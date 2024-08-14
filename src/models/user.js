@@ -3,6 +3,7 @@ const { Schema } = mongoose;
 import bcrypt from "bcrypt";
 const saltRounds = 10;
 import jwt from "jsonwebtoken";
+import { JWT_Secrete, JWT_Expiry } from "../utils/constants.js";
 const userSchema = new Schema(
   {
     name: {
@@ -22,28 +23,35 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    companies: [
+      {
+        type: String,
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-userSchema.pre("save", async function (next) {
-  this.password = bcrypt.hashSync(this.password, saltRounds);
-  next();
-});
 userSchema.methods.comparePassword = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 userSchema.methods.createToken = function (user) {
   const token = jwt.sign(
     {
-      data: user,
+      userId: user.id,
+      email: user.email,
     },
-    "secret",
-    { expiresIn: "1h" }
+    JWT_Secrete,
+    { expiresIn: JWT_Expiry }
   );
   return token;
 };
+
+userSchema.pre("save", async function (next) {
+  this.password = bcrypt.hashSync(this.password, saltRounds);
+  next();
+});
 const User = mongoose.model("User", userSchema);
 export default User;

@@ -3,20 +3,24 @@ const userRepository = new UserRepository();
 import { StatusCodes } from "http-status-codes";
 export const signUp = async (req, res) => {
   try {
-    const user = await userRepository.create({
+    const user = await userRepository.signUp({
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
+      college: req.body.college,
     });
     return res.status(StatusCodes.CREATED).json({
-      message: "user created successfully",
       data: user,
+      success: true,
+      msg: "User Sign up successfull",
+      err: null,
     });
   } catch (error) {
     console.log(error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      mssage: "not able to create user",
-      data: "",
+      data: null,
+      success: false,
+      msg: error.message || "Issues in signing up user",
       err: error,
     });
   }
@@ -25,7 +29,6 @@ export const signUp = async (req, res) => {
 export const signIn = async (req, res) => {
   try {
     const user = await userRepository.getUserByEmail(req.body.email);
-    // console.log(user);
     if (!user) {
       throw {
         message: "User not found",
@@ -38,15 +41,18 @@ export const signIn = async (req, res) => {
     }
     const token = user.createToken(user);
     return res.status(StatusCodes.OK).json({
-      message: "user logged-in successfully",
       data: token,
+      success: true,
+      msg: "user logged-in successfully",
+      err: null,
     });
   } catch (error) {
     console.log(error);
 
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      mssage: "not able to login user",
       data: null,
+      success: false,
+      msg: error.message || "User login failed",
       err: error,
     });
   }
