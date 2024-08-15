@@ -32,8 +32,22 @@ class MentorRepository extends CrudRepository {
   }
   async getAllMentorsFromCollege(college) {
     try {
-      const mentor = await Mentor.findall({ college: college });
+      const mentor = await Mentor.find({ college: college });
       return mentor;
+    } catch (error) {
+      console.log("something went wrong in the Mentor repository : ", error);
+      throw error;
+    }
+  }
+  async updateMentorAvailability() {
+    try {
+    } catch (error) {
+      console.log("something went wrong in the Mentor repository : ", error);
+      throw error;
+    }
+  }
+  async getAllAvailableSlots() {
+    try {
     } catch (error) {
       console.log("something went wrong in the Mentor repository : ", error);
       throw error;
