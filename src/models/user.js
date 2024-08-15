@@ -1,9 +1,12 @@
 import mongoose, { mongo } from "mongoose";
 const { Schema } = mongoose;
 import bcrypt from "bcrypt";
-const saltRounds = 10;
 import jwt from "jsonwebtoken";
-import { JWT_Secrete, JWT_Expiry } from "../utils/constants.js";
+import {
+  JWT_Secrete,
+  JWT_Expiry,
+  Bcrypt_saltRounds,
+} from "../utils/constants.js";
 const userSchema = new Schema(
   {
     name: {
@@ -15,19 +18,22 @@ const userSchema = new Schema(
       unique: true,
       require: true,
     },
-    college: {
-      type: String,
-      require: true,
-    },
     password: {
       type: String,
       required: true,
     },
-    companies: [
-      {
-        type: String,
-      },
-    ],
+    mobile_number: {
+      type: String,
+      required: true,
+    },
+    isMobileVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -40,8 +46,9 @@ userSchema.methods.comparePassword = function (password) {
 userSchema.methods.createToken = function (user) {
   const token = jwt.sign(
     {
-      userId: user.id,
+      UserId: user.id,
       email: user.email,
+      type: "user",
     },
     JWT_Secrete,
     { expiresIn: JWT_Expiry }
@@ -50,7 +57,7 @@ userSchema.methods.createToken = function (user) {
 };
 
 userSchema.pre("save", async function (next) {
-  this.password = bcrypt.hashSync(this.password, saltRounds);
+  this.password = bcrypt.hashSync(this.password, Bcrypt_saltRounds);
   next();
 });
 const User = mongoose.model("User", userSchema);

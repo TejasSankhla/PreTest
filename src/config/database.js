@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const connect = async () => {
   try {
-    await mongoose.connect("mongodb://127.0.0.1:27017/JCL");
+    await mongoose.connect("mongodb://127.0.0.1:27017/preCollege");
   } catch (error) {
     console.log("Database connection error : ", error);
   }

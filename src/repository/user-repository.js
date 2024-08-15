@@ -7,7 +7,6 @@ class UserRepository extends CrudRepository {
   }
   async signUp(user) {
     try {
-      user.college = convertToLowerCase(user.college);
       const newUser = await User.create(user);
       return newUser;
     } catch (error) {

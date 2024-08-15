@@ -1,7 +1,9 @@
 import Express from "express";
 const router = Express.Router();
-import authroutes from "./auth/auth-routes.js";
+import userRoutes from "./user/auth-routes.js";
+import mentorRoutes from "./mentor/auth-routes.js";
 
-router.use("/auth", authroutes);
+router.use("/user", userRoutes);
+router.use("/mentor", mentorRoutes);
 
 export default router;
