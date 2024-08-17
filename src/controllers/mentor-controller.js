@@ -1,17 +1,19 @@
+import BookingRepository from "../repository/booking-repository.js";
 import MentorRepository from "../repository/mentor-repository.js";
 const mentorRepository = new MentorRepository();
+const bookingRepository = new BookingRepository();
 import { StatusCodes } from "http-status-codes";
 export const signUp = async (req, res) => {
   try {
     const mentor = await mentorRepository.signUp({
-      username : req.body.username,
+      username: req.body.username,
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
       college: req.body.college,
-      branch : req.body.branch,
+      branch: req.body.branch,
       grad_year: req.body.grad_year,
-      mobile_number : req.body.mobile_number
+      mobile_number: req.body.mobile_number,
     });
     return res.status(StatusCodes.CREATED).json({
       data: mentor,
@@ -57,6 +59,71 @@ export const signIn = async (req, res) => {
       data: null,
       success: false,
       msg: error.message || "Mentor login failed",
+      err: error,
+    });
+  }
+};
+
+export const fetchMentorBookings = async (req, res) => {
+  try {
+    const bookings = await bookingRepository.fetchMentorBookings(
+      req.params.userId
+    );
+    return res.status(StatusCodes.OK).json({
+      data: bookings,
+      success: true,
+      msg: "bookings fetched successfully",
+      err: null,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      data: null,
+      success: false,
+      msg: error.message || "try again after some time, fetch failure",
+      err: error,
+    });
+  }
+};
+export const updateMentorAvailability = async (req, res) => {
+  try {
+    const updatedMentor = await mentorRepository.updateMentorAvailability(
+      req.params.userId,
+      req.body.updatedSlots
+    );
+    return res.status(StatusCodes.OK).json({
+      data: updatedMentor,
+      success: true,
+      msg: "Mentor updated successfully",
+      err: null,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      data: null,
+      success: false,
+      msg: error.message || "try again after some time, update failure",
+      err: error,
+    });
+  }
+};
+export const fetchMentorProfile = async (req, res) => {
+  try {
+    const mentorProfile = await mentorRepository.fetchMentorProfile(
+      req.params.userId
+    );
+    return res.status(StatusCodes.OK).json({
+      data: mentorProfile,
+      success: true,
+      msg: "mentor fetched successfully",
+      err: null,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      data: null,
+      success: false,
+      msg: error.message || "try again after some time, fetch failure",
       err: error,
     });
   }

@@ -1,19 +1,19 @@
-import mongoose, {  Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 const bookingSchema = new Schema(
   {
     mentor: {
       type: Schema.Types.ObjectId,
       ref: "Mentor",
-      require: true,
+      required: true,
     },
     client: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      require: true,
+      required: true,
     },
     slot: {
       type: Date,
-      required: true,
+      required: true
     },
     status: {
       type: Boolean,

@@ -20,6 +20,9 @@ class UserRepository extends CrudRepository {
   async getUserByEmail(userEmail) {
     try {
       const user = await User.findOne({ email: userEmail });
+      if (!user) {
+        throw { message: "User doesn't exist, Please Sign-up" };
+      }
       return user;
     } catch (error) {
       console.log("something went wrong in the User repository : ", error);

@@ -1,5 +1,5 @@
-import Booking from "../models/booking";
-import CrudRepository from "./crud-repository";
+import Booking from "../models/booking.js";
+import CrudRepository from "./crud-repository.js";
 class BookingRepository extends CrudRepository {
   constructor() {
     super(Booking);
@@ -7,6 +7,8 @@ class BookingRepository extends CrudRepository {
   async createBooking(bookingDetails) {
     try {
       const newBooking = await Booking.create(bookingDetails);
+      console.log(newBooking);
+      
       return newBooking;
     } catch (error) {
       console.log("something went wrong in the Booking repository : ", error);
@@ -37,6 +39,8 @@ class BookingRepository extends CrudRepository {
       throw error;
     }
   }
+
+  
 
   // V2
   async cancelBooking(bookingId) {
