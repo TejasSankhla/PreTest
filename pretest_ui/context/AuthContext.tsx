@@ -3,6 +3,7 @@ import { createContext, useContext, useState, ReactNode } from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { User } from "lucide-react";
 
 interface User {
   id: string;
@@ -70,6 +71,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData)); // Persist user session
         localStorage.setItem("token", JSON.stringify(userData.token)); // Persist user session
+        console.log(User);
+
         router.push("/");
       }
     } catch (error) {

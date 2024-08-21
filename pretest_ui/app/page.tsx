@@ -11,8 +11,10 @@ export default function Component() {
     { id: 2, name: "Mentors from top colleges", value: "47+" },
     { id: 3, name: "positive feedback for mentors", value: "100%" },
   ];
-
+  console.log();
+  
   return (
+
     <main className="flex-1 ">
       <section className="pt-10 md:pt-20  bg-secondary">
         <div className="container flex flex-col  items-center justify-center mx-auto px-4 md:px-6">
