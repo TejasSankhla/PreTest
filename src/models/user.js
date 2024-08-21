@@ -24,7 +24,7 @@ const userSchema = new Schema(
     },
     mobile_number: {
       type: String,
-      required: true,
+      // required: true,
     },
     isMobileVerified: {
       type: Boolean,

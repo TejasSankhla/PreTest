@@ -21,7 +21,7 @@ class UserRepository extends CrudRepository {
     try {
       const user = await User.findOne({ email: userEmail });
       if (!user) {
-        throw { message: "User doesn't exist, Please Sign-up" };
+        throw { code: 404, message: "User doesn't exist, Please Sign-up" };
       }
       return user;
     } catch (error) {

@@ -4,16 +4,15 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
 } from "./dropdown-menu";
-import { useState } from "react";
-import { Button, buttonVariants } from "./button";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "./button";
 import Image from "next/image";
 import { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 import Link from "next/link";
 import { MenuIcon } from "lucide-react";
 function Navbar() {
-  const [isSignedIn, setisSignedIn] = useState(false);
+  const { user, logout } = useAuth();
   return (
     <header className=" bg-secondary sticky top-0 z-20  text-black py-4 shadow border-b border-gray">
       <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
@@ -59,7 +58,7 @@ function Navbar() {
           >
             Contact
           </Link>
-          {isSignedIn && (
+          {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar className="h-9 w-9">
@@ -74,24 +73,23 @@ function Navbar() {
                 <DropdownMenuItem>Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
-          {!isSignedIn && (
-            <Button
-              asChild
-              className="p-4 shadow-2xl bg-blue-500 text-white hover:bg-blue-300 font-sans"
-              variant="outline"
-            >
-              <Link href="/auth/sign-up">Sign Up</Link>
-            </Button>
-          )}{" "}
-          {!isSignedIn && (
-            <Button
-              asChild
-              className="p-4 shadow-2xl  text-black hover:bg-gray-100 font-sans"
-              variant="outline"
-            >
-              <Link href="/auth/log-in">Log in </Link>
-            </Button>
+          ) : (
+            <>
+              <Button
+                asChild
+                className="p-4 shadow-2xl bg-blue-500 text-white hover:bg-blue-300 font-sans"
+                variant="outline"
+              >
+                <Link href="/auth/sign-up">Sign Up</Link>
+              </Button>
+              <Button
+                asChild
+                className="p-4 shadow-2xl  text-black hover:bg-gray-100 font-sans"
+                variant="outline"
+              >
+                <Link href="/auth/log-in">Log in </Link>
+              </Button>
+            </>
           )}
         </nav>
         <Button variant="secondary" className="md:hidden flex items-center">

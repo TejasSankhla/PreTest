@@ -3,7 +3,21 @@ import React from "react";
 import { ArrowRight } from "lucide-react";
 import pretestLogo from "../../icon.png";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
 function LogIn() {
+  const { login, ErrorMessage } = useAuth();
+  const [email, setEmail] = useState("tejashsankhla@gmail.com");
+  const [password, setPassword] = useState("123456");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await login({ email, password });
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
+  };
   return (
     <main className="flex flex-1">
       <section className="flex-1 items-center justify-center ">
@@ -29,7 +43,7 @@ function LogIn() {
                 Create a free account
               </a>
             </p>
-            <form action="#" method="POST" className="mt-8">
+            <form onSubmit={handleSubmit} className="mt-8">
               <div className="space-y-5">
                 <div>
                   <label
@@ -44,6 +58,8 @@ function LogIn() {
                       className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                       type="email"
                       placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                     ></input>
                   </div>
                 </div>
@@ -70,12 +86,19 @@ function LogIn() {
                       className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                       type="password"
                       placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     ></input>
                   </div>
                 </div>
+                {ErrorMessage && (
+                  <div className="err-msg  text-red-500 text-center font-medium text-lg">
+                    {ErrorMessage}
+                  </div>
+                )}
                 <div>
                   <button
-                    type="button"
+                    type="submit"
                     className="inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80"
                   >
                     Get started <ArrowRight className="ml-2" size={16} />

@@ -19,6 +19,14 @@ export const signUp = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    if (error.code === 11000) {
+      return res.status(StatusCodes.CONFLICT).json({
+        data: null,
+        success: false,
+        msg: error.message || "Issues in signing up user",
+        err: error,
+      });
+    }
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       data: null,
       success: false,
@@ -31,19 +39,19 @@ export const signUp = async (req, res) => {
 export const signIn = async (req, res) => {
   try {
     const user = await userRepository.getUserByEmail(req.body.email);
-    if (!user) {
-      throw {
-        message: "User not found",
-      };
-    }
+
     if (!user.comparePassword(req.body.password)) {
       throw {
+        code: 401,
         message: "Incorrect Password",
       };
     }
     const token = user.createToken(user);
+    const userData = user.toObject();
+    userData.token = token;
+
     return res.status(StatusCodes.OK).json({
-      data: token,
+      data: userData,
       success: true,
       msg: "user logged-in successfully",
       err: null,
@@ -51,7 +59,7 @@ export const signIn = async (req, res) => {
   } catch (error) {
     console.log(error);
 
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    return res.status(error.code || StatusCodes.INTERNAL_SERVER_ERROR).json({
       data: null,
       success: false,
       msg: error.message || "User login failed",
