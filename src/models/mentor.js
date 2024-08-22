@@ -40,6 +40,10 @@ const mentorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    location: {
+      type: String,
+      required: true,
+    },
     branch: {
       type: String,
       required: true,

@@ -1,7 +1,11 @@
 import Mentor from "../models/mentor.js";
 import CrudRepository from "./crud-repository.js";
 import Booking from "../models/booking.js";
-import { convertToLowerCase, trimBlankSpace } from "../utils/helper.js";
+import {
+  convertToLowerCase,
+  trimBlankSpace,
+  camelCase,
+} from "../utils/helper.js";
 import moment from "moment";
 // console.log(moment());
 // console.log(new Date());
@@ -13,9 +17,9 @@ class MentorRepository extends CrudRepository {
   async signUp(user) {
     try {
       user.username = convertToLowerCase(user.username);
-      user.name = trimBlankSpace(user.name);
-      user.college = convertToLowerCase(user.college);
-      user.branch = trimBlankSpace(user.branch);
+      user.name = camelCase(user.name);
+      user.college = camelCase(user.college);
+      user.branch = camelCase(user.branch);
       const newMentor = await Mentor.create(user);
       return newMentor;
     } catch (error) {
@@ -40,7 +44,16 @@ class MentorRepository extends CrudRepository {
   }
   async getAllMentorsFromCollege(college) {
     try {
-      const mentor = await Mentor.find({ college: college });
+      const mentor = await Mentor.find({ college });
+      return mentor;
+    } catch (error) {
+      console.log("something went wrong in the Mentor repository : ", error);
+      throw error;
+    }
+  }
+  async getAllMentors() {
+    try {
+      const mentor = await Mentor.find();
       return mentor;
     } catch (error) {
       console.log("something went wrong in the Mentor repository : ", error);

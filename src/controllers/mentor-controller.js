@@ -14,6 +14,7 @@ export const signUp = async (req, res) => {
       branch: req.body.branch,
       grad_year: req.body.grad_year,
       mobile_number: req.body.mobile_number,
+      location : req.body.location
     });
     return res.status(StatusCodes.CREATED).json({
       data: mentor,
@@ -114,6 +115,47 @@ export const fetchMentorProfile = async (req, res) => {
     );
     return res.status(StatusCodes.OK).json({
       data: mentorProfile,
+      success: true,
+      msg: "mentor fetched successfully",
+      err: null,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      data: null,
+      success: false,
+      msg: error.message || "try again after some time, fetch failure",
+      err: error,
+    });
+  }
+};
+export const getAllMentors = async (req, res) => {
+  try {
+    const mentors = await mentorRepository.getAllMentors();
+    return res.status(StatusCodes.OK).json({
+      data: mentors,
+      success: true,
+      msg: "mentors fetched successfully",
+      err: null,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      data: null,
+      success: false,
+      msg: error.message || "try again after some time, fetch failure",
+      err: error,
+    });
+  }
+};
+export const getAllMentorsFromCollege = async (req, res) => {
+  try {
+    
+    const mentors = await mentorRepository.getAllMentorsFromCollege(
+      req.params.college
+    );
+    return res.status(StatusCodes.OK).json({
+      data: mentors,
       success: true,
       msg: "mentor fetched successfully",
       err: null,
