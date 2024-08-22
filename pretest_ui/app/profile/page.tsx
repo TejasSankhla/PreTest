@@ -20,7 +20,7 @@ export default function Component() {
             style={{ aspectRatio: "1200/400", objectFit: "cover" }}
           />
           <div className="absolute left-4 sm:left-32 top-[%] -translate-y-1/2 w-[150px] z-20">
-            <Avatar className=" h-36 w-36 sm:h-48 sm:w-48 border-8 border-background border-gray-300">
+            <Avatar className=" h-36 w-36 sm:h-48 sm:w-48 border-8 border-background border-orange-300">
               <AvatarImage src="/user-placeholder.png" alt="Profile" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
