@@ -11,7 +11,6 @@ export default function Component() {
     { id: 2, name: "Mentors from top colleges", value: "47+" },
     { id: 3, name: "positive feedback for mentors", value: "100%" },
   ];
-  console.log();
   
   return (
 

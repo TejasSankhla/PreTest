@@ -16,3 +16,12 @@ export function camelCase(str) {
     })
     .replace(/\s+/g, "");
 }
+
+export function formatString(str) {
+  return str
+    .trim() // Remove leading and trailing whitespace
+    .split(" ") // Split the string into an array of words
+    .filter((word) => word !== "") // Remove any empty elements caused by multiple spaces
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter, lowercase the rest
+    .join(" "); // Join the array back into a string
+}

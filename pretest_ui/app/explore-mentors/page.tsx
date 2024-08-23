@@ -89,6 +89,7 @@ function Page() {
               key={mentor._id || index}
               className="mentor-profiles lg:w-5/12 shadow-inner border-gray-900 hover:shadow-lg relative overflow-hidden"
             >
+              
               <ProfileCard mentor={mentor} />
             </div>
           ))

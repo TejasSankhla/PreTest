@@ -3,7 +3,7 @@ import CrudRepository from "./crud-repository.js";
 import Booking from "../models/booking.js";
 import {
   convertToLowerCase,
-  trimBlankSpace,
+  formatString,
   camelCase,
 } from "../utils/helper.js";
 import moment from "moment";
@@ -17,9 +17,9 @@ class MentorRepository extends CrudRepository {
   async signUp(user) {
     try {
       user.username = convertToLowerCase(user.username);
-      user.name = camelCase(user.name);
-      user.college = camelCase(user.college);
-      user.branch = camelCase(user.branch);
+      user.name = formatString(user.name);
+      user.college = formatString(user.college);
+      user.branch = formatString(user.branch);
       const newMentor = await Mentor.create(user);
       return newMentor;
     } catch (error) {

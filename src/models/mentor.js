@@ -58,7 +58,7 @@ const mentorSchema = new mongoose.Schema(
     },
     about: {
       type: String,
-      // required: true,
+      required: true,
     },
     tagline: {
       type: String,

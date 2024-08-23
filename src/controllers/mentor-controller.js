@@ -14,7 +14,8 @@ export const signUp = async (req, res) => {
       branch: req.body.branch,
       grad_year: req.body.grad_year,
       mobile_number: req.body.mobile_number,
-      location : req.body.location
+      location: req.body.location,
+      about: req.body.about,
     });
     return res.status(StatusCodes.CREATED).json({
       data: mentor,
@@ -32,7 +33,6 @@ export const signUp = async (req, res) => {
     });
   }
 };
-
 export const signIn = async (req, res) => {
   try {
     const user = await mentorRepository.getMentorByEmail(req.body.email);
@@ -55,7 +55,6 @@ export const signIn = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       data: null,
       success: false,
@@ -65,27 +64,6 @@ export const signIn = async (req, res) => {
   }
 };
 
-export const fetchMentorBookings = async (req, res) => {
-  try {
-    const bookings = await bookingRepository.fetchMentorBookings(
-      req.params.userId
-    );
-    return res.status(StatusCodes.OK).json({
-      data: bookings,
-      success: true,
-      msg: "bookings fetched successfully",
-      err: null,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      data: null,
-      success: false,
-      msg: error.message || "try again after some time, fetch failure",
-      err: error,
-    });
-  }
-};
 export const updateMentorAvailability = async (req, res) => {
   try {
     const updatedMentor = await mentorRepository.updateMentorAvailability(
@@ -150,7 +128,6 @@ export const getAllMentors = async (req, res) => {
 };
 export const getAllMentorsFromCollege = async (req, res) => {
   try {
-    
     const mentors = await mentorRepository.getAllMentorsFromCollege(
       req.params.college
     );

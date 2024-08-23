@@ -8,22 +8,29 @@ class BookingRepository extends CrudRepository {
     try {
       const newBooking = await Booking.create(bookingDetails);
       console.log(newBooking);
-      
+
       return newBooking;
     } catch (error) {
       console.log("something went wrong in the Booking repository : ", error);
       throw error;
     }
   }
-  async fetchUserBookings(userId) {
+  async fetchUserBookings(userId, upcoming) {
     try {
-      const bookings = await Booking.find({ client: userId })
-        .sort({ slot: -1 })
-        .populate("mentor", "name college")
+      const currDate = new Date();
+      const sortOrder = upcoming ? 1 : -1; // 1 for ascending, -1 for descending
+
+      const bookings = await Booking.find({
+        client: userId,
+        slot: upcoming ? { $gt: currDate } : { $lt: currDate },
+      })
+        .sort({ slot: sortOrder }) // Sort by slot date in increasing or decreasing order
+        .populate("mentor", "name college profile_pic branch")
         .exec();
+
       return bookings;
     } catch (error) {
-      console.log("something went wrong in the Booking repository : ", error);
+      console.log("Something went wrong in the Booking repository: ", error);
       throw error;
     }
   }
@@ -39,8 +46,6 @@ class BookingRepository extends CrudRepository {
       throw error;
     }
   }
-
-  
 
   // V2
   async cancelBooking(bookingId) {

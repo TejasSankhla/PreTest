@@ -41,7 +41,7 @@ function Navbar() {
   }, []);
 
   return (
-    <header className="bg-secondary sticky top-0 z-20 text-black py-4 shadow border-b border-gray">
+    <header className="bg-secondary sticky top-0 z-50 text-black py-4 shadow border-b border-gray">
       <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
         <Link
           href="#"
@@ -93,7 +93,7 @@ function Navbar() {
                   <AvatarFallback />
                 </Avatar>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="text-sm bg-white z-30">
+              <DropdownMenuContent className="text-sm bg-white z-50">
                 <DropdownMenuItem onClick={() => router.push("/profile")}>
                   My Account
                 </DropdownMenuItem>
