@@ -7,8 +7,6 @@ import {
   camelCase,
 } from "../utils/helper.js";
 import moment from "moment";
-// console.log(moment());
-// console.log(new Date());
 
 class MentorRepository extends CrudRepository {
   constructor() {
@@ -107,7 +105,6 @@ class MentorRepository extends CrudRepository {
       if (availableDays == 0) {
         mentor.isAvailable = false;
         mentor.availableSlots = null;
-        console.log("not available");
         return mentor;
       }
       // Start iterating from currDay to find next 7 availableDays
@@ -115,7 +112,6 @@ class MentorRepository extends CrudRepository {
       let currWeekDay = currDate.weekday(); // curr Week Day index
       // get all future bookings to remove booked slots from  All availableSlots
       const bookedSlots = await this.getAllFutureBookings(mentorId, currDate);
-      console.log("booked Slots : ", bookedSlots);
 
       var availableslots = []; // all next 7 available dates with slots
       availableDays = 0;

@@ -72,6 +72,50 @@ export const upcomingUserBookings = async (req, res) => {
     });
   }
 };
+export const prevMentorBookings = async (req, res) => {
+  try {
+    const bookings = await bookingRepository.fetchMentorBookings(
+      req.params.userId,
+      false
+    );
+    return res.status(StatusCodes.OK).json({
+      data: bookings,
+      success: true,
+      msg: "bookings fetched successfully",
+      err: null,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      data: null,
+      success: false,
+      msg: error.message || "try again after some time, fetch failure",
+      err: error,
+    });
+  }
+};
+export const upcomingMentorBookings = async (req, res) => {
+  try {
+    const bookings = await bookingRepository.fetchMentorBookings(
+      req.params.userId,
+      true
+    );
+    return res.status(StatusCodes.OK).json({
+      data: bookings,
+      success: true,
+      msg: "bookings fetched successfully",
+      err: null,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      data: null,
+      success: false,
+      msg: error.message || "try again after some time, fetch failure",
+      err: error,
+    });
+  }
+};
 export const updateMentorAvailability = async (req, res) => {
   try {
     const updatedMentor = await mentorRepository.updateMentorAvailability(

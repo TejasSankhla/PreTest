@@ -56,35 +56,15 @@ function Navbar() {
             className="mr-2"
           />
         </Link>
-        <nav className="hidden md:flex space-x-6 items-center">
+        <nav className="hidden md:flex justify-center space-x-6 items-center">
           <Link
             href="/"
-            className="hover:underline transition-colors"
+            className="hover:underline  transition-colors"
             prefetch={false}
           >
             Home
           </Link>
-          <Link
-            href="#"
-            className="hover:underline transition-colors"
-            prefetch={false}
-          >
-            About
-          </Link>
-          <Link
-            href="#"
-            className="hover:underline transition-colors"
-            prefetch={false}
-          >
-            Services
-          </Link>
-          <Link
-            href="#"
-            className="hover:underline transition-colors"
-            prefetch={false}
-          >
-            Contact
-          </Link>
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -97,7 +77,7 @@ function Navbar() {
                 <DropdownMenuItem onClick={() => router.push("/profile")}>
                   My Account
                 </DropdownMenuItem>
-                <DropdownMenuItem>Bookings</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/profile/my-bookings")}>Bookings</DropdownMenuItem>
                 <DropdownMenuItem
                   className="hover:bg-slate-200"
                   onClick={logout}
@@ -120,7 +100,7 @@ function Navbar() {
                 className="p-4 shadow-2xl text-black hover:bg-gray-100 font-sans"
                 variant="outline"
               >
-                <Link href="/auth/log-in">Log in</Link>
+                <Link href="/auth/log-in">Log in </Link>
               </Button>
             </>
           )}
@@ -157,9 +137,11 @@ function Navbar() {
                   My Account
                 </Link>
                 <Link
-                  href="/profile"
+                  href="/profile/my-bookings"
                   className="hover:underline text-center flex py-2 font-medium items-center justify-center transition-colors"
                   onClick={() => {
+                    console.log("bookings clicked");
+                    
                     setIsMobileMenuOpen(false); // Close menu on link click
                   }}
                 >
@@ -169,7 +151,7 @@ function Navbar() {
                   href="#"
                   className="hover:underline text-center flex py-2 font-medium items-center justify-center transition-colors"
                   onClick={() => {
-                    // setIsMobileMenuOpen(false); // Close menu on link click
+                    // setIsMobileMenuOpen(false);
                     logout();
                   }}
                 >
@@ -183,7 +165,7 @@ function Navbar() {
                   className="p-4 shadow-2xl bg-blue-500 text-white hover:bg-blue-300 font-sans"
                   variant="outline"
                   onClick={() => {
-                    setIsMobileMenuOpen(false); // Close menu on button click
+                    setIsMobileMenuOpen(false);
                   }}
                 >
                   <Link href="/auth/sign-up">Sign Up</Link>
@@ -193,7 +175,7 @@ function Navbar() {
                   className="p-4 shadow-2xl text-black hover:bg-gray-100 font-sans"
                   variant="outline"
                   onClick={() => {
-                    setIsMobileMenuOpen(false); // Close menu on button click
+                    setIsMobileMenuOpen(false);
                   }}
                 >
                   <Link href="/auth/log-in">Log in</Link>

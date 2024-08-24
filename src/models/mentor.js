@@ -34,7 +34,7 @@ const mentorSchema = new mongoose.Schema(
     },
     mobile_number: {
       type: String,
-      required: true,
+      // required: true,
     },
     college: {
       type: String,

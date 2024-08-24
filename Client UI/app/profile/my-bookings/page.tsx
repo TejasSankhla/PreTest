@@ -165,11 +165,11 @@ function Page() {
                             {new Date(booking.slot).toLocaleString("en-US", {
                               weekday: "short",
                               year: "numeric",
-                              month: "short", 
+                              month: "short",
                               day: "numeric",
                               hour: "2-digit",
                               minute: "2-digit",
-                              hour12: true, 
+                              hour12: true,
                             })}
                           </span>
                         </td>

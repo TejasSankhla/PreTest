@@ -16,12 +16,14 @@ export function camelCase(str) {
     })
     .replace(/\s+/g, "");
 }
-
 export function formatString(str) {
+  if (typeof str !== "string" || !str.trim()) {
+    return ""; // Return an empty string for non-strings or empty inputs
+  }
+
   return str
-    .trim() // Remove leading and trailing whitespace
-    .split(" ") // Split the string into an array of words
-    .filter((word) => word !== "") // Remove any empty elements caused by multiple spaces
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter, lowercase the rest
-    .join(" "); // Join the array back into a string
+    .trim()
+    .split(/\s+/) // Use regex to handle multiple spaces properly
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
 }

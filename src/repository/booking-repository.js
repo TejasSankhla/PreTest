@@ -34,12 +34,19 @@ class BookingRepository extends CrudRepository {
       throw error;
     }
   }
-  async fetchMentorBookings(userId) {
+  async fetchMentorBookings(userId, upcoming) {
     try {
-      const bookings = await Booking.find({ mentor: userId })
-        .sort({ slot: -1 })
-        .populate("client", "name")
+      const currDate = new Date();
+      const sortOrder = upcoming ? 1 : -1; // 1 for ascending, -1 for descending
+
+      const bookings = await Booking.find({
+        mentor: userId,
+        slot: upcoming ? { $gt: currDate } : { $lt: currDate },
+      })
+        .sort({ slot: sortOrder }) // Sort by slot date in increasing or decreasing order
+        .populate("client", "name email mobile_number ")
         .exec();
+
       return bookings;
     } catch (error) {
       console.log("something went wrong in the Booking repository : ", error);
