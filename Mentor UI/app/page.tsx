@@ -1,14 +1,16 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import pretestLogo from "./icon.png";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 function LogIn() {
+  const router = useRouter();
   const { login, ErrorMessage } = useAuth();
-  const [email, setEmail] = useState("lci2021034@iiitl.ac.in");
+  const [email, setEmail] = useState("anubhavshivahre@iiitl.ac.in");
   const [password, setPassword] = useState("123456");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,6 +21,12 @@ function LogIn() {
       console.error("Login failed:", error);
     }
   };
+  useEffect(() => {
+    const auth_Token = JSON.parse(localStorage.getItem("token"));
+    if (auth_Token) {
+      router.push("/");
+    }
+  }, []);
   return (
     <main className="flex flex-1">
       <section className="flex-1 items-center justify-center ">
@@ -38,7 +46,6 @@ function LogIn() {
               Don&apos;t have an account?{" "}
               <Link
                 href="/sign-up"
-
                 className="font-semibold text-black transition-all duration-200 hover:underline"
               >
                 Create a free account
@@ -58,7 +65,7 @@ function LogIn() {
                       className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                       type="email"
                       placeholder="Email"
-                      value={email}
+                      value={email || ""}
                       onChange={(e) => setEmail(e.target.value)}
                     ></input>
                   </div>

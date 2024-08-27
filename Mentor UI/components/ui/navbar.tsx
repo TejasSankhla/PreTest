@@ -43,8 +43,9 @@ function Navbar() {
   return (
     <header className="bg-secondary sticky top-0 z-50 text-black py-4 shadow border-b border-gray">
       <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
+       {/* // navbar logo */}
         <Link
-          href="#"
+          href="/dashboard/profile"
           className="flex items-center text-xl font-bold"
           prefetch={false}
         >
@@ -56,13 +57,7 @@ function Navbar() {
             className="mr-2"
           />
         </Link>
-          <Link
-            href="/dashboard/profile"
-            className="hover:underline  text-lg  transition-colors"
-            prefetch={false}
-          >
-            Home
-          </Link>
+         
         <nav className="hidden md:flex justify-center space-x-6 items-center">
 
           {user ? (

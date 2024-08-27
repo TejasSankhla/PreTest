@@ -61,6 +61,7 @@ class MentorRepository extends CrudRepository {
   // update available slots by a mentor
   async updateMentorAvailability(mentorId, updatedSlots) {
     try {
+      
       const updatedMentor = await Mentor.findByIdAndUpdate(
         mentorId,
         {

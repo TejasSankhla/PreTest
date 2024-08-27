@@ -68,7 +68,7 @@ function Page() {
   }, [activeButton, authUser, isDataFetched, bookingsData]);
 
   return (
-    <div className="w-full h-full flex mt-4 items-center mx-auto justify-center">
+    <div className="w-full h-full flex mt-4  mx-auto justify-center">
       <div className="bookings-container w-11/12 sm:w-4/5 flex-col items-center">
         {/* Button Section */}
         <div className="flex divide-slate-400 divide-x-2 items-center justify-evenly">
@@ -80,7 +80,7 @@ function Page() {
                 : "bg-gray-200 text-black hover:bg-gray-400"
             }`}
           >
-            Upcoming Bookings
+            Upcoming 
           </button>
           <button
             onClick={() => handleButtonClick("past")}
@@ -90,7 +90,7 @@ function Page() {
                 : "bg-gray-200 text-black hover:bg-gray-400"
             }`}
           >
-            Past Bookings
+            Past 
           </button>
         </div>
         {/* Bookings table */}

@@ -5,7 +5,6 @@ const bookingRepository = new BookingRepository();
 import { StatusCodes } from "http-status-codes";
 export const signUp = async (req, res) => {
   try {
-    
     const mentor = await mentorRepository.signUp({
       username: req.body.username,
       name: req.body.name,
@@ -18,7 +17,7 @@ export const signUp = async (req, res) => {
       location: req.body.location,
       about: req.body.about,
     });
-    
+
     return res.status(StatusCodes.CREATED).json({
       data: mentor,
       success: true,
@@ -37,7 +36,6 @@ export const signUp = async (req, res) => {
 };
 export const signIn = async (req, res) => {
   try {
-
     const user = await mentorRepository.getMentorByEmail(req.body.email);
     if (!user) {
       throw {
@@ -77,7 +75,7 @@ export const updateMentorAvailability = async (req, res) => {
   try {
     const updatedMentor = await mentorRepository.updateMentorAvailability(
       req.params.userId,
-      req.body.updatedSlots
+      req.body
     );
     return res.status(StatusCodes.OK).json({
       data: updatedMentor,

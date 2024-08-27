@@ -26,10 +26,10 @@ export default function Sidebar() {
 
   return (
     user && (
-      <div className="border-r-2 border-gray-200">
+      <div className=" fixed border-r-2 min-h-screen z-40  border-gray-200">
         {/* Hamburger menu for small screens */}
         <button
-          className="md:hidden p-4"
+          className=" md:hidden p-4"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle Sidebar"
         >
@@ -38,7 +38,7 @@ export default function Sidebar() {
 
         {/* Sidebar */}
         <div
-          className={`fixed top-16 left-0 z-30 bg-blue-50 py-8 px-4 md:px-8 md:w-64 h-full md:border-r rounded-lg transition-transform duration-300 sidebar ${
+          className={`fixed top-16 left-0 z-30 bg-blue-50 py-8 px-4 md:px-8 md:w-64 h-full md:border-r rounded-xl transition-transform duration-300 sidebar ${
             isOpen ? "translate-x-0" : "-translate-x-full"
           } md:translate-x-0`}
         >
