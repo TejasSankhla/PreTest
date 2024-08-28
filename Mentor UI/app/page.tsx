@@ -6,9 +6,7 @@ import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 function LogIn() {
-  const router = useRouter();
   const { login, ErrorMessage } = useAuth();
   const [email, setEmail] = useState("anubhavshivahre@iiitl.ac.in");
   const [password, setPassword] = useState("123456");
@@ -21,12 +19,7 @@ function LogIn() {
       console.error("Login failed:", error);
     }
   };
-  useEffect(() => {
-    const auth_Token = JSON.parse(localStorage.getItem("token"));
-    if (auth_Token) {
-      router.push("/");
-    }
-  }, []);
+  
   return (
     <main className="flex flex-1">
       <section className="flex-1 items-center justify-center ">

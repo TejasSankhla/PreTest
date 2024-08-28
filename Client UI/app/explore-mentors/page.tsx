@@ -3,7 +3,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import ProfileCard from "@/components/ui/mentor/profileCard";
 import debounce from "lodash.debounce";
-
+import { Backend_Base_URL } from "@/context/constants";
 function Page() {
   const [totUsers, settotUsers] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
@@ -17,10 +17,10 @@ function Page() {
     const fetchMentors = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:5500/api/mentor/`);
+        const response = await axios.get(`${Backend_Base_URL}/api/mentor/`);
         if (response.status === 200) {
           setMentors(response.data.data);
-          setFilteredMentors(response.data.data); 
+          setFilteredMentors(response.data.data);
           settotUsers(response.data.data.length);
         }
       } catch (error) {
@@ -40,12 +40,13 @@ function Page() {
     if (!searchInput) {
       setFilteredMentors(mentors);
     } else {
-      const filtered = mentors.filter((mentor) =>
-        mentor.name.toLowerCase().includes(searchInput.toLowerCase()) ||
-        mentor.college.toLowerCase().includes(searchInput.toLowerCase())
+      const filtered = mentors.filter(
+        (mentor) =>
+          mentor.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+          mentor.college.toLowerCase().includes(searchInput.toLowerCase())
       );
       setFilteredMentors(filtered);
-      settotUsers(filtered.length); 
+      settotUsers(filtered.length);
     }
   }, [searchInput, mentors]);
 
@@ -76,7 +77,8 @@ function Page() {
           </div>
         </div>
         <div className="search-result flex text-base font-semibold md:text-2xl gap-x-2 m-4">
-          Showing <div className="totalMentors font-sans">{totUsers}</div> Mentors
+          Showing <div className="totalMentors font-sans">{totUsers}</div>{" "}
+          Mentors
         </div>
       </div>
       <hr />
@@ -89,7 +91,6 @@ function Page() {
               key={mentor._id || index}
               className="mentor-profiles lg:w-5/12 shadow-inner border-gray-900 hover:shadow-lg relative overflow-hidden"
             >
-              
               <ProfileCard mentor={mentor} />
             </div>
           ))

@@ -1,18 +1,21 @@
 import express from "express";
 import connect_Database from "./config/database.js";
-import PORT from "./config/server-config.js";
+import {
+  PORT,
+  Client_Frontend_URL,
+  Mentor_Frontend_URL,
+} from "./config/server-config.js";
 import apiroutes from "./routes/index.js";
 import bodyParser from "body-parser";
 import cors from "cors";
 const setUpAndStartServer = async () => {
   const app = express();
   const corsOptions = {
-    origin: ["http://localhost:3000", "http://localhost:3001"], // Allow only frontend requests from this origin
-    methods: "GET,POST,PUT,DELETE", // Specify allowed methods
-    credentials: true, // If you need to include cookies or authentication headers
+    origin: [Client_Frontend_URL, Mentor_Frontend_URL],
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true,
   };
 
-  // Use the cors middleware
   app.use(cors(corsOptions));
   await connect_Database();
 

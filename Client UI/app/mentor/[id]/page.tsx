@@ -4,6 +4,7 @@ import axios from "axios";
 import MentorProfile from "../../../components/ui/mentor/profile";
 import { usePathname } from "next/navigation";
 import path from "path";
+import { Backend_Base_URL } from "@/context/constants";
 const MentorDetails = () => {
   const id = usePathname().split("/").pop();
 
@@ -15,7 +16,7 @@ const MentorDetails = () => {
       // Check if ID exists before making API call
       setLoading(true);
       axios
-        .get(`http://localhost:5500/api/mentor/${id}`)
+        .get(`${Backend_Base_URL}/api/mentor/${id}`)
         .then((response) => {
           setMentor(response.data.data);
           setLoading(false);

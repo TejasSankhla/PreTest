@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Backend_Base_URL } from "@/context/constants";
 
 // Function to generate time slots with a 15-minute interval
 const generateTimeSlots = (startHour, endHour) => {
@@ -77,7 +78,7 @@ const FullWeekScheduler = () => {
         const user = JSON.parse(localStorage.getItem("mentor"));
         const mentorId = user?.id;
         const response = await fetch(
-          `http://localhost:5500/api/mentor/${mentorId}`
+          `${Backend_Base_URL}/api/mentor/${mentorId}`
         );
         const result = await response.json();
 
@@ -211,7 +212,7 @@ const FullWeekScheduler = () => {
 
       // Send PATCH request to update slots
       const response = await fetch(
-        `http://localhost:5500/api/mentor/slots/${mentorId}`,
+        `${Backend_Base_URL}/api/mentor/slots/${mentorId}`,
         {
           method: "PUT",
           headers: {

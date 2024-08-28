@@ -10,7 +10,6 @@ import ToggleLikeButton from "@/components/constants/toggleLikeButton";
 import { Button } from "../button";
 import Link from "next/link";
 function ProfileCard({ mentor }) {
-  console.log(" mentor Finside profile card", mentor);
 
   return (
     <div className=" w-full p-2 box-border border-gray-200 rounded-lg border-2 flex-row ">

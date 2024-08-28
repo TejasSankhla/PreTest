@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import userProfilePic from "../../../public/user-placeholder.png";
 import Image from "next/image";
+import { Backend_Base_URL } from "@/context/constants";
 
 function Page() {
   const { user: authUser } = useAuth();
@@ -38,8 +39,8 @@ function Page() {
       try {
         const url =
           activeButton === "upcoming"
-            ? `http://localhost:5500/api/booking/mentor/upcoming/${userId}`
-            : `http://localhost:5500/api/booking/mentor/prev/${userId}`;
+            ? `${Backend_Base_URL}/api/booking/mentor/upcoming/${userId}`
+            : `${Backend_Base_URL}/api/booking/mentor/prev/${userId}`;
 
         // Check if data is already fetched
         if (isDataFetched[activeButton]) {

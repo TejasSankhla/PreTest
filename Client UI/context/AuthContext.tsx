@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { User } from "lucide-react";
-
+import { Backend_Base_URL } from "./constants";
 interface User {
   id: string;
   name: string;
@@ -54,7 +54,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log("long in handler");
       const response = await axios.post(
-        "http://localhost:5500/api/user/sign-in",
+          `${Backend_Base_URL}/api/user/sign-in`,
         credentials,
         {
           headers: {
@@ -98,7 +98,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signUp = async (credentials: Credentials) => {
     try {
       const response = await axios.post(
-        "http://localhost:5500/api/user/sign-up",
+        `${Backend_Base_URL}/api/user/sign-up`,
         credentials,
         {
           headers: {
@@ -135,12 +135,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem("token");
   };
 
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("user");
-  //   if (storedUser) {
-  //     setUser(JSON.parse(storedUser));
-  //   }
-  // }, []);
+ 
   const value: AuthContextType = {
     user,
     login,

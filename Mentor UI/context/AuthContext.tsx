@@ -3,7 +3,7 @@ import { createContext, useContext, useState, ReactNode } from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-
+import { Backend_Base_URL } from "./constants";
 interface Mentor {
   id: string;
   name: string;
@@ -15,13 +15,13 @@ interface Mentor {
   branch?: string;
   grad_year?: number;
   about?: string;
-  selectedSlots?: Record<string, any>; // Use Record to handle the array-like object
+  selectedSlots?: Record<string, any>;
   session?: number;
   linkedin_url?: string | null;
   insta_url?: string | null;
   isVerified?: boolean;
   isBlocked?: boolean;
-  unavailable_dates?: any[]; // Modify the type according to your data
+  unavailable_dates?: any[];
 }
 
 interface Credentials {
@@ -61,12 +61,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (storedToken) {
       setToken(JSON.parse(storedToken));
     }
+    if (!storedUser || !storedToken) {
+      router.push("/");
+    }
   }, []);
 
   const login = async (credentials: Credentials) => {
     try {
       const response = await axios.post(
-        "http://localhost:5500/api/mentor/sign-in",
+        `${Backend_Base_URL}/api/mentor/sign-in`,
         credentials,
         {
           headers: {
@@ -74,7 +77,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           },
         }
       );
-      
+
       const data = await response.data;
 
       if (data.success) {
@@ -112,20 +115,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
         } else if (error.response?.status === 404) {
           setErrorMessage("User not found, please sign up");
         } else {
-          setErrorMessage(`Error: ${error.response?.status} - ${error.message}`);
+          setErrorMessage(
+            `Error: ${error.response?.status} - ${error.message}`
+          );
         }
       } else {
         console.error("Unexpected error:", error);
-        setErrorMessage("An unexpected error occurred. Please try again later.");
+        setErrorMessage(
+          "An unexpected error occurred. Please try again later."
+        );
       }
     }
   };
 
   const signUp = async (mentor: Mentor) => {
     try {
-      
       const response = await axios.post(
-        "http://localhost:5500/api/mentor/sign-up",
+        `${Backend_Base_URL}/api/mentor/sign-up`,
         mentor,
         {
           headers: {
@@ -143,11 +149,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (error.response?.status === 409) {
           setErrorMessage("User with email already exists, try logging in.");
         } else {
-          setErrorMessage(`Error: ${error.response?.status} - ${error.message}`);
+          setErrorMessage(
+            `Error: ${error.response?.status} - ${error.message}`
+          );
         }
       } else {
         console.error("Unexpected error:", error);
-        setErrorMessage("An unexpected error occurred. Please try again later.");
+        setErrorMessage(
+          "An unexpected error occurred. Please try again later."
+        );
       }
     }
   };

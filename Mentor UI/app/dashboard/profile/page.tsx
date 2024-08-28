@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Card,
   CardHeader,
@@ -11,6 +10,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Backend_Base_URL } from "@/context/constants";
 
 export default function Dashboard() {
   const [mentor, setMentor] = useState({
@@ -32,7 +32,7 @@ export default function Dashboard() {
     async function fetchMentorDetails() {
       try {
         const response = await fetch(
-          `http://localhost:5500/api/mentor/${mentorId}`
+          `${Backend_Base_URL}/api/mentor/${mentorId}`
         );
         const data = await response.json();
 

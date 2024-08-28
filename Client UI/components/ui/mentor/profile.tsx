@@ -17,6 +17,7 @@ import { Button } from "../button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { Backend_Base_URL } from "@/context/constants";
 
 export default function MentorProfile({ mentor }) {
   const { user } = useAuth();
@@ -61,13 +62,11 @@ export default function MentorProfile({ mentor }) {
     setBookingInProgress(true);
 
     try {
-      console.log(bookingData);
 
       const response = await axios.post(
-        `http://localhost:5500/api/booking/${mentor._id}`,
+        `${Backend_Base_URL}/api/booking/${mentor._id}`,
         bookingData
       );
-      console.log(response);
 
       if (response.status === 201) {
         router.push("/profile/my-bookings");
