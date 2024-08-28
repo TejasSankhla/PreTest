@@ -17,7 +17,7 @@ const setUpAndStartServer = async () => {
     credentials: true,
   };
   startCronJob("https://pretest-nvyk.onrender.com");
-  app.use(cors(corsOptions));
+  app.use(cors());
   await connect_Database();
 
   app.use(bodyParser.urlencoded({ extended: false }));
