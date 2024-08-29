@@ -10,7 +10,6 @@ import ToggleLikeButton from "@/components/constants/toggleLikeButton";
 import { Button } from "../button";
 import Link from "next/link";
 function ProfileCard({ mentor }) {
-
   return (
     <div className=" w-full p-2 box-border border-gray-200 rounded-lg border-2 flex-row ">
       <div className="mentor-info flex p-4">
@@ -24,7 +23,7 @@ function ProfileCard({ mentor }) {
           />
         </div>
         <div className="mentor-details ml-4 w-full relative flex flex-col  md:mt-4 sm:gap-y-1  ">
-          <div className="mentor-name flex text-lg sm:text-4xl">
+          <div className="mentor-name flex text-lg sm:text-2xl">
             {mentor.name}
           </div>
           <div className="mentor-college flex text-gray-400 items-center gap-x-2  text-xs sm:text-base">
@@ -41,8 +40,11 @@ function ProfileCard({ mentor }) {
       </div>
       <hr />
       <div className="mentor-actions items-center px-4  py-2 flex gap-x-4">
-        <TwitterIcon />
-        <LinkedinIcon />
+        {mentor.linkedin_url && (
+          <Link href={mentor.linkedin_url || "#"}>
+            <LinkedinIcon />
+          </Link>
+        )}
         <ToggleLikeButton />
         <Link href={`/mentor/${mentor._id}`} className="ml-auto">
           <Button className="bg-blue-500 hover:bg-blue-300 text-white  ">

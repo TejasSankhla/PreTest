@@ -23,7 +23,7 @@ export default function Dashboard() {
     college: "",
     branch: "",
     grad_year: "",
-    linkedin: "",
+    linkedin_url: "",
     instagram: "",
     about: "",
   });
@@ -52,7 +52,7 @@ export default function Dashboard() {
           college: mentor.college,
           branch: mentor.branch,
           grad_year: mentor.grad_year,
-          linkedin: mentor.linkedin_url,
+          linkedin_url: mentor.linkedin_url,
           instagram: mentor.insta_url,
           about: mentor.about,
         });
@@ -210,11 +210,11 @@ export default function Dashboard() {
                 <Label htmlFor="linkedin">LinkedIn</Label>
                 <Input
                   id="linkedin"
-                  value={mentor.linkedin}
+                  value={mentor.linkedin_url}
                   onChange={(e) =>
                     setMentor((prev) => ({
                       ...prev,
-                      linkedin: e.target.value,
+                      linkedin_url: e.target.value,
                     }))
                   }
                 />

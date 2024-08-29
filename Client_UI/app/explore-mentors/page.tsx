@@ -20,6 +20,7 @@ function Page() {
         const response = await axios.get(`${Backend_Base_URL}/api/mentor/`);
         if (response.status === 200) {
           setMentors(response.data.data);
+
           setFilteredMentors(response.data.data);
           settotUsers(response.data.data.length);
         }
@@ -54,6 +55,8 @@ function Page() {
   const handleInputChange = debounce((e) => {
     setSearchInput(e.target.value);
   }, 500);
+
+  
 
   return (
     <div>
