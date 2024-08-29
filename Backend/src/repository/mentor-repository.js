@@ -5,6 +5,7 @@ import {
   convertToLowerCase,
   formatString,
   camelCase,
+  trimBlankSpace,
 } from "../utils/helper.js";
 import moment from "moment";
 
@@ -15,9 +16,9 @@ class MentorRepository extends CrudRepository {
   async signUp(user) {
     try {
       user.username = convertToLowerCase(user.username);
-      user.name = formatString(user.name);
-      user.college = formatString(user.college);
-      user.branch = formatString(user.branch);
+      user.name = trimBlankSpace(user.name);
+      user.college = trimBlankSpace(user.college);
+      user.branch = trimBlankSpace(user.branch);
       const newMentor = await Mentor.create(user);
       return newMentor;
     } catch (error) {
@@ -61,7 +62,6 @@ class MentorRepository extends CrudRepository {
   // update available slots by a mentor
   async updateMentorAvailability(mentorId, updatedSlots) {
     try {
-      
       const updatedMentor = await Mentor.findByIdAndUpdate(
         mentorId,
         {
@@ -160,6 +160,19 @@ class MentorRepository extends CrudRepository {
       mentor.isAvailable = true;
       mentor.slots = availableslots;
       return mentor;
+    } catch (error) {
+      console.log("something went wrong in the Mentor repository : ", error);
+      throw error;
+    }
+  }
+  async updateMentor(mentorId, updateData) {
+    try {
+      const updatedMentor = await Mentor.findByIdAndUpdate(
+        mentorId,
+        { $set: updateData },
+        { new: true, runValidators: true }
+      );
+      return updatedMentor;
     } catch (error) {
       console.log("something went wrong in the Mentor repository : ", error);
       throw error;

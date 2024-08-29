@@ -8,7 +8,7 @@ import { useState } from "react";
 import Link from "next/link";
 function LogIn() {
   const { login, ErrorMessage } = useAuth();
-  const [email, setEmail] = useState("anubhavshivahre@iiitl.ac.in");
+  const [email, setEmail] = useState("tejashsankhla@gmail.com");
   const [password, setPassword] = useState("123456");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +19,7 @@ function LogIn() {
       console.error("Login failed:", error);
     }
   };
-  
+
   return (
     <main className="flex flex-1">
       <section className="flex-1 items-center justify-center ">
@@ -58,7 +58,7 @@ function LogIn() {
                       className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                       type="email"
                       placeholder="Email"
-                      value={email || ""}
+                      value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     ></input>
                   </div>

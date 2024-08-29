@@ -93,6 +93,29 @@ export const updateMentorAvailability = async (req, res) => {
     });
   }
 };
+export const updateMentor = async (req, res) => {
+  try {
+
+    const updatedMentor = await mentorRepository.updateMentor(
+      req.params.userId,
+      req.body
+    );
+    return res.status(StatusCodes.OK).json({
+      data: updatedMentor,
+      success: true,
+      msg: "Mentor updated successfully",
+      err: null,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      data: null,
+      success: false,
+      msg: error.message || "try again after some time, update failure",
+      err: error,
+    });
+  }
+};
 export const fetchMentorProfile = async (req, res) => {
   try {
     const mentorProfile = await mentorRepository.fetchMentorProfile(

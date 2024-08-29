@@ -8,6 +8,7 @@ interface Mentor {
   id: string;
   name: string;
   email: string;
+  username: string;
   mobile_number?: string;
   profile_pic?: string;
   college?: string;
@@ -85,6 +86,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           id: data.data._id,
           name: data.data.name,
           email: data.data.email,
+          username: data.data.username,
           mobile_number: data.data.mobile_number,
           profile_pic: data.data.profile_pic,
           college: data.data.college,
