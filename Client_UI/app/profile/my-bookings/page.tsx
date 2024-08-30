@@ -4,7 +4,7 @@ import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Backend_Base_URL } from "@/context/constants";
-
+import Link from "next/link";
 function Page() {
   const { user: authUser } = useAuth();
   const [activeButton, setActiveButton] = useState("upcoming");
@@ -123,8 +123,11 @@ function Page() {
                       >
                         Booked on
                       </th>
-                      <th scope="col" className="relative px-4 py-3.5">
-                        <span className="sr-only">Edit</span>
+                      <th
+                        scope="col"
+                        className="px-4 py-3.5 text-left text-sm font-normal text-gray-500"
+                      >
+                        Meeting Link
                       </th>
                     </tr>
                   </thead>
@@ -179,9 +182,24 @@ function Page() {
                             "N/A"}
                         </td>
                         <td className="whitespace-nowrap px-4 py-4 flex items-center justify-center text-right text-sm font-medium">
-                          <Button className="bg-red-600 text-white">
-                            Cancel
-                          </Button>
+                          {booking.meeting_link ? (
+                            <Button
+                              asChild
+                              className="bg-blue-600 text-white"
+                              variant="outline"
+                            >
+                              <Link href={booking.meeting_link}>
+                                Meeting Link
+                              </Link>
+                            </Button>
+                          ) : (
+                            <Button
+                              className="bg-red-600 text-white"
+                              variant="outline"
+                            >
+                              Not available
+                            </Button>
+                          )}
                         </td>
                       </tr>
                     ))}

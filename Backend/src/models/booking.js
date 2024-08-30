@@ -13,11 +13,10 @@ const bookingSchema = new Schema(
     },
     slot: {
       type: Date,
-      required: true
+      required: true,
     },
-    status: {
-      type: Boolean,
-      default: false,
+    meeting_link: {
+      type: String,
     },
   },
   {

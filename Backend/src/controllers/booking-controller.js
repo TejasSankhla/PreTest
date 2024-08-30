@@ -1,6 +1,7 @@
 import BookingRepository from "../repository/booking-repository.js";
 import { StatusCodes } from "http-status-codes";
 const bookingRepository = new BookingRepository();
+import { createEvent } from "../utils/calendar-event.js";
 export const createBooking = async (req, res) => {
   try {
     const bookingDetails = {
@@ -11,10 +12,25 @@ export const createBooking = async (req, res) => {
 
     const newBooking = await bookingRepository.createBooking(bookingDetails);
 
+    const options = {
+      startTime: bookingDetails.slot,
+      summary: `1:1 Mentorship Session with ${newBooking.mentor.name}`,
+      location: "Virtual",
+      client: newBooking.client.email,
+      mentor: newBooking.mentor.email,
+    };
+
+    const link = await createEvent(options);
+    // now need to update link in the booking
+    const updatedBooking = await bookingRepository.updateBookingStatus(
+      newBooking._id,
+      link
+    );
+
     return res.status(StatusCodes.CREATED).json({
-      data: newBooking,
+      data: updatedBooking,
       success: true,
-      msg: "booking created",
+      msg: "booking created with link",
       err: null,
     });
   } catch (error) {

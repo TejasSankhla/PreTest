@@ -52,7 +52,6 @@ export const signIn = async (req, res) => {
     const token = user.createToken(user);
     const userData = user.toObject();
     userData.token = token;
-    console.log(userData);
 
     return res.status(StatusCodes.OK).json({
       data: userData,

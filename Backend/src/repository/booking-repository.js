@@ -6,8 +6,16 @@ class BookingRepository extends CrudRepository {
   }
   async createBooking(bookingDetails) {
     try {
-      const newBooking = await Booking.create(bookingDetails);
-      console.log(newBooking);
+      const newBooking = (await Booking.create(bookingDetails)).populate([
+        {
+          path: "mentor",
+          select: "email name",
+        },
+        {
+          path: "client",
+          select: "email",
+        },
+      ]);
 
       return newBooking;
     } catch (error) {
@@ -50,6 +58,21 @@ class BookingRepository extends CrudRepository {
       return bookings;
     } catch (error) {
       console.log("something went wrong in the Booking repository : ", error);
+      throw error;
+    }
+  }
+  async updateBookingStatus(bookingId, meeting_link) {
+    try {
+      const updatedBooking = await Booking.findByIdAndUpdate(
+        bookingId,
+        {
+          meeting_link: meeting_link,
+        },
+        { new: true }
+      );
+      return updatedBooking;
+    } catch (error) {
+      console.log("something went wrong while updating status repository : ", error);
       throw error;
     }
   }

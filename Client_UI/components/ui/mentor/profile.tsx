@@ -121,14 +121,14 @@ export default function MentorProfile({ mentor }) {
                   </AvatarFallback>
                 </Avatar>
               </div>
-              <div className="profile-info flex-col pt-8 w-full flex sm:ml-8 z-30">
-                <div className="mentor-name font-bold text-black text-xl sm:text-3xl">
+              <div className="profile-info flex-col gap-y-1 pt-16 w-full flex sm:ml-8 z-30">
+                <div className="mentor-name font-bold text-black text-2xl sm:text-3xl">
                   {mentor?.name || "Unknown mentor"}
                 </div>
-                <div className="mentor-name text-black text-base sm:text-xl">
+                <div className="mentor-name text-black text-base sm:text-lg">
                   {mentor?.college || "Unknown College"}
                 </div>
-                <div className="mentor-college flex text-gray-400 items-center gap-x-2 text-base sm:text-lg">
+                <div className="mentor-college flex text-gray-400 items-center gap-x-2 text-sm sm:text-base">
                   <LocationIcon props="h-4 w-4 sm:h-5 sm:w-5" />
                   {mentor?.location || "Unknown Location"}
                 </div>
