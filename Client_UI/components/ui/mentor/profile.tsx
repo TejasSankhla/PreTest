@@ -18,7 +18,8 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Backend_Base_URL } from "@/context/constants";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export default function MentorProfile({ mentor }) {
   const { user } = useAuth();
   const router = useRouter();
@@ -62,18 +63,18 @@ export default function MentorProfile({ mentor }) {
     setBookingInProgress(true);
 
     try {
-
       const response = await axios.post(
         `${Backend_Base_URL}/api/booking/${mentor._id}`,
         bookingData
       );
 
       if (response.status === 201) {
+        toast.success("Slot Booked");
         router.push("/profile/my-bookings");
       }
     } catch (error) {
       console.error("Booking failed:", error);
-      alert("Failed to book the slot. Please try again.");
+      toast.error("Booking Failed");
     } finally {
       setBookingInProgress(false);
     }
@@ -93,6 +94,7 @@ export default function MentorProfile({ mentor }) {
     <Fragment>
       <div className="w-full flex-col relative ">
         {/* header */}
+
         <section className="profile-header">
           <div className="relative h-[250px] sm:h-[300px]">
             <Image
@@ -293,6 +295,7 @@ export default function MentorProfile({ mentor }) {
           </div>
         </div>
       )}
+      <ToastContainer />
     </Fragment>
   );
 }

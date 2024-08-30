@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Backend_Base_URL } from "@/context/constants";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // Function to generate time slots with a 15-minute interval
 const generateTimeSlots = (startHour, endHour) => {
   const slots = [];
@@ -228,10 +229,14 @@ const FullWeekScheduler = () => {
         );
       }
 
+      const availabilityUpdateSuccess = () =>
+        toast.success("Availability updated");
+      availabilityUpdateSuccess();
       const result = await response.json();
 
       // Optionally show a success message or update UI
     } catch (error) {
+      toast.error("Failed to update availability");
       console.error("Error updating availability:", error);
     }
   };
@@ -295,6 +300,7 @@ const FullWeekScheduler = () => {
           Update Availability
         </Button>
       </div>
+      <ToastContainer />
     </div>
   );
 };

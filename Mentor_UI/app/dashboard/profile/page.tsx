@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Backend_Base_URL } from "@/context/constants";
 import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export default function Dashboard() {
   const router = useRouter();
   const [mentor, setMentor] = useState({
@@ -86,11 +88,11 @@ export default function Dashboard() {
 
       if (response.status === 200) {
         const updatedMentor = response.data.data;
-        alert("Changes saved successfully");
+        toast.success("Changes saved");
         setMentor({ ...updatedMentor, id: updatedMentor._id });
       } else {
         console.error("Failed to update mentor:", response.statusText);
-        alert("Failed to save changes");
+        toast.error("Failed to save changes");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -100,26 +102,24 @@ export default function Dashboard() {
           console.error("Error headers:", error.response.headers);
 
           if (error.response.status === 400) {
-            alert("Bad Request: Please check the data you have entered.");
+            toast.error("Bad Request: Please check the data you have entered.");
           } else if (error.response.status === 404) {
-            alert("Mentor not found: Please check the mentor ID.");
+            toast.error("Mentor not found: Please check the mentor ID.");
           } else if (error.response.status === 500) {
-            alert("Server error: Please try again later.");
+            toast.error("Server error: Please try again later.");
           } else {
-            alert(`Failed to save changes: ${error.response.statusText}`);
+            toast.error("Failed to save changes");
           }
         } else if (error.request) {
           console.error("Error request:", error.request);
-          alert(
-            "No response from server: Please check your network connection."
-          );
+          toast.error("No response from server");
         } else {
           console.error("Error message:", error.message);
-          alert("An unexpected error occurred: " + error.message);
+          toast.error("An unexpected error occurred: ");
         }
       } else {
         console.error("Unexpected error:", error);
-        alert("An unexpected error occurred. Please try again later.");
+        toast.error("An unexpected error occurred: ");
       }
     }
   }
@@ -265,6 +265,7 @@ export default function Dashboard() {
           </CardFooter>
         </Card>
       </div>
+      <ToastContainer />
     </main>
   );
 }

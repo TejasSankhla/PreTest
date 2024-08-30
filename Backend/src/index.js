@@ -9,6 +9,7 @@ import apiroutes from "./routes/index.js";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { startCronJob } from "./utils/cron-job.js";
+import morgan from "morgan";
 const setUpAndStartServer = async () => {
   const app = express();
   const corsOptions = {
@@ -19,7 +20,7 @@ const setUpAndStartServer = async () => {
   startCronJob("https://pretest-nvyk.onrender.com");
   app.use(cors());
   await connect_Database();
-
+  app.use(morgan("dev"));
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.get("/dummy", (req, res) => {
