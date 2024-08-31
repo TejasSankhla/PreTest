@@ -8,19 +8,25 @@ import {
 } from "@/components/constants/icons";
 import ToggleLikeButton from "@/components/constants/toggleLikeButton";
 import { Button } from "../button";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "../../../components/ui/avatar";
 import Link from "next/link";
 function ProfileCard({ mentor }) {
   return (
     <div className=" w-full p-2 box-border border-gray-200 rounded-lg border-2 flex-row ">
       <div className="mentor-info flex p-4">
         <div className="mentor-pic flex-shrink-0 ">
-          <Image
-            src={mentor?.profile_pic || userPlaceholder}
-            className=" h-20 w-20 sm:h-32 sm:w-32 md:h-48 md:w-48 "
-            width={20}
-            height={20}
-            alt="user"
-          />
+          <Avatar className="h-20 w-20 sm:h-32 sm:w-32 md:h-44 md:w-44 ">
+            <AvatarImage
+              className="object-cover w-full h-full "
+              src={mentor.profile_pic}
+              alt="User avatar"
+            />
+            <AvatarFallback className="object-cover w-full h-full "/>
+          </Avatar>
         </div>
         <div className="mentor-details ml-4 w-full relative flex flex-col  md:mt-4 sm:gap-y-1  ">
           <div className="mentor-name flex text-lg sm:text-2xl">

@@ -38,7 +38,11 @@ function Navbar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src="/user-placeholder.png" alt="User avatar" />
+                  <AvatarImage
+                    className="object-cover h-full w-full"
+                    src={user.profile_pic}
+                    alt="User avatar"
+                  />
                   <AvatarFallback />
                 </Avatar>
               </DropdownMenuTrigger>

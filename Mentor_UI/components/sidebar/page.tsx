@@ -10,6 +10,9 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false); // State to toggle sidebar
   const { user } = useAuth();
 
+  useEffect(() => {
+    
+  }, [user]);
   // Close sidebar when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -44,12 +47,15 @@ export default function Sidebar() {
         >
           <div className="flex items-center gap-4">
             <Avatar className="h-12 w-12 md:h-16 md:w-16">
-              <AvatarImage src="/placeholder-user.jpg" alt="User Avatar" />
+              <AvatarImage
+                src={user.profile_pic}
+                className="object-cover w-full h-full"
+                alt="User Avatar"
+              />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
             <div>
               <h1 className="text-lg font-bold md:text-xl">{user.name}</h1>
-              <p className="text-sm text-muted-foreground">Software Engineer</p>
             </div>
           </div>
 

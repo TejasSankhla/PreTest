@@ -12,12 +12,18 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Backend_Base_URL } from "@/context/constants";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "../../../components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 export default function Dashboard() {
   const router = useRouter();
   const [mentor, setMentor] = useState({
+    profile_pic: "",
     id: "",
     name: "",
     username: "",
@@ -29,6 +35,38 @@ export default function Dashboard() {
     instagram: "",
     about: "",
   });
+  async function handleImageUpload(event) {
+    const file = event.target.files[0];
+
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "pretest-cloudinary"); // Set your Cloudinary upload preset here
+    formData.append("cloud_name", String(cloudName));
+    try {
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        formData
+      );
+
+      const data = response.data;
+
+      const imageUrl = data.secure_url;
+
+      // Update mentor's profile picture URL
+      setMentor((prev) => ({ ...prev, profile_pic: imageUrl }));
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400) {
+          toast.error("Invalid image size");
+        } else {
+          toast.error("Image upload failed");
+        }
+      } else toast.error("Image upload failed");
+    }
+  }
 
   useEffect(() => {
     const mentorId = JSON.parse(localStorage.getItem("mentor"))?.id;
@@ -47,6 +85,7 @@ export default function Dashboard() {
         const mentor = data.data;
 
         setMentor({
+          profile_pic: mentor.profile_pic,
           id: mentor._id,
           name: mentor.name,
           username: mentor.username,
@@ -133,7 +172,32 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <form className="grid gap-4">
-              {/* Form fields */}
+              <div className="col-span-full">
+                <div className="mt-2 flex items-center gap-x-3">
+                  <Avatar className="h-36 w-36 object-fit">
+                    <AvatarImage
+                      className="object-cover w-full h-full"
+                      src={mentor.profile_pic}
+                      alt="User avatar"
+                    />
+                    <AvatarFallback />
+                  </Avatar>
+                  <input
+                    type="file"
+                    id="photo"
+                    name="photo"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                  />
+                  <button
+                    type="button"
+                    className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    onClick={() => document.getElementById("photo").click()}
+                  >
+                    Change
+                  </button>
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
