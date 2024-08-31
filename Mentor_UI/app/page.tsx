@@ -8,8 +8,8 @@ import { useState } from "react";
 import Link from "next/link";
 function LogIn() {
   const { login, ErrorMessage } = useAuth();
-  const [email, setEmail] = useState("tejashsankhla@gmail.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 

@@ -4,13 +4,13 @@ import axios from "axios";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "../../context/AuthContext";
 function SignUpPage() {
-  const { signUp , ErrorMessage, setErrorMessage } = useAuth();
+  const { signUp, ErrorMessage, setErrorMessage } = useAuth();
   const [formData, setFormData] = useState({
     username: "",
     name: "",
     email: "",
     password: "",
-    confirmPassword: "", // Add confirmPassword field
+    confirmPassword: "",
     college: "",
     location: "",
     branch: "",
@@ -34,11 +34,10 @@ function SignUpPage() {
     if (formData.password !== formData.confirmPassword) {
       setErrorMessage("Passwords do not match!");
       setSuccessMessage("");
-      return; // Stop form submission if passwords don't match
+      return;
     }
 
     try {
-        
       await signUp(formData);
       setSuccessMessage("Sign-up successful!, Log in to continue");
       setErrorMessage("");

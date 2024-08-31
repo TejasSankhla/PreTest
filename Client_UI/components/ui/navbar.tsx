@@ -44,7 +44,7 @@ function Navbar() {
     <header className="bg-secondary sticky top-0 z-50 text-black py-4 shadow border-b border-gray">
       <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
         <Link
-          href="#"
+          href="/"
           className="flex items-center text-xl font-bold"
           prefetch={false}
         >

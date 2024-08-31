@@ -112,6 +112,7 @@ export default function MentorProfile({ mentor }) {
                   <AvatarImage
                     src={mentor?.profile_pic || avatar}
                     alt={`Profile picture of ${mentor?.name || "mentor"}`}
+                    className="object-cover w-full h-full"
                   />
                   <AvatarFallback>
                     {mentor?.name
