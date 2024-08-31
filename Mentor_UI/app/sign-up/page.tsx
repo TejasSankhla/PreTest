@@ -40,6 +40,18 @@ function SignUpPage() {
     try {
       await signUp(formData);
       setSuccessMessage("Sign-up successful!, Log in to continue");
+      setFormData({
+        username: "",
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        college: "",
+        location: "",
+        branch: "",
+        grad_year: "",
+        about: "",
+      });
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(error.response?.data?.message || "Sign-up failed");
@@ -98,6 +110,7 @@ function SignUpPage() {
                   className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={formData.username}
                   onChange={handleChange}
+                  required={true}
                 />
               </div>
             </div>
@@ -122,6 +135,7 @@ function SignUpPage() {
                   className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={formData.name}
                   onChange={handleChange}
+                  required={true}
                 />
               </div>
             </div>
@@ -141,6 +155,7 @@ function SignUpPage() {
                   className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={formData.email}
                   onChange={handleChange}
+                  required={true}
                 />
               </div>
             </div>
@@ -160,6 +175,7 @@ function SignUpPage() {
                   autoComplete="new-password"
                   className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={formData.password}
+                  required={true}
                   onChange={handleChange}
                 />
               </div>
@@ -180,6 +196,7 @@ function SignUpPage() {
                   autoComplete="new-password"
                   className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={formData.confirmPassword}
+                  required={true}
                   onChange={handleChange}
                 />
               </div>
@@ -223,6 +240,7 @@ function SignUpPage() {
                   className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={formData.branch}
                   onChange={handleChange}
+                  required={true}
                 />
               </div>
             </div>
@@ -242,6 +260,7 @@ function SignUpPage() {
                   className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={formData.grad_year}
                   onChange={handleChange}
+                  required={true}
                 />
               </div>
             </div>
@@ -260,6 +279,7 @@ function SignUpPage() {
                   className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={formData.location}
                   onChange={handleChange}
+                  required={true}
                 />
               </div>
             </div>
@@ -275,6 +295,7 @@ function SignUpPage() {
                   id="about"
                   name="about"
                   rows={3}
+                  required={true}
                   className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   value={formData.about}
                   onChange={handleChange}

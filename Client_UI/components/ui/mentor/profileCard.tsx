@@ -3,6 +3,7 @@ import userPlaceholder from "../../../public/user-placeholder.png";
 import {
   LocationIcon,
   LinkedinIcon,
+  InstagramIcon,
 } from "@/components/constants/icons";
 import ToggleLikeButton from "@/components/constants/toggleLikeButton";
 import { Button } from "../button";
@@ -23,7 +24,8 @@ function ProfileCard({ mentor }) {
 
   // Truncate the "about" text to 25 words
   const truncatedAbout = mentor?.about
-    ? mentor.about.split(" ").slice(0, 25).join(" ") + (mentor.about.split(" ").length > 25 ? "..." : "")
+    ? mentor.about.split(" ").slice(0, 25).join(" ") +
+      (mentor.about.split(" ").length > 25 ? "..." : "")
     : "";
 
   return (
@@ -35,7 +37,7 @@ function ProfileCard({ mentor }) {
               className="object-cover w-full h-full"
               src={optimizedProfilePic}
               alt="User avatar"
-              loading="lazy" 
+              loading="lazy"
             />
             <AvatarFallback className="object-cover w-full h-full" />
           </Avatar>
@@ -63,6 +65,11 @@ function ProfileCard({ mentor }) {
             <LinkedinIcon />
           </Link>
         )}
+        {mentor.insta_url && (
+          <Link href={mentor.insta_url || "#"}>
+            <InstagramIcon />
+          </Link>
+        )}
         <ToggleLikeButton />
         <Link href={`/mentor/${mentor._id}`} className="ml-auto">
           <Button className="bg-blue-500 hover:bg-blue-300 text-white">
@@ -75,4 +82,3 @@ function ProfileCard({ mentor }) {
 }
 
 export default memo(ProfileCard);
-

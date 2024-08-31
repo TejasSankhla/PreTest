@@ -32,7 +32,7 @@ export default function Dashboard() {
     branch: "",
     grad_year: "",
     linkedin_url: "",
-    instagram: "",
+    insta_url: "",
     about: "",
   });
   async function handleImageUpload(event) {
@@ -94,7 +94,7 @@ export default function Dashboard() {
           branch: mentor.branch,
           grad_year: mentor.grad_year,
           linkedin_url: mentor.linkedin_url,
-          instagram: mentor.insta_url,
+          insta_url: mentor.insta_url,
           about: mentor.about,
         });
       } catch (error) {
@@ -287,11 +287,11 @@ export default function Dashboard() {
                 <Label htmlFor="instagram">Instagram</Label>
                 <Input
                   id="instagram"
-                  value={mentor.instagram}
+                  value={mentor.insta_url}
                   onChange={(e) =>
                     setMentor((prev) => ({
                       ...prev,
-                      instagram: e.target.value,
+                      insta_url: e.target.value,
                     }))
                   }
                 />

@@ -116,9 +116,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setErrorMessage("Invalid credentials");
         } else if (error.response?.status === 404) {
           setErrorMessage("User not found, please sign up");
+        } else if (error.response?.status === 500) {
+          setErrorMessage("User not found, please sign up");
         } else {
           setErrorMessage(
-            `Error: ${error.response?.status} - ${error.message}`
+            `Error: ${error.message}`
           );
         }
       } else {
