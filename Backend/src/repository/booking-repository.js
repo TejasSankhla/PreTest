@@ -6,6 +6,8 @@ class BookingRepository extends CrudRepository {
   }
   async createBooking(bookingDetails) {
     try {
+      console.log(bookingDetails.slot);
+      
       const newBooking = (await Booking.create(bookingDetails)).populate([
         {
           path: "mentor",
@@ -13,7 +15,7 @@ class BookingRepository extends CrudRepository {
         },
         {
           path: "client",
-          select: "email",
+          select: "email name",
         },
       ]);
 

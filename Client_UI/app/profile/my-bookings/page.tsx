@@ -64,7 +64,7 @@ function Page() {
 
     fetchBookings();
   }, [activeButton, authUser, isDataFetched, bookingsData]);
-
+  
   return (
     <div className="w-full h-full flex mt-8 items-center mx-auto justify-center">
       <div className="bookings-container w-4/5 flex-col items-center">

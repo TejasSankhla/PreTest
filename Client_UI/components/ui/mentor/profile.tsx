@@ -211,10 +211,11 @@ export default function MentorProfile({ mentor }) {
                             }`}
                           >
                             {new Date(slotInfo.date).toLocaleDateString(
-                              "en-US",
+                              "en-IN",
                               {
                                 day: "2-digit",
                                 month: "short",
+                                timeZone: "Asia/Kolkata",
                               }
                             )}
                           </div>
