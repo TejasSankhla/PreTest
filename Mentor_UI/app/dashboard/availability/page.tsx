@@ -4,43 +4,40 @@ import { Button } from "@/components/ui/button";
 import { Backend_Base_URL } from "@/context/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 // Function to generate time slots with a 15-minute interval
 const generateTimeSlots = (startHour, endHour) => {
   const slots = [];
   const periods = ["AM", "PM"];
 
-  for (let hour = startHour; hour < 24; hour++) {
-    for (let minute = 0; minute < 60; minute += 15) {
-      const period = hour < 12 ? periods[0] : periods[1];
-      const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-      // a slots starting time
-      const startTime = `${displayHour}:${
-        minute < 10 ? "0" + minute : minute
-      } ${period}`;
-      // generate time after 1 hour
-      const endTime = new Date(0, 0, 0, hour, minute);
-      endTime.setHours(endTime.getHours() + 1);
-      // now the end time contains the slots ending time but need to correctly format
-      const endPeriod =
-        endTime.getHours() < 12 || endTime.getHours() === 24
-          ? periods[0]
-          : periods[1];
-      const displayEndHour =
-        endTime.getHours() % 12 === 0 ? 12 : endTime.getHours() % 12;
-      const endSlot = `${displayEndHour}:${
-        endTime.getMinutes() < 10
-          ? "0" + endTime.getMinutes()
-          : endTime.getMinutes()
-      } ${endPeriod}`;
-      slots.push(`${startTime}-${endSlot}`);
-    }
+  const formatTime = (date) => {
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const period = hour >= 12 ? periods[1] : periods[0];
+    const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+    return `${displayHour}:${minute < 10 ? "0" + minute : minute} ${period}`;
+  };
+
+  const startDate = new Date();
+  startDate.setHours(startHour, 0, 0, 0);
+  const endDate = new Date();
+  endDate.setHours(endHour, 0, 0, 0);
+
+  let currentStart = new Date(startDate);
+  while (currentStart < endDate) {
+    const currentEnd = new Date(currentStart);
+    currentEnd.setMinutes(currentEnd.getMinutes() + 60);
+
+    slots.push(`${formatTime(currentStart)}-${formatTime(currentEnd)}`);
+
+    currentStart.setMinutes(currentStart.getMinutes() + 15);
   }
 
   return slots;
 };
 
 // Generate time slots from 7:00 AM to 12:00 AM to restrict mentor between these two
-const timeSlots = generateTimeSlots(7, 24);
+const timeSlots = generateTimeSlots(10, 20);
 
 const FullWeekScheduler = () => {
   const daysOfWeek = [
@@ -53,7 +50,6 @@ const FullWeekScheduler = () => {
     "Saturday",
   ];
 
-  // Mapping days of the week to their numeric values
   const dayToNumber = {
     Sunday: 0,
     Monday: 1,
@@ -73,7 +69,6 @@ const FullWeekScheduler = () => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    // Fetch slots data on page load
     const fetchSlots = async () => {
       try {
         const user = JSON.parse(localStorage.getItem("mentor"));
@@ -83,7 +78,6 @@ const FullWeekScheduler = () => {
         );
         const result = await response.json();
 
-        // Map weekday numbers to day names
         const numberToDay = {
           0: "Sunday",
           1: "Monday",
@@ -94,32 +88,40 @@ const FullWeekScheduler = () => {
           6: "Saturday",
         };
 
-        // Map slots data to the state format
         const fetchedSlots = Object.entries(result.data.selectedSlots).reduce(
           (acc, [dayNumber, slotsArray]) => {
             const dayName = numberToDay[dayNumber];
             acc[dayName] = slotsArray.map((slot) => {
               const slotDate = new Date(slot);
-              const timeSlot = `${slotDate.getHours() % 12 || 12}:${slotDate
-                .getMinutes()
-                .toString()
-                .padStart(2, "0")} ${slotDate.getHours() < 12 ? "AM" : "PM"}-${
-                slotDate.getHours() + 1
-              }:${slotDate.getMinutes().toString().padStart(2, "0")} ${
-                slotDate.getHours() + 1 < 12 ? "AM" : "PM"
+
+              // Format time in 12-hour format
+              const period = slotDate.getHours() < 12 ? "AM" : "PM";
+              const hours = slotDate.getHours() % 12 || 12; // Converts 0 to 12
+              const minutes = slotDate.getMinutes().toString().padStart(2, "0");
+
+              const timeSlot = `${hours}:${minutes} ${period}-${
+                (hours + 1) % 12
+              }:${minutes} ${
+                hours + 1 < 12 ? period : period == "AM" ? "PM" : "AM"
               }`;
-              return { startTime: timeSlot, date: slotDate };
+
+              const matchedSlot = timeSlots.find(
+                (availableSlot) =>
+                  parseTimeSlot(availableSlot).startDate.getTime() ===
+                  slotDate.getTime()
+              );
+
+              return {
+                startTime: matchedSlot || timeSlot, // Use matched slot or fallback to the original
+                date: slotDate,
+              };
             });
             return acc;
           },
           {}
         );
 
-        console.log("fetched slots processed ", fetchedSlots);
-
-        // Initialize slots state with fetched data
         setSlots((prevSlots) => ({
-          ...prevSlots,
           ...fetchedSlots,
         }));
       } catch (error) {
@@ -144,28 +146,42 @@ const FullWeekScheduler = () => {
     setErrors({ ...errors, [day]: null });
   };
 
-  const parseTimeSlot = (timeSlot) => {
-    const [start, period] = timeSlot.split(" ");
-    const [startHour] = start.split("-");
-    const hour =
-      period === "PM" && startHour !== "12"
-        ? parseInt(startHour) + 12
-        : parseInt(startHour);
+  const convertToDate = (timeStr) => {
+    const [time, period] = timeStr.split(" ");
+    const [hour, minute] = time.split(":").map(Number);
+    let adjustedHour = hour;
+
+    if (period === "PM" && hour !== 12) {
+      adjustedHour += 12;
+    } else if (period === "AM" && hour === 12) {
+      adjustedHour = 0;
+    }
+
     const date = new Date();
-    date.setHours(hour);
-    date.setMinutes(0);
+    date.setHours(adjustedHour);
+    date.setMinutes(minute);
+    date.setSeconds(0);
     return date;
   };
 
-  const handleTimeChange = (day, index, timeSlot) => {
-    const selectedTime = parseTimeSlot(timeSlot);
+  const parseTimeSlot = (timeSlot) => {
+    const [startTime, endTime] = timeSlot.split("-");
+    const startDate = convertToDate(startTime);
+    const endDate = convertToDate(endTime);
 
-    // Check for conflicts within 1 hour
+    return { startDate, endDate };
+  };
+
+  const handleTimeChange = (day, index, timeSlot) => {
+    const { startDate: selectedStartDate, endDate: selectedEndDate } =
+      parseTimeSlot(timeSlot);
+
     const hasConflict = slots[day].some((slot, i) => {
       if (i !== index) {
-        const existingTime = parseTimeSlot(slot.startTime);
-        const diff = Math.abs(selectedTime - existingTime) / (60 * 1000); // difference in minutes
-        return diff < 60; // conflict if within 60 minutes
+        const { startDate: existingStartDate } = parseTimeSlot(slot.startTime);
+        const diff =
+          Math.abs(selectedStartDate - existingStartDate) / (60 * 1000);
+        return diff < 60;
       }
       return false;
     });
@@ -175,13 +191,13 @@ const FullWeekScheduler = () => {
         ...errors,
         [day]: `Selected slot on ${day} is within 1 hour of another slot.`,
       });
-      // Clear the conflicting slot's value
       const newSlots = slots[day].map((slot, i) => {
         if (i === index) {
           return { startTime: "", date: null };
         }
         return slot;
       });
+
       setSlots({ ...slots, [day]: newSlots });
       return;
     } else {
@@ -190,10 +206,11 @@ const FullWeekScheduler = () => {
 
     const newSlots = slots[day].map((slot, i) => {
       if (i === index) {
-        return { startTime: timeSlot, date: selectedTime };
+        return { startTime: timeSlot, date: selectedStartDate };
       }
       return slot;
     });
+
     setSlots({ ...slots, [day]: newSlots });
   };
 
@@ -206,12 +223,9 @@ const FullWeekScheduler = () => {
         return acc;
       }, {});
 
-      // Get mentor ID from localStorage or any other source
       const user = JSON.parse(localStorage.getItem("mentor"));
       const mentorId = user?.id;
-      console.log("slots before sending to backend", formattedSlots);
 
-      // Send PATCH request to update slots
       const response = await fetch(
         `${Backend_Base_URL}/api/mentor/slots/${mentorId}`,
         {
@@ -229,12 +243,8 @@ const FullWeekScheduler = () => {
         );
       }
 
-      const availabilityUpdateSuccess = () =>
-        toast.success("Availability updated");
-      availabilityUpdateSuccess();
+      toast.success("Availability updated");
       const result = await response.json();
-
-      // Optionally show a success message or update UI
     } catch (error) {
       toast.error("Failed to update availability");
       console.error("Error updating availability:", error);
@@ -243,27 +253,44 @@ const FullWeekScheduler = () => {
 
   return (
     <div className="flex flex-wrap justify-evenly gap-8 p-4 ">
+      <div className="w-4/5 flex flex-col md:flex-row items-center justify-between mt-8">
+        <div className="text-xl md:ml-4 mb-4 md:mb-0">
+          Choose slots on if available
+        </div>
+        <Button
+          onClick={handleUpdateAvailability}
+          className="bg-black text-white text-base p-2"
+        >
+          Save changes
+        </Button>
+      </div>
       {daysOfWeek.map((day) => (
         <div
           key={day}
           className="w-full md:w-1/2 lg:w-1/3 p-6 bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
         >
-          <div className="flex items-center justify-start mb-6">
-            <div className="flex items-center">
-              <label
-                htmlFor={`${day}-checkbox`}
-                className="text-xl font-semibold text-gray-800"
-              >
-                {day}
-              </label>
-            </div>
+          <div className="flex justify-between   mb-6">
+            <label
+              htmlFor={`${day}-checkbox`}
+              className="text-2xl font-semibold text-gray-800 block"
+            >
+              {day}
+            </label>
+            <Button
+              variant="secondary"
+              className=" p-2 text-base bg-blue-600 text-white"
+              onClick={() => addSlot(day)}
+            >
+              Add Slot
+            </Button>
           </div>
-          {slots[day]?.map((slot, index) => (
+
+          {slots[day].map((slot, index) => (
             <div key={index} className="flex items-center justify-between mb-4">
               <select
                 value={slot.startTime}
                 onChange={(e) => handleTimeChange(day, index, e.target.value)}
-                className="border rounded-md p-2 w-full text-center"
+                className="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-opacity-50"
               >
                 {timeSlots.map((timeSlot) => (
                   <option key={timeSlot} value={timeSlot}>
@@ -271,35 +298,21 @@ const FullWeekScheduler = () => {
                   </option>
                 ))}
               </select>
-              <button
+              <Button
+                variant="destructive"
+                className="ml-4 text-red-600 text-2xl"
                 onClick={() => removeSlot(day, index)}
-                className="ml-4 p-2 text-red-600 hover:text-red-800 focus:outline-none"
-                title="Remove slot"
               >
-                &times;
-              </button>
+                x
+              </Button>
             </div>
           ))}
-          <button
-            onClick={() => addSlot(day)}
-            className="mt-4 w-full py-2 bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Add slot
-          </button>
           {errors[day] && (
-            <div className="text-red-600 text-sm mt-2">{errors[day]}</div>
+            <p className="text-red-500 text-sm mt-2">{errors[day]}</p>
           )}
         </div>
       ))}
-      {/* Update Availability Button */}
-      <div className="w-full mt-8">
-        <Button
-          onClick={handleUpdateAvailability}
-          className="bg-black text-white hover:bg-slate-700"
-        >
-          Update Availability
-        </Button>
-      </div>
+
       <ToastContainer />
     </div>
   );
