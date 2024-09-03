@@ -247,6 +247,7 @@ const FullWeekScheduler = () => {
       }
 
       toast.success("Availability updated");
+
     } catch (error) {
       toast.error("Failed to update availability");
       console.error("Error updating availability:", error);
