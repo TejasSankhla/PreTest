@@ -135,7 +135,10 @@ const FullWeekScheduler = () => {
   const addSlot = (day) => {
     setSlots({
       ...slots,
-      [day]: [...slots[day], { startTime: timeSlots[0], date: new Date() }],
+      [day]: [
+        ...slots[day],
+        { startTime: timeSlots[0], date: convertToDate(timeSlots[0]) },
+      ],
     });
     setErrors({ ...errors, [day]: null });
   };
@@ -244,7 +247,7 @@ const FullWeekScheduler = () => {
       }
 
       toast.success("Availability updated");
-      const result = await response.json();
+
     } catch (error) {
       toast.error("Failed to update availability");
       console.error("Error updating availability:", error);

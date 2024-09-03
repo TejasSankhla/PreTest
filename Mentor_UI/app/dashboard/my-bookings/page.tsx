@@ -66,8 +66,7 @@ function Page() {
     };
 
     fetchBookings();
-  }, [activeButton, authUser, isDataFetched, bookingsData]);
-
+  }, [activeButton, authUser, isDataFetched, bookingsData]);  
   return (
     <div className="w-full h-full flex mt-4  mx-auto justify-center">
       <div className="bookings-container w-11/12 sm:w-4/5 flex-col items-center">
