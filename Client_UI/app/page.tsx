@@ -2,18 +2,18 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CheckIcon } from "lucide-react";
 import InfiniteScroll from "@/components/ui/home/scrollBar";
+import Faq from "@/components/ui/home/faq";
 import React from "react";
 import { Copy, Code, Heart } from "lucide-react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+
 export default function Component() {
   const stats = [
     { id: 1, name: "Students mentored by our experts", value: "200+" },
     { id: 2, name: "Mentors from top colleges", value: "47+" },
     { id: 3, name: "positive feedback for mentors", value: "100%" },
   ];
-  
-  return (
 
+  return (
     <main className="flex-1 ">
       <section className="pt-10 md:pt-20  bg-secondary">
         <div className="container flex flex-col  items-center justify-center mx-auto px-4 md:px-6">
@@ -162,93 +162,7 @@ export default function Component() {
         </div>
       </section>
       {/* FAQS */}
-      <section className="mx-auto max-w-7xl px-2 py-10 md:px-0">
-        <div>
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-3xl font-bold leading-tight text-black sm:text-4xl lg:text-5xl">
-              Frequently Asked Questions
-            </h2>
-          </div>
-
-          <div className="mx-auto mt-8 max-w-3xl space-y-4 md:mt-16">
-            {/* 1 faq */}
-            <div className="cursor-pointer rounded-md border border-gray-400 shadow-lg transition-all duration-200">
-              <button
-                type="button"
-                className="flex w-full items-center justify-between px-4 py-5 sm:p-6"
-              >
-                <span className="flex text-lg font-semibold text-black">
-                  What is PreTest?
-                </span>
-
-                <ChevronUp className="h-5 w-5 text-gray-500" />
-              </button>
-              <div className="px-4 pb-5 sm:px-6 sm:pb-6">
-                <p className="text-gray-500">
-                  Pretest is a free platform that connects students with mentors
-                  from top colleges and industries to prepare for mock
-                  interviews and peer learning sessions. Whether you're looking
-                  to polish your interview skills or learn from peers, Pretest
-                  provides a supportive environment to help you succeed.
-                </p>
-              </div>
-            </div>
-            {/* 2 faq */}
-            <div className="cursor-pointer rounded-md border border-gray-400 shadow-lg transition-all duration-200">
-              <button
-                type="button"
-                className="flex w-full items-center justify-between px-4 py-5 sm:p-6"
-              >
-                <span className="flex text-lg font-semibold text-black">
-                  Who can be a mentor on Pretest, and how do I book an
-                  appointment?
-                </span>
-
-                <ChevronUp className="h-5 w-5 text-gray-500" />
-              </button>
-              <div className="px-4 pb-5 sm:px-6 sm:pb-6">
-                <p className="text-gray-500">
-                  Mentors on Pretest include students from top colleges and
-                  working professionals. You can book an appointment by browsing
-                  available mentors, selecting a time that fits your schedule,
-                  and receiving your meeting details via email.
-                </p>
-              </div>
-            </div>
-            {/* 3 faq */}
-            <div className="cursor-pointer rounded-md border border-gray-400 shadow-lg transition-all duration-200">
-              <button
-                type="button"
-                className="flex w-full items-center justify-between px-4 py-5 sm:p-6"
-              >
-                <span className="flex text-lg font-semibold text-black">
-                  Do I need to pay for sessions on Pretest?
-                </span>
-
-                <ChevronUp className="h-5 w-5 text-gray-500" />
-              </button>
-              <div className="px-4 pb-5 sm:px-6 sm:pb-6">
-                <p className="text-gray-500">
-                  No, Pretest is completely free to use. You can book sessions
-                  with mentors, participate in peer learning, and access all
-                  features without any cost. Our goal is to make high-quality
-                  mentorship and interview preparation accessible to everyone.
-                </p>
-              </div>
-            </div>
-          </div>
-          <p className="textbase mt-6 text-center text-gray-600">
-            Can&apos;t find what you&apos;re looking for?{" "}
-            <a
-              href="#"
-              title=""
-              className="font-semibold text-black hover:underline"
-            >
-              Contact our support
-            </a>
-          </p>
-        </div>
-      </section>
+      <Faq />
     </main>
   );
 }
