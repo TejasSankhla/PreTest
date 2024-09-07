@@ -1,40 +1,65 @@
 import BookingRepository from "../repository/booking-repository.js";
 import { StatusCodes } from "http-status-codes";
+import * as crypto from "crypto";
 const bookingRepository = new BookingRepository();
 import { createEvent } from "../utils/calendar-event.js";
+import { razorpay, RAZORPAY_KEY_SECRET } from "../config/payment-gateway.js";
 import { sendBookingConfirmationEmail } from "../utils/send-email.js";
 export const createBooking = async (req, res) => {
   try {
-    const bookingDetails = {
-      mentor: req.params.userId,
-      client: req.body.client,
-      slot: req.body.slot,
-    };
+    // first verify the payment
 
-    const newBooking = await bookingRepository.createBooking(bookingDetails);
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body.paymentResponse;
 
-    await sendBookingConfirmationEmail(newBooking);
-    const options = {
-      startTime: bookingDetails.slot,
-      summary: `1:1 Mentorship Session with ${newBooking.mentor.name}`,
-      location: "Virtual",
-      client: newBooking.client.email,
-      mentor: newBooking.mentor.email,
-    };
+    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSign = crypto
+      .createHmac("sha256", RAZORPAY_KEY_SECRET)
+      .update(sign.toString())
+      .digest("hex");
 
-    const link = await createEvent(options);
-    // // now need to update link in the booking
-    const updatedBooking = await bookingRepository.updateBookingStatus(
-      newBooking._id,
-      link
-    );
+    // if payment is verified crete booking
+    if (razorpay_signature === expectedSign) {
+      // Payment is verified
 
-    return res.status(StatusCodes.CREATED).json({
-      data: updatedBooking,
-      success: true,
-      msg: "booking created with link",
-      err: null,
-    });
+      const bookingDetails = {
+        mentor: req.params.userId,
+        client: req.body.client,
+        slot: req.body.slot,
+      };
+      
+      const newBooking = await bookingRepository.createBooking(bookingDetails);
+
+      await sendBookingConfirmationEmail(newBooking);
+      const options = {
+        startTime: bookingDetails.slot,
+        summary: `1:1 Mentorship Session with ${newBooking.mentor.name}`,
+        location: "Virtual",
+        client: newBooking.client.email,
+        mentor: newBooking.mentor.email,
+      };
+
+      const link = await createEvent(options);
+      // // now need to update link in the booking
+      const updatedBooking = await bookingRepository.updateBookingStatus(
+        newBooking._id,
+        link
+      );
+
+      return res.status(StatusCodes.CREATED).json({
+        data: updatedBooking,
+        success: true,
+        msg: "booking created with link",
+        err: null,
+      });
+    } else {
+      res.status(400).json({
+        data: null,
+        success: false,
+        msg: "Invalid payment signature",
+        err: null,
+      });
+    }
   } catch (error) {
     console.log("Error in booking controller : ", error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
