@@ -65,6 +65,7 @@ export default function MentorProfile({ mentor }) {
     const token = localStorage.getItem("token");
 
     setIsLoading(true);
+    setBookingInProgress(true);
     try {
       // Step 1: Create Order for Payment
       const response = await axios.post(
@@ -148,46 +149,11 @@ export default function MentorProfile({ mentor }) {
       toast.error("Error initiating payment. Please try again.");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  // create booking function
-  const handleBooking = async () => {
-    if (!user) {
-      // Show sign-in modal if user is not authenticated
-      setShowSignInModal(true);
-      return;
-    }
-
-    if (!selectedTimeSlot) {
-      toast.error("Please select a time slot.");
-      return;
-    }
-
-    const bookingData = {
-      slot: selectedTimeSlot,
-      client: user._id,
-    };
-
-    setBookingInProgress(true);
-
-    try {
-      const response = await axios.post(
-        `${Backend_Base_URL}/api/booking/${mentor._id}`,
-        bookingData
-      );
-
-      if (response.status === 201) {
-        toast.success("Slot Booked");
-        router.push("/profile/my-bookings");
-      }
-    } catch (error) {
-      console.error("Booking failed:", error);
-      toast.error("Booking Failed");
-    } finally {
       setBookingInProgress(false);
     }
   };
+
+ 
 
   if (loading) {
     return (
