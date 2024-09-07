@@ -5,7 +5,9 @@ import Image from "next/image";
 import avatar from "../../../public/user-placeholder.png";
 import { LocationIcon } from "@/components/constants/icons";
 import { Fragment, useState, useEffect } from "react";
+import useRazorpay from "react-razorpay";
 import { Card, CardContent } from "@/components/ui/card";
+import { RAZORPAY_KEY_ID } from "@/context/constants";
 import {
   Carousel,
   CarouselContent,
@@ -17,18 +19,20 @@ import { Button } from "../button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { Backend_Base_URL } from "@/context/constants";
+import { Backend_Base_URL, bookingPrice } from "@/context/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 export default function MentorProfile({ mentor }) {
   const { user } = useAuth();
   const router = useRouter();
+  const [Razorpay] = useRazorpay();
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bookingInProgress, setBookingInProgress] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
-
+  const [IsLoading, setIsLoading] = useState(false);
+  // load data when loads
   useEffect(() => {
     if (mentor?.slots?.length > 0) {
       setSelectedDate(mentor.slots[0]);
@@ -46,6 +50,108 @@ export default function MentorProfile({ mentor }) {
     setSelectedTimeSlot(timeSlot);
   };
 
+  const handlePaymentAndBooking = async () => {
+    if (!user) {
+      // Show sign-in modal if user is not authenticated
+      setShowSignInModal(true);
+      return;
+    }
+
+    if (!selectedTimeSlot) {
+      toast.error("Please select a time slot.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    setIsLoading(true);
+    try {
+      // Step 1: Create Order for Payment
+      const response = await axios.post(
+        `${Backend_Base_URL}/api/order/create-order`,
+        { amount: bookingPrice },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Add token to Authorization header
+          },
+        }
+      );
+
+      if (response.status !== 200) {
+        toast.error("Failed to create order");
+        return;
+      }
+      const order = response.data;
+      const options = {
+        key: RAZORPAY_KEY_ID,
+        amount: order.amount.toString(),
+        currency: order.currency,
+        name: "Pretest",
+        description: "Payment for mentor booking",
+        order_id: order.id,
+        handler: async (paymentResponse) => {
+          try {
+            // Step 3: Call combined booking and payment verification API
+            const bookingResponse = await fetch(
+              `${Backend_Base_URL}/api/booking/${mentor._id}`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  client: user._id,
+                  slot: selectedTimeSlot,
+                  paymentResponse: {
+                    razorpay_order_id: paymentResponse.razorpay_order_id,
+                    razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                    razorpay_signature: paymentResponse.razorpay_signature,
+                  },
+                }),
+              }
+            );
+
+            const bookingData = await bookingResponse.json();
+
+            if (bookingData.success) {
+              toast.success("Booking successfull");
+              router.push("/profile/my-bookings");
+            } else {
+              toast.error("Booking creation failed");
+            }
+          } catch (err) {
+            console.error("Booking/Payment Verification Error:", err);
+            toast.error("Payment or booking failed. Please try again.");
+          }
+        },
+        prefill: {
+          name: user?.name,
+          email: user?.email,
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      // Step 4: Open Razorpay Payment Window
+      const rzpay = new Razorpay(options);
+      rzpay.open();
+
+      // Handle payment failures
+      rzpay.on("payment.failed", (response) => {
+        console.error("Payment Failed:", response);
+        alert(`Payment failed: ${response.error.description}`);
+      });
+    } catch (err) {
+      console.error("Payment Initialization Error:", err);
+      toast.error("Error initiating payment. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // create booking function
   const handleBooking = async () => {
     if (!user) {
       // Show sign-in modal if user is not authenticated
@@ -53,7 +159,10 @@ export default function MentorProfile({ mentor }) {
       return;
     }
 
-    if (!selectedTimeSlot) return;
+    if (!selectedTimeSlot) {
+      toast.error("Please select a time slot.");
+      return;
+    }
 
     const bookingData = {
       slot: selectedTimeSlot,
@@ -146,7 +255,7 @@ export default function MentorProfile({ mentor }) {
         <div className="mentor-details-container md:w-2/5 p-4 text-lg text-justify">
           {mentor?.about || "No additional information provided."}
         </div>
-
+        {/* // slots component             */}
         <div className="available-slots-booking shadow-lg border-gray-200 rounded-xl border-2 w-full p-4 md:w-2/5 flex flex-col gap-y-4 left-0 mt-8 md:mt-0">
           <div className="container-heading flex text-blue-950 gap-x-2 items-center text-2xl font-bold sm:text-3xl">
             <svg
@@ -264,7 +373,7 @@ export default function MentorProfile({ mentor }) {
               className={`bg-blue-500 text-white text-xl p-2 w-full ${
                 selectedTimeSlot ? "" : "opacity-50 cursor-not-allowed"
               }`}
-              onClick={handleBooking}
+              onClick={handlePaymentAndBooking}
             >
               Book Slot
             </Button>
