@@ -13,7 +13,12 @@ import morgan from "morgan";
 const setUpAndStartServer = async () => {
   const app = express();
   const corsOptions = {
-    origin: [Client_Frontend_URL, Mentor_Frontend_URL],
+    origin: [
+      Client_Frontend_URL,
+      Mentor_Frontend_URL,
+      "http://localhost:3000",
+      "http://localhost:3001",
+    ],
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   };
