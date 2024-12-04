@@ -56,7 +56,7 @@ function Navbar() {
             className="mr-2"
           />
         </Link>
-        <nav className="hidden md:flex justify-center space-x-6 items-center">
+        <div className=" flex space-x-10 items-center">
           <Link
             href="/"
             className="hover:underline  transition-colors"
@@ -64,7 +64,15 @@ function Navbar() {
           >
             Home
           </Link>
-
+          <Link
+            href="https://ai-mock-interview-sigma.vercel.app/dashboard"
+            className="bg-gradient-to-r from-orange-400 via-red-400 to-pink-500 text-white px-3 py-1 font-medium rounded-full shadow-sm transform hover:scale-105 hover:shadow-2xl transition-all duration-300 ease-in-out"
+            prefetch={false}
+          >
+            Naurki AI
+          </Link>
+        </div>
+        <nav className="hidden md:flex justify-center space-x-6 items-center">
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -77,7 +85,11 @@ function Navbar() {
                 <DropdownMenuItem onClick={() => router.push("/profile")}>
                   My Account
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/profile/my-bookings")}>Bookings</DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => router.push("/profile/my-bookings")}
+                >
+                  Bookings
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   className="hover:bg-slate-200"
                   onClick={logout}
@@ -141,7 +153,7 @@ function Navbar() {
                   className="hover:underline text-center flex py-2 font-medium items-center justify-center transition-colors"
                   onClick={() => {
                     console.log("bookings clicked");
-                    
+
                     setIsMobileMenuOpen(false); // Close menu on link click
                   }}
                 >
