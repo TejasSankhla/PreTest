@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import MentorProfile from "../../../components/ui/mentor/profile";
 import { usePathname } from "next/navigation";
-import path from "path";
 import { Backend_Base_URL } from "@/context/constants";
 const MentorDetails = () => {
   const id = usePathname().split("/").pop();

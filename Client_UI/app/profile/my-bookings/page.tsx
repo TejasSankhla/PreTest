@@ -18,7 +18,7 @@ function Page() {
     past: false,
   });
 
-  const handleButtonClick = (buttonType) => {
+  const handleButtonClick = (buttonType : string) => {
     setActiveButton(buttonType);
   };
 

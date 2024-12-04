@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { User } from "lucide-react";
 import { Backend_Base_URL } from "./constants";
+import { toast } from "react-toastify";
 interface User {
   id: string;
   name: string;
@@ -54,7 +55,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log("long in handler");
       const response = await axios.post(
-          `${Backend_Base_URL}/api/user/sign-in`,
+        `${Backend_Base_URL}/api/user/sign-in`,
         credentials,
         {
           headers: {
@@ -65,16 +66,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       );
       const data = await response.data;
       console.log(data);
+      if (!data.success) {
+        console.log("throw error");
 
-      if (data.success) {
-        const userData = data.data;
-        setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData)); // Persist user session
-        localStorage.setItem("token", JSON.stringify(userData.token)); // Persist user session
-        console.log(User);
-
-        router.push("/");
+        throw new Error("Bad Request, Login Failed.");
       }
+
+      const userData = data.data;
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData)); // Persist user session
+      localStorage.setItem("token", JSON.stringify(userData.token)); // Persist user session
+      router.push("/");
+      setErrorMessage("");
     } catch (error) {
       console.log(error);
       if (axios.isAxiosError(error)) {
@@ -110,7 +113,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const data = await response.data;
 
       if (!data.success) {
-        setErrorMessage(data.msg);
+        throw Error(data.msg || "Sign-Up failed, Please try again.");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -127,6 +130,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           "An unexpected error occurred. Please try again later."
         );
       }
+      throw error;
     }
   };
   const logout = () => {
@@ -135,7 +139,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem("token");
   };
 
- 
   const value: AuthContextType = {
     user,
     login,

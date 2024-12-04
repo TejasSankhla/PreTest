@@ -1,10 +1,10 @@
 "use client";
-import React, { Fragment, useEffect, useState } from "react";
-import { ArrowRight, Divide } from "lucide-react";
+import React, { useState } from "react";
+import { ArrowRight } from "lucide-react";
 import pretestLogo from "../../icon.png";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
-import { Erica_One } from "next/font/google";
+import { toast } from "react-toastify";
 function LogIn() {
   const { signUp, ErrorMessage, setErrorMessage } = useAuth();
   const [userMessage, setuserMessage] = useState("");
@@ -16,8 +16,7 @@ function LogIn() {
     e.preventDefault();
     try {
       await signUp({ name, email, password, mobile_number });
-      if (!ErrorMessage)
-        setuserMessage("sign-up successfull, Log in to continue");
+      toast.success("Sign-up successful");
     } catch (error) {
       if (error) console.error("Login failed:", error);
       setuserMessage(String(ErrorMessage));
