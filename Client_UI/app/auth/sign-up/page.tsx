@@ -8,10 +8,10 @@ import { toast } from "react-toastify";
 function LogIn() {
   const { signUp, ErrorMessage, setErrorMessage } = useAuth();
   const [userMessage, setuserMessage] = useState("");
-  const [name, setname] = useState("Tejas Sankhla");
-  const [email, setEmail] = useState("tejashsankhla@gmail.com");
-  const [password, setPassword] = useState("123456");
-  const [mobile_number, setmobile_number] = useState("7976676481");
+  const [name, setname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [mobile_number, setmobile_number] = useState("");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
