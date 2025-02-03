@@ -137,6 +137,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    router.push("/")
   };
 
   const value: AuthContextType = {
