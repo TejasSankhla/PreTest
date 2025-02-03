@@ -23,6 +23,7 @@ function Navbar() {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen((prev) => !prev);
   };
+  
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
