@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: backend-v2
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=2048
+      - key: NODE_ENV
+        value: production
