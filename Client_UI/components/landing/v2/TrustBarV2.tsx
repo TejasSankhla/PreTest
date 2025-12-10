@@ -12,9 +12,9 @@ const colleges = [
 
 export default function TrustBarV2() {
   return (
-    <section className="py-10 border-y border-gray-100 bg-white overflow-hidden">
+    <section className="py-10 border-y border-border bg-background overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 mb-6">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
+        <p className="text-xs font-semibold text-text-tertiary uppercase tracking-widest">
           Trusted by students from
         </p>
       </div>
@@ -26,7 +26,7 @@ export default function TrustBarV2() {
             {colleges.map((college, index) => (
               <span
                 key={`set1-${index}`}
-                className="text-lg font-bold text-gray-300 tracking-tight hover:text-gray-500 transition-colors cursor-default whitespace-nowrap"
+                className="text-lg font-bold text-text-tertiary tracking-tight hover:text-text-secondary transition-colors cursor-default whitespace-nowrap"
               >
                 {college}
               </span>
@@ -37,7 +37,7 @@ export default function TrustBarV2() {
             {colleges.map((college, index) => (
               <span
                 key={`set2-${index}`}
-                className="text-lg font-bold text-gray-300 tracking-tight hover:text-gray-500 transition-colors cursor-default whitespace-nowrap"
+                className="text-lg font-bold text-text-tertiary tracking-tight hover:text-text-secondary transition-colors cursor-default whitespace-nowrap"
               >
                 {college}
               </span>

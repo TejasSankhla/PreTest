@@ -50,7 +50,7 @@ function Navbar() {
           <div className="w-6 h-6 bg-secondary rounded-md flex items-center justify-center text-white text-xs font-bold tracking-tighter">
             P
           </div>
-          <span className="text-sm font-semibold tracking-tight text-gray-900">PreTest</span>
+          <span className="text-sm font-semibold tracking-tight text-text-primary">PreTest</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-3">
@@ -59,10 +59,10 @@ function Navbar() {
               <DropdownMenuTrigger asChild>
                 <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-transparent hover:ring-secondary/20 transition-all">
                   <AvatarImage src="/user-placeholder.png" alt="User avatar" />
-                  <AvatarFallback className="bg-gray-100 text-gray-600 text-xs font-medium" />
+                  <AvatarFallback className="bg-background-subtle text-text-secondary text-xs font-medium" />
                 </Avatar>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="text-[13px] bg-white z-50 shadow-lg border border-gray-100 rounded-xl p-1">
+              <DropdownMenuContent className="text-[13px] bg-background z-50 shadow-lg border border-border rounded-xl p-1">
                 <DropdownMenuItem onClick={() => router.push("/profile")} className="cursor-pointer rounded-lg px-3 py-2">
                   My Account
                 </DropdownMenuItem>
@@ -82,7 +82,7 @@ function Navbar() {
               {/* Sign in - Text link */}
               <Link
                 href="/auth/log-in"
-                className="text-[13px] font-medium text-gray-500 hover:text-gray-900 transition-colors"
+                className="text-[13px] font-medium text-text-secondary hover:text-text-primary transition-colors"
               >
                 Sign in
               </Link>
@@ -101,9 +101,9 @@ function Navbar() {
           onClick={toggleMobileMenu}
         >
           {isMobileMenuOpen ? (
-            <XIcon className="h-5 w-5 text-gray-600" />
+            <XIcon className="h-5 w-5 text-text-secondary" />
           ) : (
-            <MenuIcon className="h-5 w-5 text-gray-600" />
+            <MenuIcon className="h-5 w-5 text-text-secondary" />
           )}
           <span className="sr-only">Toggle menu</span>
         </button>
@@ -112,26 +112,26 @@ function Navbar() {
       {isMobileMenuOpen && (
         <div
           ref={mobileMenuRef}
-          className="md:hidden absolute top-14 right-4 w-56 rounded-xl bg-white/95 backdrop-blur-md shadow-xl border border-gray-100 overflow-hidden"
+          className="md:hidden absolute top-14 right-4 w-56 rounded-xl bg-background/95 backdrop-blur-md shadow-xl border border-border overflow-hidden"
         >
           <nav className="flex flex-col p-2">
             {user ? (
               <>
                 <Link
                   href="/profile"
-                  className="text-[13px] font-medium text-gray-700 hover:bg-gray-50 rounded-lg px-4 py-2.5 transition-colors"
+                  className="text-[13px] font-medium text-text-primary hover:bg-background-subtle rounded-lg px-4 py-2.5 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   My Account
                 </Link>
                 <Link
                   href="/profile/my-bookings"
-                  className="text-[13px] font-medium text-gray-700 hover:bg-gray-50 rounded-lg px-4 py-2.5 transition-colors"
+                  className="text-[13px] font-medium text-text-primary hover:bg-background-subtle rounded-lg px-4 py-2.5 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Bookings
                 </Link>
-                <div className="border-t border-gray-100 my-1" />
+                <div className="border-t border-border my-1" />
                 <button
                   className="text-[13px] font-medium text-red-500 hover:bg-red-50 rounded-lg px-4 py-2.5 text-left transition-colors"
                   onClick={() => {
@@ -146,7 +146,7 @@ function Navbar() {
               <div className="flex flex-col gap-2 p-2">
                 <Link
                   href="/auth/log-in"
-                  className="text-[13px] font-medium text-gray-600 hover:text-gray-900 text-center py-2 transition-colors"
+                  className="text-[13px] font-medium text-text-secondary hover:text-text-primary text-center py-2 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Sign in

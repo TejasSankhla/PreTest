@@ -116,18 +116,19 @@ PreTest uses **Geist** - a modern sans-serif typeface designed by Vercel for opt
 
 ### V2 Typography Style
 
-The V2 variant uses tighter letter-spacing for a more modern feel:
+The V2 variant uses custom letter-spacing:
 
 ```tsx
-// V2 Hero headline
-<h1
-  className="text-5xl lg:text-[5.5rem] font-bold tracking-tighter leading-[0.95]"
-  style={{ letterSpacing: "-0.04em" }}
->
-  Master your <br />
-  <span className="text-gray-300">next interview.</span>
+// Use the tracking-tight-v2 class (NOT inline styles)
+<h1 className="text-5xl font-bold tracking-tight-v2">
+  Master your next interview.
 </h1>
 ```
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `tracking-tight-v2` | `-0.04em` | V2 headlines |
+| `tracking-tighter` | `-0.05em` | Fallback |
 
 ---
 
@@ -172,6 +173,58 @@ The V2 variant uses tighter letter-spacing for a more modern feel:
 | `--background-subtle` | `#f9fafb` | Subtle background (gray-50) |
 | `--border` | `#e5e7eb` | Borders (gray-200) |
 
+### State Colors (Semantic)
+
+| Token | Hex | Tailwind | Usage |
+|-------|-----|----------|-------|
+| `--success` | `#22c55e` | `bg-success`, `text-success` | Success states, confirmations |
+| `--success-light` | `#dcfce7` | `bg-success-light` | Success backgrounds |
+| `--info` | `#3b82f6` | `bg-info`, `text-info` | Informational states |
+| `--info-light` | `#dbeafe` | `bg-info-light` | Info backgrounds |
+| `--warning` | `#eab308` | `bg-warning`, `text-warning` | Warning states |
+| `--warning-light` | `#fef9c3` | `bg-warning-light` | Warning backgrounds |
+| `--error` | `#ef4444` | `bg-error`, `text-error` | Error states |
+| `--error-light` | `#fee2e2` | `bg-error-light` | Error backgrounds |
+
+---
+
+## Text Color Usage (STRICT)
+
+**All components MUST use semantic text tokens. Direct Tailwind gray classes are NOT allowed.**
+
+| Semantic Token | Use For | Old Classes (DO NOT USE) |
+|----------------|---------|--------------------------|
+| `text-text-primary` | Headlines, primary text | `text-gray-900`, `text-black` |
+| `text-text-secondary` | Body text, descriptions | `text-gray-600`, `text-gray-500` |
+| `text-text-tertiary` | Muted text, captions | `text-gray-400`, `text-gray-300` |
+
+**Background Colors:**
+| Semantic Token | Use For | Old Classes |
+|----------------|---------|-------------|
+| `bg-background` | Main backgrounds | `bg-white` |
+| `bg-background-subtle` | Subtle backgrounds | `bg-gray-50` |
+| `border-border` | All borders | `border-gray-100`, `border-gray-200` |
+
+---
+
+## Layout Standards
+
+### Container Width
+All sections must use `max-w-7xl` (1280px) as the standard container width.
+
+```tsx
+<div className="max-w-7xl mx-auto px-6">
+  {/* Section content */}
+</div>
+```
+
+### Section Padding
+| Size | Class | Use For |
+|------|-------|---------|
+| Small | `py-10` | Trust bars, compact sections |
+| Medium | `py-24` | Standard sections |
+| Large | `py-32` | Hero-adjacent sections |
+
 ---
 
 ## Spacing System
@@ -204,7 +257,7 @@ Based on a 4px grid system:
 | `--radius-lg` | 12px | Cards |
 | `--radius-xl` | 16px | Large cards |
 | `--radius-2xl` | 24px | Modal, panels |
-| `--radius-3xl` | 32px | Bento cards (V2) |
+| `--radius-3xl` | 32px | Bento cards |
 | `--radius-full` | 9999px | Pills, avatars |
 
 ---
@@ -227,19 +280,19 @@ Based on a 4px grid system:
 The navbar uses a minimal, modern design:
 
 ```tsx
-<header className="fixed top-0 w-full z-50 bg-white/60 backdrop-blur-md border-b border-gray-100/50">
-  <div className="max-w-screen-xl mx-auto px-6 h-14 flex items-center justify-between">
+<header className="fixed top-0 w-full z-50 bg-background/60 backdrop-blur-md border-b border-border/50">
+  <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
     {/* Logo */}
     <Link href="/" className="flex items-center gap-2">
       <div className="w-6 h-6 bg-secondary rounded-md flex items-center justify-center text-white text-xs font-bold">
         P
       </div>
-      <span className="text-sm font-semibold tracking-tight text-gray-900">PreTest</span>
+      <span className="text-sm font-semibold tracking-tight text-text-primary">PreTest</span>
     </Link>
 
     {/* Auth buttons */}
     <div className="flex items-center gap-3">
-      <Link href="/auth/log-in" className="text-[13px] font-medium text-gray-500 hover:text-gray-900">
+      <Link href="/auth/log-in" className="text-[13px] font-medium text-text-secondary hover:text-text-primary">
         Sign in
       </Link>
       <Link href="/auth/sign-up" className="bg-gray-900 hover:bg-black text-white text-[13px] font-medium px-3 py-1.5 rounded-full">
@@ -268,7 +321,7 @@ The navbar uses a minimal, modern design:
 
 #### Ghost Button (Outline)
 ```tsx
-<button className="bg-white border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 text-sm font-semibold px-6 py-3.5 rounded-full">
+<button className="bg-background border border-border text-text-secondary hover:text-text-primary hover:border-border text-sm font-semibold px-6 py-3.5 rounded-full">
   View Sample Report
 </button>
 ```
@@ -277,14 +330,14 @@ The navbar uses a minimal, modern design:
 
 #### Standard Card
 ```tsx
-<div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 hover:shadow-lg transition-shadow">
+<div className="bg-background rounded-xl shadow-md border border-border p-6 hover:shadow-lg transition-shadow">
   {/* Card content */}
 </div>
 ```
 
 #### Bento Card (V2)
 ```tsx
-<div className="bg-gray-50 rounded-3xl p-8 border border-gray-100 hover:border-gray-200 transition-all">
+<div className="bg-background-subtle rounded-3xl p-8 border border-border hover:border-border transition-all">
   {/* Bento card content */}
 </div>
 ```
@@ -315,7 +368,7 @@ The navbar uses a minimal, modern design:
 
 ```tsx
 <motion.div
-  className="bg-white/95 backdrop-blur-sm p-3.5 rounded-xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.1)] w-56"
+  className="bg-background/95 backdrop-blur-sm p-3.5 rounded-xl border border-border shadow-[0_8px_30px_rgba(0,0,0,0.1)] w-56"
   animate={{ y: [0, -8, 0] }}
   transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
 >
@@ -504,11 +557,29 @@ Client_UI/
 
 ## Accessibility
 
+### Reduced Motion Support
+
+The design system respects `prefers-reduced-motion` user preferences:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; }
+}
+```
+
+For Framer Motion components, use the `useReducedMotion` hook:
+
+```tsx
+import { useReducedMotion, reducedMotionVariants, fadeInUp } from "@/lib/animations";
+
+const prefersReducedMotion = useReducedMotion();
+const variants = prefersReducedMotion ? reducedMotionVariants : fadeInUp;
+```
+
 - Minimum contrast ratio: 4.5:1 for body text
 - Focus states on all interactive elements
 - Semantic HTML structure
 - ARIA labels where needed
-- Reduced motion support via `prefers-reduced-motion`
 
 ---
 
@@ -522,13 +593,24 @@ Client_UI/
 
 ---
 
-*Document Version: 2.1*
+*Document Version: 2.2*
 *Last Updated: December 10, 2024*
 *Design System by PreTest Team*
 
 ---
 
 ## Changelog
+
+### v2.2 (Dec 10, 2024)
+- Added semantic state colors (success, info, warning, error)
+- Enforced strict semantic text color tokens
+- Added `tracking-tight-v2` letter-spacing token
+- Added `--radius-3xl` border radius token
+- Standardized container width to `max-w-7xl`
+- Added reduced-motion accessibility support
+- Updated footer to match navbar styling
+- Fixed FAQ border/shadow consistency
+- Removed legacy `--textp` token
 
 ### v2.1 (Dec 10, 2024)
 - Removed unused animation exports from `lib/animations.ts`

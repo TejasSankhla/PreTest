@@ -47,8 +47,8 @@ export default function HeroSection() {
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 border-2 border-white/70 flex items-center justify-center text-white text-[10px] font-bold shadow-sm">R</div>
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-green-600 border-2 border-white/70 flex items-center justify-center text-white text-[10px] font-bold shadow-sm">A</div>
           </div>
-          <div className="text-sm text-gray-700">
-            <span className="font-bold text-gray-900">200+</span> students practicing
+          <div className="text-sm text-text-primary">
+            <span className="font-bold text-text-primary">200+</span> students practicing
           </div>
         </div>
       </motion.div>
@@ -65,14 +65,14 @@ export default function HeroSection() {
           >
             {/* Main Headline - Bold & Clean */}
             <motion.div variants={textReveal} className="mb-2">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 leading-[1.05]">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-text-primary leading-[1.05]">
                 Preparation
               </h1>
               <div className="flex items-center justify-center gap-3 mt-1">
                 <span className="text-4xl sm:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500">
                   ≠
                 </span>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 leading-[1.05]">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-text-primary leading-[1.05]">
                   Practice
                 </h1>
               </div>
@@ -81,7 +81,7 @@ export default function HeroSection() {
             {/* Subheadline - Simple */}
             <motion.p
               variants={fadeInUp}
-              className="text-base sm:text-lg text-gray-500 mb-6"
+              className="text-base sm:text-lg text-text-secondary mb-6"
             >
               That&apos;s the gap we close.
             </motion.p>
@@ -91,7 +91,7 @@ export default function HeroSection() {
               <Button
                 asChild
                 size="lg"
-                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-6 text-base font-semibold rounded-full shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 group"
+                className="bg-secondary hover:bg-secondary-dark text-white px-8 py-6 text-base font-semibold rounded-full shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 group"
               >
                 <Link href="/explore-mentors" className="flex items-center gap-2">
                   Start Practicing
@@ -108,24 +108,24 @@ export default function HeroSection() {
       <div className="hidden lg:block">
         {/* Left side badge */}
         <motion.div
-          className="absolute z-20 left-8 xl:left-16 bottom-36 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md border border-gray-100"
+          className="absolute z-20 left-8 xl:left-16 bottom-36 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md border border-border"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 1, duration: 0.5 }}
         >
           <span className="text-lg">💳</span>
-          <span className="text-sm font-medium text-gray-600">No credit card required</span>
+          <span className="text-sm font-medium text-text-secondary">No credit card required</span>
         </motion.div>
 
         {/* Right side badge */}
         <motion.div
-          className="absolute z-20 right-8 xl:right-16 bottom-36 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md border border-gray-100"
+          className="absolute z-20 right-8 xl:right-16 bottom-36 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md border border-border"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 1.2, duration: 0.5 }}
         >
           <CheckIcon className="w-4 h-4 text-green-500" />
-          <span className="text-sm font-medium text-gray-600">Verified mentors only</span>
+          <span className="text-sm font-medium text-text-secondary">Verified mentors only</span>
         </motion.div>
 
       </div>
@@ -137,7 +137,7 @@ export default function HeroSection() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 0.5 }}
       >
-        <div className="flex items-center justify-center gap-4 text-xs text-gray-500 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm">
+        <div className="flex items-center justify-center gap-4 text-xs text-text-secondary bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm">
           <span className="flex items-center gap-1">
             <CheckIcon className="w-3 h-3 text-green-500" />
             Free
@@ -154,7 +154,7 @@ export default function HeroSection() {
       </motion.div>
 
       {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background to-transparent z-10" />
     </section>
   );
 }

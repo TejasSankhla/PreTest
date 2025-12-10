@@ -86,7 +86,7 @@ function LogoScroll({ logos, direction = "left" }: LogoScrollProps) {
 
 export default function TrustBar() {
   return (
-    <section className="py-12 md:py-16 bg-gray-50/50">
+    <section className="py-12 md:py-16 bg-background-subtle/50">
       <div className="container mx-auto px-4 md:px-6">
         {/* Colleges Section */}
         <motion.div
@@ -96,7 +96,7 @@ export default function TrustBar() {
           viewport={{ once: true, margin: "-50px" }}
           className="mb-10 md:mb-12"
         >
-          <p className="text-center text-sm font-semibold text-gray-400 uppercase tracking-widest mb-6">
+          <p className="text-center text-sm font-semibold text-text-tertiary uppercase tracking-widest mb-6">
             Mentors from Top Colleges
           </p>
           <LogoScroll logos={collegeLogos} direction="left" />
@@ -104,9 +104,9 @@ export default function TrustBar() {
 
         {/* Divider */}
         <div className="flex items-center justify-center gap-4 mb-10 md:mb-12">
-          <div className="h-px w-16 bg-gray-200" />
+          <div className="h-px w-16 bg-border" />
           <span className="text-gray-300 text-sm">×</span>
-          <div className="h-px w-16 bg-gray-200" />
+          <div className="h-px w-16 bg-border" />
         </div>
 
         {/* Companies Section */}
@@ -116,7 +116,7 @@ export default function TrustBar() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          <p className="text-center text-sm font-semibold text-gray-400 uppercase tracking-widest mb-6">
+          <p className="text-center text-sm font-semibold text-text-tertiary uppercase tracking-widest mb-6">
             Now Working At
           </p>
           <LogoScroll logos={companyLogos} direction="right" />

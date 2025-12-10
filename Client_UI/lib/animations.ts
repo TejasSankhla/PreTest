@@ -35,3 +35,16 @@ export const textReveal: Variants = {
     }
   }
 };
+
+// Reduced motion hook for accessibility
+export function useReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  return mediaQuery.matches;
+}
+
+// Reduced motion variants - use these when user prefers reduced motion
+export const reducedMotionVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.01 } }
+};

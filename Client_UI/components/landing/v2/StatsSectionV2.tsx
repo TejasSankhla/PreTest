@@ -19,7 +19,7 @@ const stats = [
 
 export default function StatsSectionV2() {
   return (
-    <section className="py-24 bg-gray-50 border-t border-gray-100">
+    <section className="py-24 bg-background-subtle border-t border-border">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Content */}
@@ -31,15 +31,14 @@ export default function StatsSectionV2() {
           >
             <motion.h2
               variants={fadeInUp}
-              className="text-3xl md:text-4xl font-bold tracking-tighter text-gray-900 mb-6"
-              style={{ letterSpacing: "-0.04em" }}
+              className="text-3xl md:text-4xl font-bold tracking-tighter tracking-tight-v2 text-text-primary mb-6"
             >
               Not just another{" "}
-              <span className="text-gray-400">mock interview.</span>
+              <span className="text-text-tertiary">mock interview.</span>
             </motion.h2>
             <motion.p
               variants={fadeInUp}
-              className="text-lg text-gray-600 mb-8 leading-relaxed font-medium"
+              className="text-lg text-text-secondary mb-8 leading-relaxed font-medium"
             >
               PreTest is built on the belief that context matters. Our mentors
               have cracked the specific companies you are targeting.
@@ -48,7 +47,7 @@ export default function StatsSectionV2() {
               {features.map((feature, index) => (
                 <li
                   key={index}
-                  className="flex items-center gap-3 text-gray-700"
+                  className="flex items-center gap-3 text-text-primary"
                 >
                   <CheckCircle2 className="w-5 h-5 text-secondary flex-shrink-0" />
                   <span className="font-medium text-sm">{feature}</span>
@@ -72,19 +71,19 @@ export default function StatsSectionV2() {
                 className={`p-8 rounded-2xl ${
                   stat.highlight
                     ? "bg-secondary shadow-lg shadow-orange-500/20 border border-orange-400"
-                    : "bg-white shadow-sm border border-gray-100"
+                    : "bg-background shadow-sm border border-border"
                 }`}
               >
                 <div
                   className={`text-4xl font-bold mb-1 tracking-tighter ${
-                    stat.highlight ? "text-white" : "text-gray-900"
+                    stat.highlight ? "text-white" : "text-text-primary"
                   }`}
                 >
                   {stat.value}
                 </div>
                 <div
                   className={`text-xs font-semibold uppercase tracking-wider ${
-                    stat.highlight ? "text-orange-100" : "text-gray-400"
+                    stat.highlight ? "text-orange-100" : "text-text-tertiary"
                   }`}
                 >
                   {stat.label}
