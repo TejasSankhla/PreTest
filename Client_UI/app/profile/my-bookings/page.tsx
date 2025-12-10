@@ -1,24 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useAuth, User } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Backend_Base_URL } from "@/context/constants";
+import { apiClient, API_ROUTES, Booking, User } from "@/lib/api";
 import Link from "next/link";
-
-interface Mentor {
-  profile_pic?: string;
-  name?: string;
-  college?: string;
-  branch?: string;
-}
-
-interface Booking {
-  mentor?: Mentor;
-  slot: string;
-  createdAt: string;
-  meeting_link?: string;
-}
 
 type BookingType = "upcoming" | "past";
 
@@ -54,8 +39,8 @@ function Page() {
       try {
         const url =
           activeButton === "upcoming"
-            ? `${Backend_Base_URL}/api/booking/user/upcoming/${userId}`
-            : `${Backend_Base_URL}/api/booking/user/prev/${userId}`;
+            ? API_ROUTES.booking.upcoming(userId)
+            : API_ROUTES.booking.past(userId);
 
         // Check if data is already fetched
         if (isDataFetched[activeButton]) {
@@ -63,9 +48,9 @@ function Page() {
           return;
         }
 
-        const response = await axios.get(url);
+        const response = await apiClient.get(url);
 
-        const fetchedBookings = response.data.data; // Assuming response contains bookings array
+        const fetchedBookings = response.data.data;
         setBookings(fetchedBookings);
         setBookingsData((prev) => ({
           ...prev,
@@ -92,7 +77,7 @@ function Page() {
             onClick={() => handleButtonClick("upcoming")}
             className={`px-4 py-2 w-1/2 relative rounded-md ${
               activeButton === "upcoming"
-                ? "bg-blue-500 text-white shadow-lg"
+                ? "bg-secondary text-white shadow-lg"
                 : "bg-gray-200 text-black hover:bg-gray-400"
             }`}
           >
@@ -102,7 +87,7 @@ function Page() {
             onClick={() => handleButtonClick("past")}
             className={`px-4 py-2 w-1/2 relative rounded-md ${
               activeButton === "past"
-                ? "bg-blue-500 text-white shadow-lg"
+                ? "bg-secondary text-white shadow-lg"
                 : "bg-gray-200 text-black hover:bg-gray-400"
             }`}
           >
@@ -204,8 +189,7 @@ function Page() {
                           {booking.meeting_link ? (
                             <Button
                               asChild
-                              className="bg-blue-600 text-white"
-                              variant="outline"
+                              variant="primary"
                             >
                               <Link href={booking.meeting_link}>
                                 Meeting Link
@@ -213,8 +197,7 @@ function Page() {
                             </Button>
                           ) : (
                             <Button
-                              className="bg-red-600 text-white"
-                              variant="outline"
+                              variant="danger"
                             >
                               Not available
                             </Button>

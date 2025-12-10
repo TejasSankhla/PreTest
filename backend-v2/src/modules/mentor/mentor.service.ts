@@ -216,4 +216,20 @@ export class MentorService {
       slots: availableSlots,
     };
   }
+
+  async fetchMentorBookings(
+    mentorId: string,
+    isUpcoming: boolean,
+  ): Promise<BookingDocument[]> {
+    const currentDate = new Date();
+
+    const query = isUpcoming
+      ? { mentor: mentorId, slot: { $gte: currentDate } }
+      : { mentor: mentorId, slot: { $lt: currentDate } };
+
+    return this.bookingModel
+      .find(query)
+      .populate('user', 'name email')
+      .sort({ slot: isUpcoming ? 1 : -1 });
+  }
 }

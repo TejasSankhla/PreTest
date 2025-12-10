@@ -11,6 +11,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 import Link from "next/link";
 import { MenuIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Button, Container } from "@/components/atoms";
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -41,7 +42,7 @@ function Navbar() {
 
   return (
     <header className="fixed top-0 w-full z-50 bg-white/60 backdrop-blur-md border-b border-gray-100/50">
-      <div className="max-w-screen-xl mx-auto px-6 h-14 flex items-center justify-between">
+      <Container size="full" padding="default" className="h-14 flex items-center justify-between">
         <Link
           href="/"
           className="flex items-center gap-2"
@@ -87,17 +88,19 @@ function Navbar() {
                 Sign in
               </Link>
               {/* Get Started - Dark button */}
-              <Link
-                href="/auth/sign-up"
-                className="bg-gray-900 hover:bg-black text-white text-[13px] font-medium px-3 py-1.5 rounded-full shadow-sm transition-all hover:shadow-md"
-              >
-                Get Started
-              </Link>
+              <Button asChild variant="secondary" size="sm" rounded="full">
+                <Link href="/auth/sign-up">
+                  Get Started
+                </Link>
+              </Button>
             </div>
           )}
         </nav>
-        <button
-          className="md:hidden flex items-center justify-center h-9 w-9 rounded-lg hover:bg-gray-100 transition-colors"
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          rounded="lg"
+          className="md:hidden"
           onClick={toggleMobileMenu}
         >
           {isMobileMenuOpen ? (
@@ -106,8 +109,8 @@ function Navbar() {
             <MenuIcon className="h-5 w-5 text-text-secondary" />
           )}
           <span className="sr-only">Toggle menu</span>
-        </button>
-      </div>
+        </Button>
+      </Container>
 
       {isMobileMenuOpen && (
         <div
@@ -132,15 +135,18 @@ function Navbar() {
                   Bookings
                 </Link>
                 <div className="border-t border-border my-1" />
-                <button
-                  className="text-[13px] font-medium text-red-500 hover:bg-red-50 rounded-lg px-4 py-2.5 text-left transition-colors"
+                <Button
+                  variant="danger-ghost"
+                  size="sm"
+                  rounded="lg"
+                  className="justify-start w-full"
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     logout();
                   }}
                 >
                   Logout
-                </button>
+                </Button>
               </>
             ) : (
               <div className="flex flex-col gap-2 p-2">
@@ -151,13 +157,14 @@ function Navbar() {
                 >
                   Sign in
                 </Link>
-                <Link
-                  href="/auth/sign-up"
-                  className="bg-gray-900 hover:bg-black text-white text-[13px] font-medium px-4 py-2 rounded-full text-center transition-all"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Get Started
-                </Link>
+                <Button asChild variant="secondary" size="sm" rounded="full" className="w-full">
+                  <Link
+                    href="/auth/sign-up"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Get Started
+                  </Link>
+                </Button>
               </div>
             )}
           </nav>

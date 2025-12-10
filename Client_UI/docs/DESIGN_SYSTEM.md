@@ -275,13 +275,162 @@ Based on a 4px grid system:
 
 ## Components
 
-### Navbar (Updated)
+### Atoms (Design Library Foundation)
 
-The navbar uses a minimal, modern design:
+The design library uses **Atomic Design** principles. Components are located in `components/atoms/`.
+
+```tsx
+// Import from atoms
+import { Button, Container } from "@/components/atoms";
+```
+
+### Button Component
+
+The Button component is the foundation for all button UI. It supports multiple variants, sizes, and features.
+
+**Import:**
+```tsx
+import { Button } from "@/components/atoms";
+```
+
+**Variants:**
+| Variant | Background | Hover | Use Case |
+|---------|------------|-------|----------|
+| `primary` | `bg-secondary` (orange) | `hover:bg-secondary-dark` | Main CTAs |
+| `secondary` | `bg-gray-900` | `hover:bg-black` | Secondary actions |
+| `outline` | transparent + border | `hover:bg-background-subtle` | Tertiary |
+| `ghost` | transparent | `hover:bg-background-subtle` | Minimal |
+| `danger` | `bg-error` | `hover:bg-red-600` | Destructive |
+| `danger-ghost` | transparent | `hover:bg-error-light` | Destructive minimal |
+
+**Sizes:**
+| Size | Height | Padding | Font |
+|------|--------|---------|------|
+| `xs` | h-7 | px-2.5 | text-xs |
+| `sm` | h-8 | px-3 | text-[13px] |
+| `md` | h-10 | px-4 | text-sm |
+| `lg` | h-11 | px-6 | text-base |
+| `xl` | h-12 | px-8 | text-base |
+| `icon` | h-10 w-10 | - | - |
+| `icon-sm` | h-8 w-8 | - | - |
+
+**Border Radius:**
+| Value | Class | Use Case |
+|-------|-------|----------|
+| `default` | rounded-md | Form buttons |
+| `full` | rounded-full | CTAs, pills |
+| `lg` | rounded-lg | Cards |
+
+**Usage Examples:**
+
+```tsx
+// Primary CTA (Orange)
+<Button variant="primary" size="lg" rounded="full">
+  Find a Mentor
+</Button>
+
+// Secondary (Dark)
+<Button variant="secondary" size="sm" rounded="full">
+  Get Started
+</Button>
+
+// Outline/Ghost
+<Button variant="outline" rounded="full">
+  View Sample Report
+</Button>
+
+// With Link (asChild)
+<Button asChild variant="primary" rounded="full">
+  <Link href="/explore-mentors">Start Practicing</Link>
+</Button>
+
+// With Icons
+<Button
+  variant="primary"
+  rightIcon={<ArrowRight className="w-4 h-4" />}
+>
+  Continue
+</Button>
+
+// Loading State
+<Button variant="secondary" isLoading loadingText="Submitting...">
+  Submit
+</Button>
+
+// Icon Button
+<Button variant="ghost" size="icon-sm">
+  <MenuIcon className="h-5 w-5" />
+</Button>
+
+// Danger Button
+<Button variant="danger">Delete</Button>
+<Button variant="danger-ghost">Logout</Button>
+```
+
+### Container Component
+
+The Container component standardizes max-width and padding across the application.
+
+**Import:**
+```tsx
+import { Container } from "@/components/atoms";
+```
+
+**Size Variants:**
+| Size | Max Width | Use Case |
+|------|-----------|----------|
+| `sm` | max-w-sm (384px) | Auth forms |
+| `md` | max-w-2xl (672px) | Narrow content |
+| `lg` | max-w-4xl (896px) | Content/legal pages |
+| `xl` | max-w-7xl (1280px) | Main sections (DEFAULT) |
+| `full` | max-w-screen-xl | Navbar |
+
+**Padding Variants:**
+| Value | Classes |
+|-------|---------|
+| `none` | px-0 |
+| `sm` | px-4 |
+| `default` | px-4 md:px-6 |
+| `lg` | px-6 md:px-8 |
+
+**Usage Examples:**
+
+```tsx
+// Standard section container (default: max-w-7xl)
+<Container>
+  <h2>Section Content</h2>
+</Container>
+
+// Navbar (full width)
+<Container size="full" className="h-14 flex items-center justify-between">
+  {/* Navbar content */}
+</Container>
+
+// Auth form (small)
+<Container size="sm">
+  <form>{/* Form fields */}</form>
+</Container>
+
+// Legal page content
+<Container size="lg">
+  <article>{/* Terms & Conditions */}</article>
+</Container>
+
+// Custom padding
+<Container padding="lg">
+  {/* Content with more padding */}
+</Container>
+```
+
+---
+
+### Navbar
+
+The navbar uses the Container and Button atoms:
 
 ```tsx
 <header className="fixed top-0 w-full z-50 bg-background/60 backdrop-blur-md border-b border-border/50">
-  <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+  <Container size="full" className="h-14 flex items-center justify-between">
     {/* Logo */}
     <Link href="/" className="flex items-center gap-2">
       <div className="w-6 h-6 bg-secondary rounded-md flex items-center justify-center text-white text-xs font-bold">
@@ -295,35 +444,12 @@ The navbar uses a minimal, modern design:
       <Link href="/auth/log-in" className="text-[13px] font-medium text-text-secondary hover:text-text-primary">
         Sign in
       </Link>
-      <Link href="/auth/sign-up" className="bg-gray-900 hover:bg-black text-white text-[13px] font-medium px-3 py-1.5 rounded-full">
-        Get Started
-      </Link>
+      <Button asChild variant="secondary" size="sm" rounded="full">
+        <Link href="/auth/sign-up">Get Started</Link>
+      </Button>
     </div>
-  </div>
+  </Container>
 </header>
-```
-
-### Buttons
-
-#### Primary Button (Dark - V2 Style)
-```tsx
-<Link className="bg-gray-900 hover:bg-black text-white text-[13px] font-medium px-3 py-1.5 rounded-full shadow-sm hover:shadow-md">
-  Get Started
-</Link>
-```
-
-#### Secondary Button (Orange CTA)
-```tsx
-<Link className="bg-secondary hover:bg-secondary-dark text-white text-sm font-semibold px-6 py-3.5 rounded-full shadow-[0_1px_2px_rgba(249,115,22,0.3)]">
-  Find a Mentor
-</Link>
-```
-
-#### Ghost Button (Outline)
-```tsx
-<button className="bg-background border border-border text-text-secondary hover:text-text-primary hover:border-border text-sm font-semibold px-6 py-3.5 rounded-full">
-  View Sample Report
-</button>
 ```
 
 ### Cards
@@ -493,6 +619,14 @@ Client_UI/
 │   └── explore-mentors/
 │       └── page.tsx             # Mentor listing (dynamic rendering)
 ├── components/
+│   ├── atoms/                   # Atomic Design - Foundation components
+│   │   ├── Button/
+│   │   │   ├── Button.tsx       # Button component with variants
+│   │   │   └── index.ts
+│   │   ├── Container/
+│   │   │   ├── Container.tsx    # Layout container with max-width
+│   │   │   └── index.ts
+│   │   └── index.ts             # Barrel exports
 │   ├── landing/
 │   │   ├── HeroSection.tsx      # V1 Hero with orbital animation
 │   │   ├── OrbitingLogos.tsx    # V1 Orbital logo component
@@ -505,9 +639,9 @@ Client_UI/
 │   │       ├── HowItWorksV2.tsx     # V2 Bento grid (4 cards)
 │   │       └── StatsSectionV2.tsx   # V2 Split stats layout
 │   └── ui/
-│       ├── navbar.tsx           # Navigation (glassmorphism, minimal)
-│       ├── button.tsx           # Button component
-│       ├── footer.tsx           # Footer
+│       ├── navbar.tsx           # Navigation (uses atoms)
+│       ├── button.tsx           # @deprecated - re-exports from atoms
+│       ├── footer.tsx           # Footer (uses atoms)
 │       ├── home/
 │       │   └── faq.tsx          # FAQ accordion (shared)
 │       └── ...
@@ -593,13 +727,22 @@ const variants = prefersReducedMotion ? reducedMotionVariants : fadeInUp;
 
 ---
 
-*Document Version: 2.2*
+*Document Version: 2.3*
 *Last Updated: December 10, 2024*
 *Design System by PreTest Team*
 
 ---
 
 ## Changelog
+
+### v2.3 (Dec 10, 2024)
+- **NEW: Atomic Design structure** - Added `components/atoms/` folder
+- **NEW: Button component** with 6 variants (primary, secondary, outline, ghost, danger, danger-ghost)
+- **NEW: Container component** with 5 size variants (sm, md, lg, xl, full)
+- Migrated navbar, footer, hero sections, and auth pages to use atoms
+- Fixed color violations (`bg-blue-500` → `bg-secondary`) in mentor components
+- Deprecated `components/ui/button.tsx` (re-exports from atoms)
+- Updated file structure documentation
 
 ### v2.2 (Dec 10, 2024)
 - Added semantic state colors (success, info, warning, error)

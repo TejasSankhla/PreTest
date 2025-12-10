@@ -2,28 +2,16 @@
 import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { apiClient, API_ROUTES, User, LoginCredentials, SignUpCredentials } from "@/lib/api";
 import axios from "axios";
-import { Backend_Base_URL } from "./constants";
 
-export interface User {
-  _id: string;
-  id?: string;
-  name: string;
-  email: string;
-  mobile_number?: string;
-}
-
-interface Credentials {
-  name?: string;
-  email: string;
-  password: string;
-  mobile_number?: string;
-}
+// Re-export User type for backwards compatibility
+export type { User } from "@/lib/api";
 
 interface AuthContextType {
   user: User | null;
-  login: (credentials: Credentials) => Promise<void>;
-  signUp: (credentials: Credentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  signUp: (credentials: SignUpCredentials) => Promise<void>;
   logout: () => void;
   ErrorMessage: string | null;
   setErrorMessage: Dispatch<SetStateAction<string>>;
@@ -51,35 +39,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
-  const login = async (credentials: Credentials) => {
+  const login = async (credentials: LoginCredentials) => {
     try {
-      console.log("long in handler");
-      const response = await axios.post(
-        `${Backend_Base_URL}/api/user/sign-in`,
-        credentials,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Add token to Authorization header
-          },
-        }
-      );
-      const data = await response.data;
-      console.log(data);
-      if (!data.success) {
-        console.log("throw error");
+      const response = await apiClient.post(API_ROUTES.auth.signIn(), credentials);
+      const data = response.data;
 
+      if (!data.success) {
         throw new Error("Bad Request, Login Failed.");
       }
 
       const userData = data.data;
       setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData)); // Persist user session
-      localStorage.setItem("token", JSON.stringify(userData.token)); // Persist user session
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("token", JSON.stringify(userData.token));
       router.push("/");
       setErrorMessage("");
     } catch (error) {
-      console.log(error);
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
           setErrorMessage("Invalid credentials");
@@ -98,19 +73,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     }
   };
-  const signUp = async (credentials: Credentials) => {
+  const signUp = async (credentials: SignUpCredentials) => {
     try {
-      const response = await axios.post(
-        `${Backend_Base_URL}/api/user/sign-up`,
-        credentials,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Add token to Authorization header
-          },
-        }
-      );
-      const data = await response.data;
+      const response = await apiClient.post(API_ROUTES.auth.signUp(), credentials);
+      const data = response.data;
 
       if (!data.success) {
         throw Error(data.msg || "Sign-Up failed, Please try again.");

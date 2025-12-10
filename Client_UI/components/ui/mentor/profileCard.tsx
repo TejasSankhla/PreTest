@@ -5,7 +5,7 @@ import {
   InstagramIcon,
 } from "@/components/constants/icons";
 import ToggleLikeButton from "@/components/constants/toggleLikeButton";
-import { Button } from "../button";
+import { Button } from "@/components/atoms";
 import {
   Avatar,
   AvatarImage,
@@ -87,7 +87,7 @@ function ProfileCard({ mentor }: ProfileCardProps) {
         )}
         <ToggleLikeButton />
         <Link href={`/mentor/${mentor._id}`} className="ml-auto">
-          <Button className="bg-blue-500 hover:bg-blue-300 text-white">
+          <Button variant="primary" rounded="default">
             View Profile
           </Button>
         </Link>

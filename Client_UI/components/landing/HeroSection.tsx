@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/atoms";
 import { CheckIcon, ArrowRight } from "lucide-react";
 import OrbitingLogos from "./OrbitingLogos";
 import {
@@ -90,12 +90,14 @@ export default function HeroSection() {
             <motion.div variants={fadeInUp}>
               <Button
                 asChild
-                size="lg"
-                className="bg-secondary hover:bg-secondary-dark text-white px-8 py-6 text-base font-semibold rounded-full shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 group"
+                variant="primary"
+                size="xl"
+                rounded="full"
+                className="shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/40"
+                rightIcon={<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
               >
-                <Link href="/explore-mentors" className="flex items-center gap-2">
+                <Link href="/explore-mentors" className="group">
                   Start Practicing
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
             </motion.div>

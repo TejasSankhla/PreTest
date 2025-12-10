@@ -6,7 +6,7 @@ import { LocationIcon } from "@/components/constants/icons";
 import { Fragment, useState, useEffect } from "react";
 import useRazorpay, { RazorpayOptions } from "react-razorpay";
 import { Card, CardContent } from "@/components/ui/card";
-import { RAZORPAY_KEY_ID } from "@/context/constants";
+import { RAZORPAY_KEY_ID, bookingPrice } from "@/context/constants";
 import {
   Carousel,
   CarouselContent,
@@ -14,44 +14,22 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "../carousel";
-import { Button } from "../button";
-import axios from "axios";
+import { Button } from "@/components/atoms";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { Backend_Base_URL, bookingPrice } from "@/context/constants";
+import {
+  apiClient,
+  API_ROUTES,
+  Mentor,
+  SlotInfo,
+  PaymentResponse,
+  PaymentFailedResponse,
+} from "@/lib/api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Define Types globally and then import
-interface SlotInfo {
-  date: string;
-  slots: string[];
-}
-
-interface Mentor {
-  _id: string;
-  name?: string;
-  profile_pic?: string;
-  college?: string;
-  location?: string;
-  about?: string;
-  slots?: SlotInfo[];
-}
-
 interface MentorProfileProps {
   mentor: Mentor;
-}
-
-interface PaymentResponse {
-  razorpay_order_id: string;
-  razorpay_payment_id: string;
-  razorpay_signature: string;
-}
-
-interface PaymentFailedResponse {
-  error: {
-    description: string;
-  };
 }
 
 export default function MentorProfile({ mentor }: MentorProfileProps) {
@@ -94,22 +72,11 @@ export default function MentorProfile({ mentor }: MentorProfileProps) {
       return;
     }
 
-    const token = localStorage.getItem("token");
-
     setIsLoading(true);
     setBookingInProgress(true);
     try {
       // Step 1: Create Order for Payment
-      const response = await axios.post(
-        `${Backend_Base_URL}/api/order/create-order`,
-        { amount: bookingPrice },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Add token to Authorization header
-          },
-        }
-      );
+      const response = await apiClient.post(API_ROUTES.order.create(), { amount: bookingPrice });
 
       if (response.status !== 200) {
         toast.error("Failed to create order");
@@ -125,27 +92,21 @@ export default function MentorProfile({ mentor }: MentorProfileProps) {
         order_id: order.id,
         handler: async (paymentResponse: PaymentResponse) => {
           try {
-            // Step 3: Call combined booking and payment verification API
-            const bookingResponse = await fetch(
-              `${Backend_Base_URL}/api/booking/${mentor._id}`,
+            // Step 2: Call combined booking and payment verification API
+            const bookingResponse = await apiClient.post(
+              API_ROUTES.booking.create(mentor._id),
               {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
+                client: user?._id,
+                slot: selectedTimeSlot,
+                paymentResponse: {
+                  razorpay_order_id: paymentResponse.razorpay_order_id,
+                  razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                  razorpay_signature: paymentResponse.razorpay_signature,
                 },
-                body: JSON.stringify({
-                  client: user?._id,
-                  slot: selectedTimeSlot,
-                  paymentResponse: {
-                    razorpay_order_id: paymentResponse.razorpay_order_id,
-                    razorpay_payment_id: paymentResponse.razorpay_payment_id,
-                    razorpay_signature: paymentResponse.razorpay_signature,
-                  },
-                }),
               }
             );
 
-            const bookingData = await bookingResponse.json();
+            const bookingData = bookingResponse.data;
 
             if (bookingData.success) {
               toast.success("Booking successfull");
@@ -305,7 +266,7 @@ export default function MentorProfile({ mentor }: MentorProfileProps) {
                       <Card
                         className={`${
                           selectedDate?.date === slotInfo.date
-                            ? "bg-blue-500"
+                            ? "bg-secondary"
                             : "bg-white"
                         }`}
                       >
@@ -349,7 +310,7 @@ export default function MentorProfile({ mentor }: MentorProfileProps) {
                     key={idx}
                     className={`p-2 border rounded-md text-center text-base cursor-pointer ${
                       selectedTimeSlot === timeSlot
-                        ? "bg-blue-500 text-white"
+                        ? "bg-secondary text-white"
                         : "bg-gray-100 hover:bg-gray-200"
                     }`}
                     onClick={() => handleTimeSlotClick(timeSlot)}
@@ -367,10 +328,9 @@ export default function MentorProfile({ mentor }: MentorProfileProps) {
 
           <div className="bookings-action flex mt-4 items-center justify-center">
             <Button
-              disabled={bookingInProgress}
-              className={`bg-blue-500 text-white text-xl p-2 w-full ${
-                selectedTimeSlot ? "" : "opacity-50 cursor-not-allowed"
-              }`}
+              disabled={bookingInProgress || !selectedTimeSlot}
+              variant="primary"
+              className="text-xl p-2 w-full"
               onClick={handlePaymentAndBooking}
             >
               Book Slot

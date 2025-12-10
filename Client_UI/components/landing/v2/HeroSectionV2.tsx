@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronRight, Star } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import { Button } from "@/components/atoms";
 
 export default function HeroSectionV2() {
   return (
@@ -65,16 +66,25 @@ export default function HeroSectionV2() {
             variants={fadeInUp}
             className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto"
           >
-            <Link
-              href="/explore-mentors"
-              className="group bg-secondary hover:bg-secondary-dark text-white text-sm font-semibold px-6 py-3.5 rounded-full shadow-[0_1px_2px_rgba(249,115,22,0.3)] transition-all flex items-center justify-center gap-2"
+            <Button
+              asChild
+              variant="primary"
+              size="lg"
+              rounded="full"
+              className="shadow-[0_1px_2px_rgba(249,115,22,0.3)]"
+              rightIcon={<ChevronRight className="w-4 h-4 opacity-80 group-hover:translate-x-0.5 transition-transform" />}
             >
-              Find a Mentor
-              <ChevronRight className="w-4 h-4 opacity-80 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-            <button className="bg-background border border-border text-text-secondary hover:text-text-primary hover:border-border text-sm font-semibold px-6 py-3.5 rounded-full transition-all flex items-center justify-center">
+              <Link href="/explore-mentors" className="group">
+                Find a Mentor
+              </Link>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              rounded="full"
+            >
               View Sample Report
-            </button>
+            </Button>
           </motion.div>
 
           {/* Social Proof */}

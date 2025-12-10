@@ -1,19 +1,20 @@
 import React from "react";
-import axios from "axios";
 import SearchMentors from "./components/SearchMentors";
-import { Backend_Base_URL } from "@/context/constants";
+import { apiClient, API_ROUTES, Mentor, ApiResponse } from "@/lib/api";
 
 // Force dynamic rendering - skip static generation during build
 export const dynamic = "force-dynamic";
 
-async function fetchMentors() {
+async function fetchMentors(): Promise<Mentor[]> {
   try {
-    const response = await axios.get(`${Backend_Base_URL}/api/mentor/`);
+    const response = await apiClient.get<ApiResponse<Mentor[]>>(API_ROUTES.mentor.list());
     if (response.status === 200) {
       return response.data.data;
     }
-  } catch (error : any) {
-    console.error("Error fetching mentors:", error.response?.data?.msg || error.message);
+    return [];
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { msg?: string } }; message?: string };
+    console.error("Error fetching mentors:", err.response?.data?.msg || err.message);
     return [];
   }
 }
