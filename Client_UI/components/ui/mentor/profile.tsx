@@ -2,10 +2,9 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import profile_banner from "../../../public/profile-banner.png";
 import Image from "next/image";
-import avatar from "../../../public/user-placeholder.png";
 import { LocationIcon } from "@/components/constants/icons";
 import { Fragment, useState, useEffect } from "react";
-import useRazorpay from "react-razorpay";
+import useRazorpay, { RazorpayOptions } from "react-razorpay";
 import { Card, CardContent } from "@/components/ui/card";
 import { RAZORPAY_KEY_ID } from "@/context/constants";
 import {
@@ -22,31 +21,64 @@ import { useAuth } from "@/context/AuthContext";
 import { Backend_Base_URL, bookingPrice } from "@/context/constants";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-export default function MentorProfile({ mentor }) {
+
+// Define Types globally and then import
+interface SlotInfo {
+  date: string;
+  slots: string[];
+}
+
+interface Mentor {
+  _id: string;
+  name?: string;
+  profile_pic?: string;
+  college?: string;
+  location?: string;
+  about?: string;
+  slots?: SlotInfo[];
+}
+
+interface MentorProfileProps {
+  mentor: Mentor;
+}
+
+interface PaymentResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
+interface PaymentFailedResponse {
+  error: {
+    description: string;
+  };
+}
+
+export default function MentorProfile({ mentor }: MentorProfileProps) {
   const { user } = useAuth();
   const router = useRouter();
   const [Razorpay] = useRazorpay();
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [selectedDate, setSelectedDate] = useState<SlotInfo | null>(null);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [bookingInProgress, setBookingInProgress] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [IsLoading, setIsLoading] = useState(false);
   // load data when loads
   useEffect(() => {
-    if (mentor?.slots?.length > 0) {
+    if (mentor?.slots?.length && mentor.slots.length > 0) {
       setSelectedDate(mentor.slots[0]);
       setSelectedTimeSlot(null);
     }
     setLoading(false);
   }, [mentor]);
 
-  const handleDateClick = (slotInfo) => {
+  const handleDateClick = (slotInfo: SlotInfo) => {
     setSelectedDate(slotInfo);
     setSelectedTimeSlot(null);
   };
 
-  const handleTimeSlotClick = (timeSlot) => {
+  const handleTimeSlotClick = (timeSlot: string) => {
     setSelectedTimeSlot(timeSlot);
   };
 
@@ -84,14 +116,14 @@ export default function MentorProfile({ mentor }) {
         return;
       }
       const order = response.data;
-      const options = {
-        key: RAZORPAY_KEY_ID,
+      const options: RazorpayOptions = {
+        key: RAZORPAY_KEY_ID || "",
         amount: order.amount.toString(),
         currency: order.currency,
         name: "Pretest",
         description: "Payment for mentor booking",
         order_id: order.id,
-        handler: async (paymentResponse) => {
+        handler: async (paymentResponse: PaymentResponse) => {
           try {
             // Step 3: Call combined booking and payment verification API
             const bookingResponse = await fetch(
@@ -102,7 +134,7 @@ export default function MentorProfile({ mentor }) {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                  client: user._id,
+                  client: user?._id,
                   slot: selectedTimeSlot,
                   paymentResponse: {
                     razorpay_order_id: paymentResponse.razorpay_order_id,
@@ -127,8 +159,8 @@ export default function MentorProfile({ mentor }) {
           }
         },
         prefill: {
-          name: user?.name,
-          email: user?.email,
+          name: user?.name || "",
+          email: user?.email || "",
         },
         theme: {
           color: "#3399cc",
@@ -140,7 +172,7 @@ export default function MentorProfile({ mentor }) {
       rzpay.open();
 
       // Handle payment failures
-      rzpay.on("payment.failed", (response) => {
+      rzpay.on("payment.failed", (response: PaymentFailedResponse) => {
         console.error("Payment Failed:", response);
         alert(`Payment failed: ${response.error.description}`);
       });
@@ -185,7 +217,7 @@ export default function MentorProfile({ mentor }) {
               <div className="profile-avatar">
                 <Avatar className="h-36 w-36 sm:h-48 sm:w-48 border-8 border-background border-orange-400">
                   <AvatarImage
-                    src={mentor?.profile_pic || avatar}
+                    src={mentor?.profile_pic || "/user-placeholder.png"}
                     alt={`Profile picture of ${mentor?.name || "mentor"}`}
                     className="object-cover w-full h-full"
                   />
@@ -193,7 +225,7 @@ export default function MentorProfile({ mentor }) {
                     {mentor?.name
                       ? mentor.name
                           .split(" ")
-                          .map((n) => n[0])
+                          .map((n: string) => n[0])
                           .join("")
                       : "JD"}
                   </AvatarFallback>
@@ -261,7 +293,7 @@ export default function MentorProfile({ mentor }) {
               className="w-full max-w-sm"
             >
               <CarouselContent>
-                {mentor?.slots?.map((slotInfo, index) => (
+                {mentor?.slots?.map((slotInfo: SlotInfo, index: number) => (
                   <CarouselItem
                     key={index}
                     className={`basis-1/3 cursor-pointer ${
@@ -312,7 +344,7 @@ export default function MentorProfile({ mentor }) {
                 Available Time Slots
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {selectedDate.slots.map((timeSlot, idx) => (
+                {selectedDate.slots.map((timeSlot: string, idx: number) => (
                   <div
                     key={idx}
                     className={`p-2 border rounded-md text-center text-base cursor-pointer ${

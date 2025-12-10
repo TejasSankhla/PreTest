@@ -1,30 +1,48 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, User } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Backend_Base_URL } from "@/context/constants";
 import Link from "next/link";
+
+interface Mentor {
+  profile_pic?: string;
+  name?: string;
+  college?: string;
+  branch?: string;
+}
+
+interface Booking {
+  mentor?: Mentor;
+  slot: string;
+  createdAt: string;
+  meeting_link?: string;
+}
+
+type BookingType = "upcoming" | "past";
+
 function Page() {
   const { user: authUser } = useAuth();
-  const [activeButton, setActiveButton] = useState("upcoming");
-  const [bookings, setBookings] = useState([]);
-  const [bookingsData, setBookingsData] = useState({
+  const [activeButton, setActiveButton] = useState<BookingType>("upcoming");
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookingsData, setBookingsData] = useState<Record<BookingType, Booking[]>>({
     upcoming: [],
     past: [],
   });
-  const [isDataFetched, setIsDataFetched] = useState({
+  const [isDataFetched, setIsDataFetched] = useState<Record<BookingType, boolean>>({
     upcoming: false,
     past: false,
   });
 
-  const handleButtonClick = (buttonType : string) => {
+  const handleButtonClick = (buttonType: BookingType) => {
     setActiveButton(buttonType);
   };
 
   // Fetch bookings when the activeButton changes
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const storedUser = localStorage.getItem("user");
+    const user: User | null = storedUser ? JSON.parse(storedUser) : null;
     const userId = user?._id || authUser?._id; // Ensure userId is available from localStorage or context
 
     if (!userId) {
@@ -144,9 +162,10 @@ function Page() {
                                   "/default-avatar.jpg"
                                 }
                                 alt="Mentor Profile"
-                                onError={(e) =>
-                                  (e.target.src = "/default-avatar.jpg")
-                                }
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = "/default-avatar.jpg";
+                                }}
                               />
                             </div>
                             <div className="ml-4">

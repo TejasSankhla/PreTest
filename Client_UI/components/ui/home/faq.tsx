@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 
 function Faq() {
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const toggleOpen = (index) => {
+  const toggleOpen = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 

@@ -1,13 +1,13 @@
 "use client";
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { User } from "lucide-react";
 import { Backend_Base_URL } from "./constants";
-import { toast } from "react-toastify";
-interface User {
-  id: string;
+
+export interface User {
+  _id: string;
+  id?: string;
   name: string;
   email: string;
   mobile_number?: string;
@@ -25,8 +25,8 @@ interface AuthContextType {
   login: (credentials: Credentials) => Promise<void>;
   signUp: (credentials: Credentials) => Promise<void>;
   logout: () => void;
-  ErrorMessage: String | null;
-  setErrorMessage: any;
+  ErrorMessage: string | null;
+  setErrorMessage: Dispatch<SetStateAction<string>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
