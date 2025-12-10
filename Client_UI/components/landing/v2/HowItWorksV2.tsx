@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ThumbsUp } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";

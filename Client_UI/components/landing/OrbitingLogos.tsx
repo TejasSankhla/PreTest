@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { ReactNode } from "react";
 import Image from "next/image";
 
 // Company logos
@@ -24,7 +24,7 @@ const innerOrbitLogos = [
 ];
 
 interface OrbitingLogosProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function OrbitingLogos({ children }: OrbitingLogosProps) {

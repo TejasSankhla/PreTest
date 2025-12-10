@@ -1,14 +1,14 @@
 "use client";
 
-import Faq from "@/components/ui/home/faq";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Copy, Code, Heart } from "lucide-react";
+import Faq from "@/components/ui/home/faq";
 
 // V1 Components (Original)
 import HeroSection from "@/components/landing/HeroSection";
 import TrustBar from "@/components/landing/TrustBar";
 
-// V2 Components (Minimal/Modern)
+// V2 Components (Minimal/Modern) - Default
 import {
   HeroSectionV2,
   TrustBarV2,
@@ -20,6 +20,13 @@ import {
 import VariantSwitcher, {
   LandingVariant,
 } from "@/components/landing/VariantSwitcher";
+
+// V1 Stats Data
+const V1_STATS = [
+  { id: 1, name: "Mock interviews completed", value: "200+" },
+  { id: 2, name: "Verified mentors", value: "47+" },
+  { id: 3, name: "Would recommend", value: "100%" },
+];
 
 export default function Component() {
   const [variant, setVariant] = useState<LandingVariant>("v2");
@@ -39,13 +46,7 @@ export default function Component() {
     localStorage.setItem("landing-variant", newVariant);
   };
 
-  const stats = [
-    { id: 1, name: "Mock interviews completed", value: "200+" },
-    { id: 2, name: "Verified mentors", value: "47+" },
-    { id: 3, name: "Would recommend", value: "100%" },
-  ];
-
-  // V2 Landing Page (Minimal/Modern)
+  // V2 Landing Page (Minimal/Modern) - Default
   if (variant === "v2") {
     return (
       <main className="flex-1">
@@ -150,7 +151,7 @@ export default function Component() {
 
           <div className="mx-auto max-w-4xl">
             <dl className="grid grid-cols-1 gap-8 sm:grid-cols-3 text-center">
-              {stats.map((stat) => (
+              {V1_STATS.map((stat) => (
                 <div
                   key={stat.id}
                   className="flex flex-col gap-2 p-6 rounded-2xl bg-white/60 backdrop-blur-sm"
