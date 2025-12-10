@@ -22,7 +22,7 @@ import VariantSwitcher, {
 } from "@/components/landing/VariantSwitcher";
 
 export default function Component() {
-  const [variant, setVariant] = useState<LandingVariant>("v1");
+  const [variant, setVariant] = useState<LandingVariant>("v2");
 
   // Persist variant choice in localStorage
   useEffect(() => {
