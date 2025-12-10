@@ -40,8 +40,11 @@ async function bootstrap() {
     }),
   );
 
-  const port = configService.get<number>('app.port') || 3000;
-  await app.listen(port);
+  // Use process.env.PORT directly for Render deployment compatibility
+  const port = process.env.PORT || configService.get<number>('app.port') || 4000;
+
+  // Bind to 0.0.0.0 for Render (required for external access)
+  await app.listen(port, '0.0.0.0');
 
   console.log(`Server started on port ${port}`);
 }

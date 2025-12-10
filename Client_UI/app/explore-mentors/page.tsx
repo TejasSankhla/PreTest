@@ -3,6 +3,9 @@ import axios from "axios";
 import SearchMentors from "./components/SearchMentors";
 import { Backend_Base_URL } from "@/context/constants";
 
+// Force dynamic rendering - skip static generation during build
+export const dynamic = "force-dynamic";
+
 async function fetchMentors() {
   try {
     const response = await axios.get(`${Backend_Base_URL}/api/mentor/`);

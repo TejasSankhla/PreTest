@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import Navbar from "../components/ui/navbar"; // Import Navbar component
 import Footer from "../components/ui/footer"; // Import Footer component
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "PreTest",
@@ -17,8 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+      <body className="font-sans antialiased">
         <AuthProvider>
           <div className="flex flex-col min-h-screen max-w-full">
             <Navbar /> {/* Navbar appears at the top */}

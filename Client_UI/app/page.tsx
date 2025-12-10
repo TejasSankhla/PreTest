@@ -1,168 +1,176 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { CheckIcon } from "lucide-react";
-import InfiniteScroll from "@/components/ui/home/scrollBar";
+"use client";
+
 import Faq from "@/components/ui/home/faq";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Copy, Code, Heart } from "lucide-react";
 
+// V1 Components (Original)
+import HeroSection from "@/components/landing/HeroSection";
+import TrustBar from "@/components/landing/TrustBar";
+
+// V2 Components (Minimal/Modern)
+import {
+  HeroSectionV2,
+  TrustBarV2,
+  HowItWorksV2,
+  StatsSectionV2,
+} from "@/components/landing/v2";
+
+// Variant Switcher
+import VariantSwitcher, {
+  LandingVariant,
+} from "@/components/landing/VariantSwitcher";
+
 export default function Component() {
+  const [variant, setVariant] = useState<LandingVariant>("v2");
+
+  // Persist variant choice in localStorage
+  useEffect(() => {
+    const savedVariant = localStorage.getItem(
+      "landing-variant"
+    ) as LandingVariant | null;
+    if (savedVariant && (savedVariant === "v1" || savedVariant === "v2")) {
+      setVariant(savedVariant);
+    }
+  }, []);
+
+  const handleVariantChange = (newVariant: LandingVariant) => {
+    setVariant(newVariant);
+    localStorage.setItem("landing-variant", newVariant);
+  };
+
   const stats = [
-    { id: 1, name: "Students mentored by our experts", value: "200+" },
-    { id: 2, name: "Mentors from top colleges", value: "47+" },
-    { id: 3, name: "positive feedback for mentors", value: "100%" },
+    { id: 1, name: "Mock interviews completed", value: "200+" },
+    { id: 2, name: "Verified mentors", value: "47+" },
+    { id: 3, name: "Would recommend", value: "100%" },
   ];
 
-  return (
-    <main className="flex-1 ">
-      <section className="pt-10 md:pt-20  bg-secondary">
-        <div className="container flex flex-col  items-center justify-center mx-auto px-4 md:px-6">
-          <div className="text-3xl sm:text-5xl  md:text-6xl  text-black mb-4 font-medium text-center ">
-            Build Your Career The
-          </div>
-          <div className=" text-textp text-3xl md:text-6xl  sm:text-5xl italic font-serif   mb-4">
-            <span className="line-through">Random Way</span> Right Way
-          </div>
-          <p className="text-lg text-justify sm:text-xl md:text-center  text-gray-600 mb-8">
-            Connect with top college students and professionals to prepare for
-            mock interviews and peer learning – all for free.
-          </p>
-          {/* // actions  */}
-          <div className="flex flex-col w-full sm:flex-row sm:justify-center  gap-4 mb-8">
-            <Button asChild className="p-4 shadow-2xl" variant="outline">
-              <Link href="/explore-mentors">Book a free trial</Link>
-            </Button>
-            <Button asChild className=" bg-gray-900 text-white p-4  shadow-2xl">
-              <Link href="/explore-mentors">Find your mentor</Link>
-            </Button>
-          </div>
-          {/* // features  */}
-          <div className="hidden sm:flex mb-8">
-            <div className="flex gap-4">
-              <span className=" text-sm flex gap-2">
-                <CheckIcon
-                  className="bg-blue-500  rounded-full p-1 text-white"
-                  height={20}
-                  width={20}
-                />
-                No payment required
-              </span>
-              <span className=" text-sm flex gap-2">
-                <CheckIcon
-                  className="bg-blue-500  rounded-full p-1 text-white"
-                  height={20}
-                  width={20}
-                />
-                Verified Mentors Only
-              </span>
-              <span className=" text-sm flex gap-2">
-                <CheckIcon
-                  className="bg-blue-500  rounded-full p-1 text-white"
-                  height={20}
-                  width={20}
-                />
-                Reschedule Anytime
-              </span>
-            </div>
-          </div>
-          {/* // scroll animation  */}
-          <div className=" w-4/5 flex  flex-col gap-6 mt-4 items-center justify-center">
-            <span className=" text-orange-400 font-bold text-xl md:text-2xl mb-2">
-              Mentors from top colleges
-            </span>
-            <div className=" max-w-full  ">
-              <InfiniteScroll />
-            </div>
-          </div>
-          <div className="feature mt-8 py-4 w-full text-ce ">
-            {/* // how pretest works */}
-            <div className="mx-auto max-w-7xl  px-2 my-16 lg:px-8">
-              <div className="mb-4 max-w-lg">
-                <p className="text-sm font-semibold  text uppercase tracking-widest text-black">
-                  Get Started in 3 Easy Steps
-                </p>
-                <h2 className="mt-6 text-2xl md:text-3xl flex gap-2 font-bold leading-tight text-black">
-                  How <div className="orange text-orange-400"> Pretest </div>{" "}
-                  Works
-                </h2>
-              </div>
-              <hr />
+  // V2 Landing Page (Minimal/Modern)
+  if (variant === "v2") {
+    return (
+      <main className="flex-1">
+        <HeroSectionV2 />
+        <TrustBarV2 />
+        <HowItWorksV2 />
+        <StatsSectionV2 />
+        <Faq />
 
-              <div className="mt-8  grid grid-cols-1 items-center gap-6 md:grid-cols-2 ">
-                <div className="flex items-start">
-                  <Copy className="h-5 w-5 md:h-9 md:w-9 text-gray-700" />
-                  <div className="ml-5">
-                    <h3 className="text-xl font-semibold text-black">
-                      Sign Up
-                    </h3>
-                    <p className="mt-3 text-base text-gray-600">
-                      Create your free account in minutes.
-                    </p>
-                  </div>
+        {/* Variant Switcher */}
+        <VariantSwitcher variant={variant} onVariantChange={handleVariantChange} />
+      </main>
+    );
+  }
+
+  // V1 Landing Page (Original)
+  return (
+    <main className="flex-1">
+      {/* New Hero Section */}
+      <HeroSection />
+
+      {/* New Trust Bar - Colleges + Companies */}
+      <TrustBar />
+
+      {/* How PreTest Works */}
+      <section className="py-16 md:py-24 bg-white">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-8 max-w-lg">
+              <p className="text-sm font-semibold uppercase tracking-widest text-orange-500">
+                How It Works
+              </p>
+              <h2 className="mt-4 text-2xl md:text-4xl font-bold leading-tight text-gray-900">
+                From nervous to confident in{" "}
+                <span className="text-orange-500">3 steps</span>
+              </h2>
+            </div>
+            <hr className="mb-8" />
+
+            <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-3">
+              <div className="flex flex-col items-start p-6 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-orange-100 text-orange-600 mb-4">
+                  <Copy className="h-6 w-6" />
                 </div>
-                <div className="flex items-start">
-                  <Code className="h-5 w-5 md:h-9 md:w-9md:h-9 md:w-9 text-gray-700" />
-                  <div className="ml-5">
-                    <h3 className="text-xl font-semibold text-black">
-                      Book a Mentor
-                    </h3>
-                    <p className="mt-3 text-base text-gray-600">
-                      Choose from top students and professionals.
-                    </p>
-                  </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Sign Up Free
+                </h3>
+                <p className="text-base text-gray-600">
+                  Create your account in 2 minutes. No payment required.
+                </p>
+              </div>
+
+              <div className="flex flex-col items-start p-6 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600 mb-4">
+                  <Code className="h-6 w-6" />
                 </div>
-                <div className="flex items-start">
-                  <Heart className="h-5 w-5 md:h-9 md:w-9 text-gray-700" />
-                  <div className="ml-5">
-                    <h3 className="text-xl font-semibold text-black">
-                      Prepare & Learn
-                    </h3>
-                    <p className="mt-3 text-base text-gray-600">
-                      Schedule your mock interview and receive expert feedback.
-                    </p>
-                  </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Pick Your Mentor
+                </h3>
+                <p className="text-base text-gray-600">
+                  Browse by company, role, or expertise. Book a time that works
+                  for you.
+                </p>
+              </div>
+
+              <div className="flex flex-col items-start p-6 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-600 mb-4">
+                  <Heart className="h-6 w-6" />
                 </div>
-                <div className="flex items-start">
-                  <Heart className="h-5 w-5 md:h-9 md:w-9 text-gray-700" />
-                  <div className="ml-5">
-                    <h3 className="text-xl font-semibold text-black">
-                      Get Notified
-                    </h3>
-                    <p className="mt-3 text-base text-gray-600">
-                      Receive your meeting schedule via email.
-                    </p>
-                  </div>
-                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Practice & Get Feedback
+                </h3>
+                <p className="text-base text-gray-600">
+                  Experience a real mock interview. Get honest feedback. Repeat
+                  until ready.
+                </p>
               </div>
             </div>
+
+            <p className="mt-8 text-center text-sm text-gray-500">
+              Most students book 2-3 sessions before their real interview. Start
+              early.
+            </p>
           </div>
         </div>
-        {/* Stats */}
-        <div className="bg-orange-50 py-8 sm:py-16">
-          <div className=" flex justify-center mb-8 text-lg  md:text-2xl  text-blue-950 font-semibold items-center">
-            How we have helped other students
-          </div>
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <dl className="grid grid-cols-1 gap-x-8 gap-y-8 sm:gap-y-16 text-center lg:grid-cols-3">
+      </section>
+
+      {/* Stats Section */}
+      <section className="bg-gradient-to-br from-orange-50 to-orange-100/50 py-16 sm:py-20">
+        <div className="container mx-auto px-4 md:px-6">
+          <h2 className="text-center text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+            200+ Students Stopped Guessing
+          </h2>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            &quot;I thought I was ready after 3 months of prep. My first mock
+            interview showed me I wasn&apos;t. Glad I found out here, not at
+            Google.&quot;
+            <span className="block mt-2 text-sm font-medium text-gray-500">
+              — Rahul, Now at Amazon
+            </span>
+          </p>
+
+          <div className="mx-auto max-w-4xl">
+            <dl className="grid grid-cols-1 gap-8 sm:grid-cols-3 text-center">
               {stats.map((stat) => (
                 <div
                   key={stat.id}
-                  className="mx-auto flex max-w-xs flex-col gap-y-2 md:gap-y-4"
+                  className="flex flex-col gap-2 p-6 rounded-2xl bg-white/60 backdrop-blur-sm"
                 >
-                  <dt className="text-base leading-7 text-gray-600">
-                    {stat.name}
-                  </dt>
-                  <dd className="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+                  <dd className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
                     {stat.value}
                   </dd>
+                  <dt className="text-base text-gray-600">{stat.name}</dt>
                 </div>
               ))}
             </dl>
           </div>
         </div>
       </section>
-      {/* FAQS */}
+
+      {/* FAQs */}
       <Faq />
+
+      {/* Variant Switcher */}
+      <VariantSwitcher variant={variant} onVariantChange={handleVariantChange} />
     </main>
   );
 }

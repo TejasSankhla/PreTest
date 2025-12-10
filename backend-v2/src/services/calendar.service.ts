@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { google } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
+import { calendar_v3, calendar } from '@googleapis/calendar';
 
 interface CalendarEventOptions {
   startTime: Date;
@@ -12,18 +13,21 @@ interface CalendarEventOptions {
 
 @Injectable()
 export class CalendarService {
-  private oauth2Client: any;
+  private readonly logger = new Logger(CalendarService.name);
+  private oauth2Client: OAuth2Client;
+  private calendarClient: calendar_v3.Calendar;
 
   constructor(private readonly configService: ConfigService) {
     const clientId = this.configService.get<string>('google.clientId');
     const clientSecret = this.configService.get<string>('google.clientSecret');
     const refreshToken = this.configService.get<string>('google.refreshToken');
 
-    const { OAuth2 } = google.auth;
-    this.oauth2Client = new OAuth2(clientId, clientSecret);
+    this.oauth2Client = new OAuth2Client(clientId, clientSecret);
     this.oauth2Client.setCredentials({
       refresh_token: refreshToken,
     });
+
+    this.calendarClient = calendar({ version: 'v3', auth: this.oauth2Client });
   }
 
   async createEvent(options: CalendarEventOptions): Promise<string> {
@@ -31,9 +35,7 @@ export class CalendarService {
     const endTime = new Date(options.startTime);
     endTime.setHours(endTime.getHours() + 1);
 
-    const calendar = google.calendar({ version: 'v3', auth: this.oauth2Client });
-
-    const event = {
+    const event: calendar_v3.Schema$Event = {
       summary: options.summary,
       location: options.location,
       description: options.summary + '\n' + '\nSession Duration: 60 Minutes',
@@ -68,7 +70,7 @@ export class CalendarService {
       guestsCanSeeOtherGuests: false,
     };
 
-    const response = await calendar.events.insert({
+    const response = await this.calendarClient.events.insert({
       calendarId: 'primary',
       conferenceDataVersion: 1,
       requestBody: event,

@@ -3,10 +3,187 @@
 @tailwind utilities;
 
 :root {
-  @apply tracking-tighter;
-  @apply font-mono;
+  /* ========================================
+     PRETEST DESIGN SYSTEM
+     Font: Geist Sans / Geist Mono
+     ======================================== */
 
-  --primary: #ebf7fd;
-  --secondary: #ffffff;
+  /* ----------------------------------------
+     COLOR TOKENS
+     ---------------------------------------- */
+
+  /* Primary - Blue (Trust, Professional) */
+  --primary: #2563eb;           /* blue-600 - Main brand blue */
+  --primary-light: #3b82f6;     /* blue-500 - Hover states */
+  --primary-lighter: #60a5fa;   /* blue-400 - Accents */
+  --primary-lightest: #dbeafe;  /* blue-100 - Backgrounds */
+  --primary-dark: #1d4ed8;      /* blue-700 - Active states */
+
+  /* Secondary - Orange (Energy, Action, CTA) */
+  --secondary: #f97316;         /* orange-500 - Main CTA color */
+  --secondary-light: #fb923c;   /* orange-400 - Hover states */
+  --secondary-lighter: #fdba74; /* orange-300 - Soft accents */
+  --secondary-lightest: #fff7ed;/* orange-50 - Backgrounds */
+  --secondary-dark: #ea580c;    /* orange-600 - Active states */
+
+  /* Tertiary - Orange Tints (Warmth, Highlights) */
+  --tertiary: #ffedd5;          /* orange-100 - Light backgrounds */
+  --tertiary-light: #fed7aa;    /* orange-200 - Subtle highlights */
+  --tertiary-accent: #fdba74;   /* orange-300 - Warm accents */
+
+  /* Neutrals */
+  --text-primary: #111827;      /* gray-900 - Headlines */
+  --text-secondary: #4b5563;    /* gray-600 - Body text */
+  --text-tertiary: #9ca3af;     /* gray-400 - Muted text */
+  --background: #ffffff;        /* White - Main background */
+  --background-subtle: #f9fafb; /* gray-50 - Subtle background */
+  --border: #e5e7eb;            /* gray-200 - Borders */
+
+  /* Legacy support */
   --textp: #007aff;
+
+  /* ----------------------------------------
+     TYPOGRAPHY TOKENS
+     ---------------------------------------- */
+
+  /* Font Families */
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: -0.01em;
+  --letter-spacing-wide: 0.02em;
+
+  /* Line Heights */
+  --line-height-tight: 1.1;
+  --line-height-snug: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+
+  /* ----------------------------------------
+     SPACING TOKENS
+     ---------------------------------------- */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+
+  /* ----------------------------------------
+     BORDER RADIUS TOKENS
+     ---------------------------------------- */
+  --radius-sm: 0.25rem;   /* 4px */
+  --radius-md: 0.5rem;    /* 8px */
+  --radius-lg: 0.75rem;   /* 12px */
+  --radius-xl: 1rem;      /* 16px */
+  --radius-2xl: 1.5rem;   /* 24px */
+  --radius-full: 9999px;
+
+  /* ----------------------------------------
+     SHADOW TOKENS
+     ---------------------------------------- */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* ----------------------------------------
+   BASE LAYER - Typography Defaults
+   ---------------------------------------- */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply text-body-md;
+    color: var(--text-primary);
+    background-color: var(--background);
+  }
+
+  /* Heading defaults */
+  h1 {
+    @apply text-display-lg font-bold tracking-tight;
+    color: var(--text-primary);
+  }
+
+  h2 {
+    @apply text-display-sm font-bold tracking-tight;
+    color: var(--text-primary);
+  }
+
+  h3 {
+    @apply text-heading-xl font-semibold;
+    color: var(--text-primary);
+  }
+
+  h4 {
+    @apply text-heading-lg font-semibold;
+    color: var(--text-primary);
+  }
+
+  h5 {
+    @apply text-heading-md font-semibold;
+    color: var(--text-primary);
+  }
+
+  h6 {
+    @apply text-heading-sm font-semibold;
+    color: var(--text-primary);
+  }
+
+  p {
+    @apply text-body-md;
+    color: var(--text-secondary);
+  }
+
+  /* Code/Mono text */
+  code, pre, kbd {
+    font-family: var(--font-mono);
+  }
+}
+
+/* ----------------------------------------
+   COMPONENT LAYER - Reusable Typography Classes
+   ---------------------------------------- */
+@layer components {
+  /* Display text styles */
+  .text-display {
+    @apply text-display-lg font-bold tracking-tight;
+    color: var(--text-primary);
+  }
+
+  /* Lead paragraph */
+  .text-lead {
+    @apply text-body-xl;
+    color: var(--text-secondary);
+  }
+
+  /* Muted text */
+  .text-muted {
+    color: var(--text-tertiary);
+  }
+
+  /* Small caps for labels */
+  .text-overline {
+    @apply text-label-md uppercase tracking-wide;
+    color: var(--text-tertiary);
+  }
 }

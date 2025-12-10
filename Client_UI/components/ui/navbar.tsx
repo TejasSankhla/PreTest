@@ -7,8 +7,6 @@ import {
   DropdownMenuItem,
 } from "./dropdown-menu";
 import { useAuth } from "@/context/AuthContext";
-import { Button } from "./button";
-import Image from "next/image";
 import { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 import Link from "next/link";
 import { MenuIcon, XIcon } from "lucide-react";
@@ -42,45 +40,37 @@ function Navbar() {
   }, []);
 
   return (
-    <header className="bg-secondary sticky top-0 z-50 text-black py-4 shadow border-b border-gray">
-      <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
+    <header className="fixed top-0 w-full z-50 bg-white/60 backdrop-blur-md border-b border-gray-100/50">
+      <div className="max-w-screen-xl mx-auto px-6 h-14 flex items-center justify-between">
         <Link
           href="/"
-          className="flex items-center text-xl font-bold"
+          className="flex items-center gap-2"
           prefetch={false}
         >
-          <Image
-            src="/logo_bg.png"
-            width={150}
-            height={50}
-            alt="Logo"
-            className="mr-2"
-          />
+          <div className="w-6 h-6 bg-secondary rounded-md flex items-center justify-center text-white text-xs font-bold tracking-tighter">
+            P
+          </div>
+          <span className="text-sm font-semibold tracking-tight text-gray-900">PreTest</span>
         </Link>
-        <nav className="hidden md:flex justify-center space-x-6 items-center">
-          <Link
-            href="/"
-            className="hover:underline  transition-colors"
-            prefetch={false}
-          >
-            Home
-          </Link>
 
+        <nav className="hidden md:flex items-center gap-3">
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Avatar className="h-9 w-9 ">
+                <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-transparent hover:ring-secondary/20 transition-all">
                   <AvatarImage src="/user-placeholder.png" alt="User avatar" />
-                  <AvatarFallback />
+                  <AvatarFallback className="bg-gray-100 text-gray-600 text-xs font-medium" />
                 </Avatar>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="text-sm bg-white z-50">
-                <DropdownMenuItem onClick={() => router.push("/profile")}>
+              <DropdownMenuContent className="text-[13px] bg-white z-50 shadow-lg border border-gray-100 rounded-xl p-1">
+                <DropdownMenuItem onClick={() => router.push("/profile")} className="cursor-pointer rounded-lg px-3 py-2">
                   My Account
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/profile/my-bookings")}>Bookings</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/profile/my-bookings")} className="cursor-pointer rounded-lg px-3 py-2">
+                  Bookings
+                </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="hover:bg-slate-200"
+                  className="cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg px-3 py-2"
                   onClick={logout}
                 >
                   Logout
@@ -88,100 +78,87 @@ function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <>
-              <Button
-                asChild
-                className="p-4 shadow-2xl bg-blue-500 text-white hover:bg-blue-300 font-sans"
-                variant="outline"
+            <div className="flex items-center gap-3">
+              {/* Sign in - Text link */}
+              <Link
+                href="/auth/log-in"
+                className="text-[13px] font-medium text-gray-500 hover:text-gray-900 transition-colors"
               >
-                <Link href="/auth/sign-up">Sign Up</Link>
-              </Button>
-              <Button
-                asChild
-                className="p-4 shadow-2xl text-black hover:bg-gray-100 font-sans"
-                variant="outline"
+                Sign in
+              </Link>
+              {/* Get Started - Dark button */}
+              <Link
+                href="/auth/sign-up"
+                className="bg-gray-900 hover:bg-black text-white text-[13px] font-medium px-3 py-1.5 rounded-full shadow-sm transition-all hover:shadow-md"
               >
-                <Link href="/auth/log-in">Log in </Link>
-              </Button>
-            </>
+                Get Started
+              </Link>
+            </div>
           )}
         </nav>
-        <Button
-          variant="secondary"
-          className="md:hidden flex items-center"
+        <button
+          className="md:hidden flex items-center justify-center h-9 w-9 rounded-lg hover:bg-gray-100 transition-colors"
           onClick={toggleMobileMenu}
         >
           {isMobileMenuOpen ? (
-            <XIcon className="h-6 w-6" />
+            <XIcon className="h-5 w-5 text-gray-600" />
           ) : (
-            <MenuIcon className="h-6 w-6" />
+            <MenuIcon className="h-5 w-5 text-gray-600" />
           )}
           <span className="sr-only">Toggle menu</span>
-        </Button>
+        </button>
       </div>
 
       {isMobileMenuOpen && (
         <div
           ref={mobileMenuRef}
-          className="md:hidden absolute top-16 right-0 w-1/2 rounded-lg bg-white shadow-lg border-2 border-gray-200"
+          className="md:hidden absolute top-14 right-4 w-56 rounded-xl bg-white/95 backdrop-blur-md shadow-xl border border-gray-100 overflow-hidden"
         >
-          <nav className="flex flex-col gap-y-4 p-2 justify-center divide-y-2">
+          <nav className="flex flex-col p-2">
             {user ? (
               <>
                 <Link
                   href="/profile"
-                  className="hover:underline text-center flex py-2 font-medium items-center justify-center transition-colors"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false); // Close menu on link click
-                  }}
+                  className="text-[13px] font-medium text-gray-700 hover:bg-gray-50 rounded-lg px-4 py-2.5 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   My Account
                 </Link>
                 <Link
                   href="/profile/my-bookings"
-                  className="hover:underline text-center flex py-2 font-medium items-center justify-center transition-colors"
-                  onClick={() => {
-                    console.log("bookings clicked");
-                    
-                    setIsMobileMenuOpen(false); // Close menu on link click
-                  }}
+                  className="text-[13px] font-medium text-gray-700 hover:bg-gray-50 rounded-lg px-4 py-2.5 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Bookings
                 </Link>
-                <Link
-                  href="#"
-                  className="hover:underline text-center flex py-2 font-medium items-center justify-center transition-colors"
+                <div className="border-t border-gray-100 my-1" />
+                <button
+                  className="text-[13px] font-medium text-red-500 hover:bg-red-50 rounded-lg px-4 py-2.5 text-left transition-colors"
                   onClick={() => {
-                    // setIsMobileMenuOpen(false);
+                    setIsMobileMenuOpen(false);
                     logout();
                   }}
                 >
                   Logout
-                </Link>
+                </button>
               </>
             ) : (
-              <>
-                <Button
-                  asChild
-                  className="p-4 shadow-2xl bg-blue-500 text-white hover:bg-blue-300 font-sans"
-                  variant="outline"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                  }}
+              <div className="flex flex-col gap-2 p-2">
+                <Link
+                  href="/auth/log-in"
+                  className="text-[13px] font-medium text-gray-600 hover:text-gray-900 text-center py-2 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <Link href="/auth/sign-up">Sign Up</Link>
-                </Button>
-                <Button
-                  asChild
-                  className="p-4 shadow-2xl text-black hover:bg-gray-100 font-sans"
-                  variant="outline"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                  }}
+                  Sign in
+                </Link>
+                <Link
+                  href="/auth/sign-up"
+                  className="bg-gray-900 hover:bg-black text-white text-[13px] font-medium px-4 py-2 rounded-full text-center transition-all"
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <Link href="/auth/log-in">Log in</Link>
-                </Button>
-              </>
+                  Get Started
+                </Link>
+              </div>
             )}
           </nav>
         </div>

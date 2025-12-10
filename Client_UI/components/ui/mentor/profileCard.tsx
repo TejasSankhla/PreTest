@@ -1,5 +1,4 @@
 import React, { memo } from "react";
-import userPlaceholder from "../../../public/user-placeholder.png";
 import {
   LocationIcon,
   LinkedinIcon,
@@ -14,13 +13,29 @@ import {
 } from "../../../components/ui/avatar";
 import Link from "next/link";
 
-function ProfileCard({ mentor }) {
+// Define types and import
+interface Mentor {
+  _id: string;
+  name: string;
+  profile_pic?: string;
+  location?: string;
+  college?: string;
+  about?: string;
+  linkedin_url?: string;
+  insta_url?: string;
+}
+
+interface ProfileCardProps {
+  mentor: Mentor;
+}
+
+function ProfileCard({ mentor }: ProfileCardProps) {
   const optimizedProfilePic = mentor.profile_pic
     ? mentor.profile_pic.replace(
         "/upload/",
         "/upload/c_fill,w_400,h_400,q_auto,f_auto/"
       )
-    : userPlaceholder;
+    : "/user-placeholder.png";
 
   // Truncate the "about" text to 25 words
   const truncatedAbout = mentor?.about
