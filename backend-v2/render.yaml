@@ -4,10 +4,8 @@ services:
     runtime: node
     region: oregon
     plan: free
-    buildCommand: npm install && npm run build
+    buildCommand: NODE_OPTIONS=--max-old-space-size=4096 npm install && NODE_OPTIONS=--max-old-space-size=4096 npm run build
     startCommand: npm run start:prod
     envVars:
-      - key: NODE_OPTIONS
-        value: --max-old-space-size=2048
       - key: NODE_ENV
         value: production
