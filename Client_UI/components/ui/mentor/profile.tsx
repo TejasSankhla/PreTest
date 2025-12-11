@@ -114,8 +114,7 @@ export default function MentorProfile({ mentor }: MentorProfileProps) {
             } else {
               toast.error("Booking creation failed");
             }
-          } catch (err) {
-            console.error("Booking/Payment Verification Error:", err);
+          } catch {
             toast.error("Payment or booking failed. Please try again.");
           }
         },
@@ -134,11 +133,9 @@ export default function MentorProfile({ mentor }: MentorProfileProps) {
 
       // Handle payment failures
       rzpay.on("payment.failed", (response: PaymentFailedResponse) => {
-        console.error("Payment Failed:", response);
-        alert(`Payment failed: ${response.error.description}`);
+        toast.error(`Payment failed: ${response.error.description}`);
       });
-    } catch (err) {
-      console.error("Payment Initialization Error:", err);
+    } catch {
       toast.error("Error initiating payment. Please try again.");
     } finally {
       setIsLoading(false);

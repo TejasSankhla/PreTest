@@ -10,16 +10,8 @@ export class AppController {
     return {
       data: { status: 'ok' },
       success: true,
-      msg: 'response from backend service',
+      msg: 'Server is healthy',
       err: null,
-    };
-  }
-
-  // Keeping /dummy for backward compatibility
-  @Get('dummy')
-  dummy() {
-    return {
-      message: 'response from backend service',
     };
   }
 }

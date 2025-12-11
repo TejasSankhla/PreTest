@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/atoms";
 import { apiClient, API_ROUTES, Booking, User } from "@/lib/api";
 import Link from "next/link";
 
@@ -31,7 +31,6 @@ function Page() {
     const userId = user?._id || authUser?._id; // Ensure userId is available from localStorage or context
 
     if (!userId) {
-      console.log("User ID not found!");
       return;
     }
 
@@ -60,8 +59,8 @@ function Page() {
           ...prev,
           [activeButton]: true,
         }));
-      } catch (error) {
-        console.log("Error fetching bookings: ", error);
+      } catch {
+        // Error fetching bookings - silent fail
       }
     };
 

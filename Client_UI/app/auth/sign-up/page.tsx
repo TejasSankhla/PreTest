@@ -6,21 +6,20 @@ import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import { Button } from "@/components/atoms";
-function LogIn() {
-  const { signUp, ErrorMessage, setErrorMessage } = useAuth();
-  const [userMessage, setuserMessage] = useState("");
-  const [name, setname] = useState("");
+function SignUp() {
+  const { signUp, ErrorMessage } = useAuth();
+  const [userMessage, setUserMessage] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mobile_number, setmobile_number] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await signUp({ name, email, password, mobile_number });
+      await signUp({ name, email, password, mobile_number: mobileNumber });
       toast.success("Sign-up successful");
-    } catch (error) {
-      if (error) console.error("Login failed:", error);
-      setuserMessage(String(ErrorMessage));
+    } catch {
+      setUserMessage(String(ErrorMessage));
     }
   };
 
@@ -65,7 +64,7 @@ function LogIn() {
                       type="text"
                       placeholder="Full Name"
                       value={name}
-                      onChange={(e) => setname(e.target.value)}
+                      onChange={(e) => setName(e.target.value)}
                       id="name"
                     ></input>
                   </div>
@@ -157,4 +156,4 @@ function LogIn() {
   );
 }
 
-export default LogIn;
+export default SignUp;

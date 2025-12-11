@@ -12,9 +12,7 @@ async function fetchMentors(): Promise<Mentor[]> {
       return response.data.data;
     }
     return [];
-  } catch (error: unknown) {
-    const err = error as { response?: { data?: { msg?: string } }; message?: string };
-    console.error("Error fetching mentors:", err.response?.data?.msg || err.message);
+  } catch {
     return [];
   }
 }

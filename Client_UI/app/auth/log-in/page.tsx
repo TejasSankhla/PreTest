@@ -12,13 +12,7 @@ function LogIn() {
   const [password, setPassword] = useState("");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      await login({ email, password });
-      ErrorMessage;
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
+    await login({ email, password });
   };
   return (
     <main className="flex flex-1">

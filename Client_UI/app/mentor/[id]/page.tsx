@@ -19,8 +19,7 @@ const MentorDetails = () => {
           setMentor(response.data.data);
           setLoading(false);
         })
-        .catch((error) => {
-          console.error(error);
+        .catch(() => {
           setLoading(false);
         });
     }

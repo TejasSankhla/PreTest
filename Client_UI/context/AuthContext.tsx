@@ -66,7 +66,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
           );
         }
       } else {
-        console.error("Unexpected error:", error);
         setErrorMessage(
           "An unexpected error occurred. Please try again later."
         );
@@ -91,7 +90,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
           );
         }
       } else {
-        console.error("Unexpected error:", error);
         setErrorMessage(
           "An unexpected error occurred. Please try again later."
         );
