@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { ReactNode } from "react";
 import Image from "next/image";
 
 // Company logos
@@ -24,7 +24,7 @@ const innerOrbitLogos = [
 ];
 
 interface OrbitingLogosProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function OrbitingLogos({ children }: OrbitingLogosProps) {
@@ -84,7 +84,7 @@ export default function OrbitingLogos({ children }: OrbitingLogosProps) {
                   top: `${y}px`,
                 }}
               >
-                <div className="w-full h-full bg-white rounded-2xl shadow-lg p-3 border border-gray-100 hover:scale-110 hover:shadow-xl transition-all duration-300">
+                <div className="w-full h-full bg-background rounded-2xl shadow-lg p-3 border border-border hover:scale-110 hover:shadow-xl transition-all duration-300">
                   <div className="relative w-full h-full">
                     <Image
                       src={logo.src}
@@ -126,7 +126,7 @@ export default function OrbitingLogos({ children }: OrbitingLogosProps) {
                   top: `${y}px`,
                 }}
               >
-                <div className="w-full h-full bg-white rounded-2xl shadow-lg p-2.5 border border-gray-100 hover:scale-110 hover:shadow-xl transition-all duration-300">
+                <div className="w-full h-full bg-background rounded-2xl shadow-lg p-2.5 border border-border hover:scale-110 hover:shadow-xl transition-all duration-300">
                   <div className="relative w-full h-full">
                     <Image
                       src={logo.src}
@@ -164,7 +164,7 @@ export default function OrbitingLogos({ children }: OrbitingLogosProps) {
         {[...outerOrbitLogos, ...innerOrbitLogos].slice(0, 4).map((logo) => (
           <div
             key={logo.alt}
-            className="w-12 h-12 bg-white rounded-xl shadow-md p-2 border border-gray-100"
+            className="w-12 h-12 bg-background rounded-xl shadow-md p-2 border border-border"
           >
             <div className="relative w-full h-full">
               <Image

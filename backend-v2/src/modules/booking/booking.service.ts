@@ -16,11 +16,50 @@ export class BookingService {
     private readonly emailService: EmailService,
   ) {}
 
-  async createBooking(
-    mentorId: string,
-    createBookingDto: CreateBookingDto,
+  async fetchUserBookings(
+    userId: string,
+    upcoming: boolean,
+  ): Promise<BookingDocument[]> {
+    const currDate = new Date();
+    const sortOrder = upcoming ? 1 : -1;
+
+    const bookings = await this.bookingModel
+      .find({
+        client: userId,
+        slot: upcoming ? { $gt: currDate } : { $lt: currDate },
+      })
+      .sort({ slot: sortOrder })
+      .populate('mentor', 'name college profile_pic branch')
+      .exec();
+
+    return bookings;
+  }
+
+  async fetchMentorBookings(
+    userId: string,
+    upcoming: boolean,
+  ): Promise<BookingDocument[]> {
+    const currDate = new Date();
+    const sortOrder = upcoming ? 1 : -1;
+
+    const bookings = await this.bookingModel
+      .find({
+        mentor: userId,
+        slot: upcoming ? { $gt: currDate } : { $lt: currDate },
+      })
+      .sort({ slot: sortOrder })
+      .populate('client', 'name email mobile_number')
+      .exec();
+
+    return bookings;
+  }
+
+  // Create booking for user (userId is the client, mentorId is in body)
+  async createBookingForUser(
+    userId: string,
+    createBookingDto: CreateBookingDto & { mentorId: string },
   ): Promise<BookingDocument> {
-    const { paymentResponse, client, slot } = createBookingDto;
+    const { paymentResponse, mentorId, slot } = createBookingDto;
 
     // Verify payment signature
     const isValid = this.paymentService.verifyPaymentSignature(
@@ -36,7 +75,7 @@ export class BookingService {
     // Create booking
     const bookingDetails = {
       mentor: mentorId,
-      client: client,
+      client: userId,
       slot: new Date(slot),
     };
 
@@ -87,43 +126,5 @@ export class BookingService {
       .exec();
 
     return updatedBooking as BookingDocument;
-  }
-
-  async fetchUserBookings(
-    userId: string,
-    upcoming: boolean,
-  ): Promise<BookingDocument[]> {
-    const currDate = new Date();
-    const sortOrder = upcoming ? 1 : -1;
-
-    const bookings = await this.bookingModel
-      .find({
-        client: userId,
-        slot: upcoming ? { $gt: currDate } : { $lt: currDate },
-      })
-      .sort({ slot: sortOrder })
-      .populate('mentor', 'name college profile_pic branch')
-      .exec();
-
-    return bookings;
-  }
-
-  async fetchMentorBookings(
-    userId: string,
-    upcoming: boolean,
-  ): Promise<BookingDocument[]> {
-    const currDate = new Date();
-    const sortOrder = upcoming ? 1 : -1;
-
-    const bookings = await this.bookingModel
-      .find({
-        mentor: userId,
-        slot: upcoming ? { $gt: currDate } : { $lt: currDate },
-      })
-      .sort({ slot: sortOrder })
-      .populate('client', 'name email mobile_number')
-      .exec();
-
-    return bookings;
   }
 }

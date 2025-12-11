@@ -16,8 +16,8 @@ async function bootstrap() {
     origin: [
       configService.get<string>('app.clientFrontendUrl'),
       configService.get<string>('app.mentorFrontendUrl'),
-      'http://localhost:3000',
-      'http://localhost:3001',
+      'http://localhost:4000',
+      'http://localhost:4002',
     ].filter(Boolean),
     methods: 'GET,POST,PUT,DELETE,PATCH',
     credentials: true,

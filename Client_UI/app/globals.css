@@ -31,6 +31,16 @@
   --tertiary-light: #fed7aa;    /* orange-200 - Subtle highlights */
   --tertiary-accent: #fdba74;   /* orange-300 - Warm accents */
 
+  /* State Colors - Semantic */
+  --success: #22c55e;        /* green-500 */
+  --success-light: #dcfce7;  /* green-100 */
+  --info: #3b82f6;           /* blue-500 */
+  --info-light: #dbeafe;     /* blue-100 */
+  --warning: #eab308;        /* yellow-500 */
+  --warning-light: #fef9c3;  /* yellow-100 */
+  --error: #ef4444;          /* red-500 */
+  --error-light: #fee2e2;    /* red-100 */
+
   /* Neutrals */
   --text-primary: #111827;      /* gray-900 - Headlines */
   --text-secondary: #4b5563;    /* gray-600 - Body text */
@@ -38,9 +48,6 @@
   --background: #ffffff;        /* White - Main background */
   --background-subtle: #f9fafb; /* gray-50 - Subtle background */
   --border: #e5e7eb;            /* gray-200 - Borders */
-
-  /* Legacy support */
-  --textp: #007aff;
 
   /* ----------------------------------------
      TYPOGRAPHY TOKENS
@@ -91,6 +98,7 @@
   --radius-lg: 0.75rem;   /* 12px */
   --radius-xl: 1rem;      /* 16px */
   --radius-2xl: 1.5rem;   /* 24px */
+  --radius-3xl: 2rem;     /* 32px - bento cards */
   --radius-full: 9999px;
 
   /* ----------------------------------------
@@ -185,5 +193,19 @@
   .text-overline {
     @apply text-label-md uppercase tracking-wide;
     color: var(--text-tertiary);
+  }
+}
+
+/* ----------------------------------------
+   ACCESSIBILITY - Reduced Motion
+   ---------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

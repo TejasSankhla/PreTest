@@ -5,19 +5,14 @@ import pretestLogo from "../../icon.png";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
+import { Button } from "@/components/atoms";
 function LogIn() {
   const { login, ErrorMessage } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      await login({ email, password });
-      ErrorMessage;
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
+    await login({ email, password });
   };
   return (
     <main className="flex flex-1">
@@ -90,12 +85,14 @@ function LogIn() {
                   </div>
                 )}
                 <div>
-                  <button
+                  <Button
                     type="submit"
-                    className="inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80"
+                    variant="secondary"
+                    className="w-full"
+                    rightIcon={<ArrowRight className="ml-2" size={16} />}
                   >
-                    Get started <ArrowRight className="ml-2" size={16} />
-                  </button>
+                    Get started
+                  </Button>
                 </div>
               </div>
             </form>
