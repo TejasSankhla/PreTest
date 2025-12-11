@@ -94,9 +94,9 @@ export default function MentorProfile({ mentor }: MentorProfileProps) {
           try {
             // Step 2: Call combined booking and payment verification API
             const bookingResponse = await apiClient.post(
-              API_ROUTES.booking.create(mentor._id),
+              API_ROUTES.booking.create(user._id),
               {
-                client: user?._id,
+                mentorId: mentor._id,
                 slot: selectedTimeSlot,
                 paymentResponse: {
                   razorpay_order_id: paymentResponse.razorpay_order_id,

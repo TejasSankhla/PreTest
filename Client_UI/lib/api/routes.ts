@@ -12,19 +12,24 @@ export const API_ROUTES = {
 
   // Mentor endpoints
   mentor: {
-    list: () => "/api/mentor/",
+    list: (college?: string) => college ? `/api/mentor?college=${encodeURIComponent(college)}` : "/api/mentor",
     detail: (id: string) => `/api/mentor/${id}`,
+    updateProfile: (userId: string) => `/api/mentor/${userId}`,
+    updateSlots: (userId: string) => `/api/mentor/${userId}/slots`,
+    bookings: (userId: string, status: "upcoming" | "previous") => `/api/mentor/${userId}/bookings?status=${status}`,
   },
 
-  // Booking endpoints
+  // User booking endpoints
   booking: {
-    create: (mentorId: string) => `/api/booking/${mentorId}`,
-    upcoming: (userId: string) => `/api/booking/user/upcoming/${userId}`,
-    past: (userId: string) => `/api/booking/user/prev/${userId}`,
+    create: (userId: string) => `/api/user/${userId}/booking`,
+    list: (userId: string, status: "upcoming" | "previous") => `/api/user/${userId}/bookings?status=${status}`,
+    // Convenience aliases
+    upcoming: (userId: string) => `/api/user/${userId}/bookings?status=upcoming`,
+    past: (userId: string) => `/api/user/${userId}/bookings?status=previous`,
   },
 
   // Order endpoints
   order: {
-    create: () => "/api/order/create-order",
+    create: () => "/api/order",
   },
 } as const;
