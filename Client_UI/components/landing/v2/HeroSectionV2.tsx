@@ -40,13 +40,14 @@ export default function HeroSectionV2() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
             </span>
-            Community Powered Practice
+            <span className="hidden sm:inline">Community Powered Practice</span>
+            <span className="sm:hidden">200+ Practicing</span>
           </motion.div>
 
           {/* Headline */}
           <motion.h1
             variants={fadeInUp}
-            className="text-5xl sm:text-6xl lg:text-[5.5rem] font-bold tracking-tighter tracking-tight-v2 text-text-primary leading-[0.95] mb-8"
+            className="text-4xl sm:text-5xl lg:text-[5.5rem] font-bold tracking-tighter tracking-tight-v2 text-text-primary leading-[0.95] mb-8"
           >
             Master your <br />
             <span className="text-text-tertiary">next interview.</span>
@@ -57,8 +58,8 @@ export default function HeroSectionV2() {
             variants={fadeInUp}
             className="text-lg sm:text-xl text-text-secondary mb-10 max-w-lg leading-relaxed font-medium tracking-tight"
           >
-            Direct access to mentors from top tech companies. No fluff, just
-            real mock interviews and actionable feedback.
+            Practice with engineers who recently cracked Google, Amazon, Flipkart.
+            Get honest feedback before your real interview.
           </motion.p>
 
           {/* CTAs */}
@@ -74,16 +75,9 @@ export default function HeroSectionV2() {
               className="shadow-[0_1px_2px_rgba(249,115,22,0.3)]"
               rightIcon={<ChevronRight className="w-4 h-4 opacity-80 group-hover:translate-x-0.5 transition-transform" />}
             >
-              <Link href="/explore-mentors" className="group">
-                Find a Mentor
+              <Link href="/auth/sign-up" className="group">
+                Get Started Free
               </Link>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              rounded="full"
-            >
-              View Sample Report
             </Button>
           </motion.div>
 
