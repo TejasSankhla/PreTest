@@ -1,6 +1,9 @@
 "use client";
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { ChevronUp, ChevronDown } from "lucide-react";
+import { fadeInUp, staggerContainer } from "@/lib/animations";
+import { Container } from "@/components/atoms";
 
 function Faq() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -10,17 +13,32 @@ function Faq() {
   };
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-10">
-      <div>
-        <div className="mx-auto max-w-2xl lg:text-center">
-          <h2 className="text-2xl font-bold leading-tight text-text-primary sm:text-3xl lg:text-4xl">
+    <section className="py-24 bg-background-subtle border-t border-border">
+      <Container>
+        <motion.div
+          className="mx-auto max-w-2xl lg:text-center mb-16"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          <motion.h2
+            variants={fadeInUp}
+            className="text-3xl md:text-5xl font-bold tracking-tight-v2 text-text-primary mb-6"
+          >
             Frequently Asked Questions
-          </h2>
-        </div>
+          </motion.h2>
+        </motion.div>
 
-        <div className="mx-auto mt-8 max-w-3xl space-y-4 md:mt-16">
+        <div className="mx-auto max-w-3xl space-y-4">
           {/* 1 faq */}
-          <div className="rounded-md border border-border shadow-md transition-all duration-200">
+          <motion.div
+            className="rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 bg-background"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
             <button
               type="button"
               className="flex w-full items-center justify-between px-4 py-5 sm:p-6"
@@ -37,26 +55,28 @@ function Faq() {
             </button>
             {openIndex === 0 && (
               <div className="px-4 pb-5 sm:px-6 sm:pb-6">
-                <p className="text-sm sm:text-base text-text-secondary">
-                  Pretest is a free platform that connects students with mentors
-                  from top colleges and industries to prepare for mock
-                  interviews and peer learning sessions. Whether you're looking
-                  to polish your interview skills or learn from peers, Pretest
-                  provides a supportive environment to help you succeed.
+                <p className="text-sm sm:text-base text-text-secondary leading-relaxed">
+                  PreTest is a community-powered mock interview platform where students practice with recent grads from top companies like Google, Amazon, Microsoft, and Flipkart. We connect you with mentors who recently cracked the interviews you're preparing for.
                 </p>
               </div>
             )}
-          </div>
+          </motion.div>
+
           {/* 2 faq */}
-          <div className="rounded-md border border-border shadow-md transition-all duration-200">
+          <motion.div
+            className="rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 bg-background"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
             <button
               type="button"
               className="flex w-full items-center justify-between px-4 py-5 sm:p-6"
               onClick={() => toggleOpen(1)}
             >
               <span className="flex text-base sm:text-lg font-semibold text-text-primary">
-                Who can be a mentor on Pretest, and how do I book an
-                appointment?
+                How much does a session cost?
               </span>
               {openIndex === 1 ? (
                 <ChevronUp className="h-5 w-5 text-text-secondary" />
@@ -66,24 +86,28 @@ function Faq() {
             </button>
             {openIndex === 1 && (
               <div className="px-4 pb-5 sm:px-6 sm:pb-6">
-                <p className="text-sm sm:text-base text-text-secondary">
-                  Mentors on Pretest include students from top colleges and
-                  working professionals. You can book an appointment by browsing
-                  available mentors, selecting a time that fits your schedule,
-                  and receiving your meeting details via email.
+                <p className="text-sm sm:text-base text-text-secondary leading-relaxed">
+                  Sessions are priced at ₹49-99 depending on the mentor's expertise and experience. We're currently offering a launch discount at ₹49/session. Mentors receive 90% of the session price, with 10% going to platform infrastructure.
                 </p>
               </div>
             )}
-          </div>
+          </motion.div>
+
           {/* 3 faq */}
-          <div className="rounded-md border border-border shadow-md transition-all duration-200">
+          <motion.div
+            className="rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 bg-background"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <button
               type="button"
               className="flex w-full items-center justify-between px-4 py-5 sm:p-6"
               onClick={() => toggleOpen(2)}
             >
               <span className="flex text-base sm:text-lg font-semibold text-text-primary">
-                Do I need to pay for sessions on Pretest?
+                Who are the mentors on PreTest?
               </span>
               {openIndex === 2 ? (
                 <ChevronUp className="h-5 w-5 text-text-secondary" />
@@ -93,17 +117,21 @@ function Faq() {
             </button>
             {openIndex === 2 && (
               <div className="px-4 pb-5 sm:px-6 sm:pb-6">
-                <p className="text-sm sm:text-base text-text-secondary">
-                  No, Pretest is completely free to use. You can book sessions
-                  with mentors, participate in peer learning, and access all
-                  features without any cost. Our goal is to make high-quality
-                  mentorship and interview preparation accessible to everyone.
+                <p className="text-sm sm:text-base text-text-secondary leading-relaxed">
+                  Our mentors are recent graduates (6-12 months out) from top companies like Google, Amazon, Microsoft, and Flipkart. They remember the struggle, know what actually gets asked, and provide honest feedback because they just went through it themselves.
                 </p>
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
-        <p className="text-sm sm:text-base mt-6 text-center text-text-secondary">
+
+        <motion.p
+          className="text-sm sm:text-base mt-8 text-center text-text-secondary"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           Can&apos;t find what you&apos;re looking for?{" "}
           <a
             href="#"
@@ -112,8 +140,8 @@ function Faq() {
           >
             Contact our support
           </a>
-        </p>
-      </div>
+        </motion.p>
+      </Container>
     </section>
   );
 }

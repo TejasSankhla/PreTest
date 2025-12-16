@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import pretestLogo from "../../icon.png";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
@@ -10,6 +10,7 @@ function LogIn() {
   const { login, ErrorMessage } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await login({ email, password });
@@ -26,15 +27,15 @@ function LogIn() {
                 alt="pretest logo"
               />
             </div>
-            <h2 className="text-center text-2xl font-bold leading-tight text-black">
+            <h2 className="text-center text-2xl font-bold leading-tight text-text-primary">
               Sign in to your account
             </h2>
-            <p className="mt-2 text-center text-sm text-gray-600 ">
+            <p className="mt-2 text-center text-sm text-text-secondary">
               Don&apos;t have an account?{" "}
               <a
                 href="/auth/sign-up"
                 title=""
-                className="font-semibold text-black transition-all duration-200 hover:underline"
+                className="font-semibold text-text-primary transition-all duration-200 hover:underline"
               >
                 Create a free account
               </a>
@@ -43,44 +44,60 @@ function LogIn() {
               <div className="space-y-5">
                 <div>
                   <label
-                    htmlFor=""
-                    className="text-base font-medium text-gray-900"
+                    htmlFor="email"
+                    className="text-base font-medium text-text-primary"
                   >
-                    {" "}
                     Email
                   </label>
                   <div className="mt-2">
                     <input
-                      className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex h-10 w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-primary focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
                       type="email"
                       placeholder="Email"
+                      id="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      autoComplete="email"
+                      required
                     ></input>
                   </div>
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
                     <label
-                      htmlFor=""
-                      className="text-base font-medium text-gray-900"
+                      htmlFor="password"
+                      className="text-base font-medium text-text-primary"
                     >
-                      {" "}
-                      Password{" "}
+                      Password
                     </label>
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-2 relative">
                     <input
-                      className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                      type="password"
+                      className="flex h-10 w-full rounded-md border border-border bg-transparent px-3 py-2 pr-10 text-sm placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-primary focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Password"
+                      id="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="current-password"
+                      required
                     ></input>
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-secondary transition-colors"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
                   </div>
                 </div>
                 {ErrorMessage && (
-                  <div className="err-msg  text-red-500 text-center font-medium text-lg">
+                  <div role="alert" className="err-msg text-error text-center font-medium text-lg">
                     {ErrorMessage}
                   </div>
                 )}
@@ -91,7 +108,7 @@ function LogIn() {
                     className="w-full"
                     rightIcon={<ArrowRight className="ml-2" size={16} />}
                   >
-                    Get started
+                    Sign in
                   </Button>
                 </div>
               </div>

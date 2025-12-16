@@ -4,3 +4,6 @@ export type { ButtonProps } from "./Button";
 
 export { Container, containerVariants } from "./Container";
 export type { ContainerProps } from "./Container";
+
+export { Badge, badgeVariants } from "./Badge";
+export type { BadgeProps } from "./Badge";

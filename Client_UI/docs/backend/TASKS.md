@@ -10,11 +10,11 @@
 | Priority | Tasks | Total Hours |
 |----------|-------|-------------|
 | P0 | 2 tasks | 4-6h |
-| P1 | 3 tasks | 5-8h |
+| P1 | 4 tasks | 8-11h |
 | P2 | 1 task | 3-4h |
 | P5 | 2 tasks | 8-10h |
 | P6 | 2 tasks | 6-8h |
-| **Total** | **10 tasks** | **26-36h** |
+| **Total** | **11 tasks** | **29-39h** |
 
 ---
 
@@ -164,6 +164,102 @@ Review and plan database schema for upcoming features.
 - [ ] Consider data relationships
 
 **Deliverable:** `docs/backend/DATA_MODEL.md`
+
+---
+
+### 1.4 Forgot Password API - P1
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 1 |
+| **Hours** | 3-4h |
+| **Dependencies** | Email service (3.2 Email setup or basic SMTP) |
+| **Status** | [ ] Not Started |
+
+**Description:**
+Implement forgot/reset password API endpoints for account recovery.
+
+**Tasks:**
+- [ ] Create password reset token model/schema
+- [ ] Implement `POST /api/auth/forgot-password` endpoint
+  - Validate email exists
+  - Generate secure reset token (crypto.randomBytes)
+  - Set token expiration (1 hour recommended)
+  - Store token in database (hashed)
+  - Send reset email with token link
+  - Return success even if email doesn't exist (security)
+- [ ] Implement `POST /api/auth/reset-password` endpoint
+  - Validate token and expiration
+  - Validate new password strength
+  - Hash new password
+  - Update user password
+  - Invalidate reset token
+  - Return success response
+- [ ] Add rate limiting (prevent abuse)
+  - Max 3 reset requests per hour per email
+  - Max 5 token validation attempts
+- [ ] Add proper error handling
+- [ ] Write API documentation
+
+**Database Schema Addition:**
+```prisma
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique // hashed token
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  used      Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+```
+
+**API Endpoints:**
+
+**1. Request Password Reset**
+```
+POST /api/auth/forgot-password
+Body: { email: string }
+Response: { message: "If email exists, reset link sent" }
+```
+
+**2. Reset Password**
+```
+POST /api/auth/reset-password
+Body: {
+  token: string,
+  newPassword: string
+}
+Response: { message: "Password reset successful" }
+```
+
+**Email Template:**
+```
+Subject: Reset Your PreTest Password
+
+Hi {name},
+
+You requested to reset your password. Click the link below to reset it:
+
+{resetLink}
+
+This link expires in 1 hour.
+
+If you didn't request this, ignore this email.
+
+- PreTest Team
+```
+
+**Security Notes:**
+- [ ] Hash tokens before storing (bcrypt or SHA-256)
+- [ ] Always return success message (don't leak email existence)
+- [ ] Implement rate limiting
+- [ ] Set short expiration (1 hour max)
+- [ ] Invalidate token after use
+- [ ] Log password reset attempts
 
 ---
 
@@ -334,7 +430,7 @@ Implement scheduled booking reminders.
 | Sprint | Focus | Hours |
 |--------|-------|-------|
 | **Sprint 0** | E2E Testing support | 1-2h |
-| **Sprint 1** | Auth security, Pagination API | 4-6h |
+| **Sprint 1** | Auth security, Pagination API, Forgot Password API | 7-10h |
 | **Sprint 3** | Search API, Google OAuth, Email (P5), Reviews (P6), Reminders (P6) | 16-21h |
 | **Sprint 4** | Data Model, Billing Architecture | 5-7h |
 

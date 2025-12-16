@@ -43,13 +43,40 @@ export interface SlotInfo {
 
 export interface Mentor {
   _id: string;
-  name?: string;
+  name: string;
+  email?: string;
   profile_pic?: string;
-  college?: string;
+  username?: string;
+
+  // Professional Info
+  currentCompany?: string;
+  role?: string;
+
+  // Education
+  college: string;
   branch?: string;
   location?: string;
+  grad_year?: number;
+
+  // Profile Content
   about?: string;
+  tagline?: string;
+
+  // Stats
+  rating?: number;
+  session?: number;
+
+  // Social Links
+  linkedin_url?: string;
+  insta_url?: string;
+
+  // Availability
   slots?: SlotInfo[];
+  isAvailable?: boolean;
+
+  // Metadata
+  isVerified?: boolean;
+  mobile_number?: string;
 }
 
 // ============ Booking Types ============

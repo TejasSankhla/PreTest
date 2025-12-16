@@ -52,6 +52,12 @@ export class Mentor {
   @Prop({ default: 0 })
   session: number;
 
+  @Prop()
+  currentCompany: string;
+
+  @Prop()
+  role: string;
+
   @Prop({ default: null })
   linkedin_url: string;
 

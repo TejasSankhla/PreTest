@@ -10,12 +10,12 @@
 | Priority | Tasks | Total Hours |
 |----------|-------|-------------|
 | P0 | 2 tasks | 5-8h |
-| P1 | 2 tasks | 4-6h |
+| P1 | 4 tasks | 10-13h |
 | P2 | 2 tasks | 5-7h |
 | P3 | 6 tasks | 15-21h |
 | P4 | 1 task | 2-3h |
 | P6 | 1 task | 3-4h |
-| **Total** | **14 tasks** | **34-49h** |
+| **Total** | **16 tasks** | **40-56h** |
 
 ---
 
@@ -133,6 +133,202 @@ components/
       EmptyState.tsx
       index.ts
 ```
+
+---
+
+### 1.6 Forgot Password Flow - P1
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 1 |
+| **Hours** | 3-4h |
+| **Dependencies** | Backend forgot password API |
+| **Status** | [ ] Not Started |
+
+**Description:**
+Implement complete forgot/reset password flow for users who can't access their accounts.
+
+**Tasks:**
+- [ ] Create `app/auth/forgot-password/page.tsx` - Email input form
+- [ ] Create `app/auth/reset-password/page.tsx` - New password form (with token)
+- [ ] Add "Forgot password?" link on login page (next to Password label)
+- [ ] Implement email validation on forgot password page
+- [ ] Add success message after email sent
+- [ ] Add token validation on reset password page
+- [ ] Add password strength indicator on reset form
+- [ ] Add password confirmation field with validation
+- [ ] Handle expired/invalid token states
+- [ ] Add loading states for all API calls
+- [ ] Redirect to login after successful reset
+- [ ] Use design system tokens (semantic colors)
+- [ ] Add password visibility toggle
+
+**Files to Create:**
+```
+app/
+  auth/
+    forgot-password/
+      page.tsx
+    reset-password/
+      page.tsx
+```
+
+**Files to Modify:**
+- `app/auth/log-in/page.tsx` - Add "Forgot password?" link
+
+**API Endpoints Needed (Backend):**
+- `POST /api/auth/forgot-password` - Send reset email
+- `POST /api/auth/reset-password` - Reset password with token
+
+**UX Flow:**
+```
+Login page
+  ↓ Click "Forgot password?"
+Forgot Password page (enter email)
+  ↓ Submit
+Success message ("Check your email")
+  ↓ User clicks email link
+Reset Password page (token in URL)
+  ↓ Enter new password
+Success message
+  ↓ Redirect to login
+```
+
+---
+
+### 1.7 Deep Linking & Post-Auth Redirects - P1
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 1 |
+| **Hours** | 2-3h |
+| **Dependencies** | None |
+| **Status** | [ ] Not Started |
+
+**Description:**
+Implement deep linking so users are **never blocked** and always return to their intended destination after authentication. Session expiration should not disrupt user flow.
+
+**Core Principle:**
+> Users should never lose their place. If they're on `/explore-mentors` or mid-booking and their session expires, they should land right back where they were after logging in.
+
+**Tasks:**
+- [ ] Capture current URL before redirecting to auth
+- [ ] Store intended destination in:
+  - Query parameter: `?returnTo=/mentor/123`
+  - LocalStorage (fallback if query param lost)
+  - SessionStorage (cleared after auth)
+- [ ] Redirect to stored destination after successful auth
+- [ ] Handle edge cases:
+  - Invalid/malicious `returnTo` URLs (whitelist validation)
+  - External URLs (block, only allow internal paths)
+  - Auth pages as `returnTo` (redirect to `/explore-mentors` instead)
+- [ ] Default behavior when no `returnTo`:
+  - New sign-up → `/explore-mentors` (start browsing)
+  - Returning login → `/explore-mentors` (consistent default)
+- [ ] Clear stored destination after redirect
+- [ ] Add loading state during redirect
+- [ ] Update AuthContext with redirect logic
+- [ ] Test session expiration scenarios
+
+**Implementation Strategy:**
+
+**1. Protected Route Middleware (or HOC)**
+```tsx
+// middleware.ts or useProtectedRoute.tsx
+export function redirectToLogin(currentPath: string) {
+  const returnTo = encodeURIComponent(currentPath);
+  router.push(`/auth/log-in?returnTo=${returnTo}`);
+}
+```
+
+**2. Store Intended Destination**
+```tsx
+// Before redirecting to auth
+const currentPath = window.location.pathname + window.location.search;
+localStorage.setItem('auth_return_to', currentPath);
+
+// Or use query param
+router.push(`/auth/log-in?returnTo=${encodeURIComponent(currentPath)}`);
+```
+
+**3. Redirect After Auth**
+```tsx
+// After successful login/signup
+const returnTo = searchParams.get('returnTo') || localStorage.getItem('auth_return_to');
+
+if (returnTo && isValidInternalPath(returnTo)) {
+  localStorage.removeItem('auth_return_to');
+  router.push(returnTo);
+} else {
+  router.push('/explore-mentors'); // Safe default
+}
+```
+
+**Example Flows:**
+
+**Flow 1: Session Expires During Booking**
+```
+User on /mentor/123 (booking page)
+  ↓ Session expires
+  ↓ Middleware detects unauthenticated state
+  ↓ Redirect to /auth/log-in?returnTo=%2Fmentor%2F123
+User logs in
+  ↓ Read returnTo param
+  ↓ Redirect to /mentor/123 (resume booking)
+```
+
+**Flow 2: Direct Landing on Protected Page**
+```
+User clicks email link to /mentor/456
+  ↓ Not authenticated
+  ↓ Redirect to /auth/log-in?returnTo=%2Fmentor%2F456
+User signs up (new account)
+  ↓ Read returnTo param
+  ↓ Redirect to /mentor/456 (original destination)
+```
+
+**Flow 3: Session Expires on Explore Page**
+```
+User browsing /explore-mentors?expertise=DSA&sort=rating
+  ↓ Session expires
+  ↓ Redirect to /auth/log-in?returnTo=%2Fexplore-mentors%3Fexpertise%3DDSA%26sort%3Drating
+User logs in
+  ↓ Redirect back with filters intact
+  ↓ /explore-mentors?expertise=DSA&sort=rating
+```
+
+**Security Validation:**
+```tsx
+function isValidInternalPath(path: string): boolean {
+  // Remove any protocol/domain (prevent open redirect)
+  const url = path.startsWith('/') ? path : `/${path}`;
+
+  // Blacklist auth pages (prevent redirect loops)
+  const authPages = ['/auth/log-in', '/auth/sign-up', '/auth/forgot-password'];
+  if (authPages.includes(url.split('?')[0])) return false;
+
+  // Only allow paths starting with /
+  if (!url.startsWith('/')) return false;
+
+  // Whitelist internal paths
+  const allowedPrefixes = ['/', '/mentor/', '/explore-mentors', '/profile', '/bookings'];
+  return allowedPrefixes.some(prefix => url.startsWith(prefix));
+}
+```
+
+**Files to Modify:**
+- `context/AuthContext.tsx` - Add redirect logic
+- `app/auth/sign-up/page.tsx` - Read returnTo, redirect after signup
+- `app/auth/log-in/page.tsx` - Read returnTo, redirect after login
+- `middleware.ts` (or create) - Capture current URL before auth redirect
+- `lib/utils/redirects.ts` (create) - Validation helpers
+
+**Testing Scenarios:**
+- [ ] Session expires on `/explore-mentors` → User returns to explore page
+- [ ] Session expires on `/mentor/123` → User returns to mentor profile
+- [ ] Session expires mid-booking → User returns to booking flow
+- [ ] Direct link to protected page → User lands on that page after auth
+- [ ] Malicious `returnTo` (e.g., `https://evil.com`) → Blocked, default redirect
+- [ ] `returnTo=/auth/log-in` (loop prevention) → Redirect to `/explore-mentors`
+- [ ] New sign-up without `returnTo` → Default to `/explore-mentors`
 
 ---
 
@@ -397,7 +593,7 @@ Review and fix frontend auth implementation.
 | Sprint | Focus | Hours |
 |--------|-------|-------|
 | **Sprint 0** | E2E Testing | 1-2h |
-| **Sprint 1** | Landing, Error states, Auth, Pagination, Mobile | 12-18h |
+| **Sprint 1** | Landing, Error states, Auth, Forgot Password, Post-Auth Redirects, Pagination, Mobile | 18-25h |
 | **Sprint 2** | Mentor Card, Empty States, Scheduling, Bookings, Profile | 13-17h |
 | **Sprint 3** | Google Sign-in, Search/Filter, Reviews | 7-10h |
 
