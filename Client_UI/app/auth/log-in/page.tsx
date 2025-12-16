@@ -3,9 +3,11 @@ import React from "react";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import pretestLogo from "../../icon.png";
 import Image from "next/image";
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { Button } from "@/components/atoms";
+import { ROUTES } from "@/lib/routes";
 function LogIn() {
   const { login, ErrorMessage } = useAuth();
   const [email, setEmail] = useState("");
@@ -32,13 +34,12 @@ function LogIn() {
             </h2>
             <p className="mt-2 text-center text-sm text-text-secondary">
               Don&apos;t have an account?{" "}
-              <a
-                href="/auth/sign-up"
-                title=""
+              <Link
+                href={ROUTES.auth.signUp}
                 className="font-semibold text-text-primary transition-all duration-200 hover:underline"
               >
                 Create a free account
-              </a>
+              </Link>
             </p>
             <form onSubmit={handleSubmit} className="mt-8">
               <div className="space-y-5">

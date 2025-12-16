@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ShieldCheck } from "lucide-react";
 import { Button, Container } from "@/components/atoms";
+import { ROUTES } from "@/lib/routes";
 
 export default function CTABlock() {
   return (
@@ -23,11 +24,16 @@ export default function CTABlock() {
             className="shadow-lg"
             rightIcon={<ChevronRight className="w-5 h-5" />}
           >
-            <Link href="/auth/sign-up">Get Started Free</Link>
+            <Link href={ROUTES.auth.signUp}>Get Started Free</Link>
           </Button>
           <p className="text-sm text-orange-100 mt-4 font-medium">
             No credit card required • Free to sign up
           </p>
+          {/* Trust Badge */}
+          <div className="mt-6 flex items-center justify-center gap-2 text-orange-100/80">
+            <ShieldCheck className="w-4 h-4" />
+            <span className="text-xs font-medium">Secure payments by Razorpay</span>
+          </div>
         </div>
       </Container>
     </section>

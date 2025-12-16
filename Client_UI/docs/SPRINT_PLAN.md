@@ -1,6 +1,6 @@
 # PreTest Sprint Planning
 
-> Last Updated: December 11, 2025
+> Last Updated: December 17, 2024 (Session 2)
 
 ---
 
@@ -37,8 +37,13 @@
 | 0.3 | End-to-End Flow Testing | **Frontend** + **Backend** | Backend running | 0 | 2-3h |
 | 1.1 | Auth Logic Review & Security Fixes | **Backend** + **Frontend** | 0.3 E2E Testing | 1 | 4-5h |
 | 1.2 | Landing Page Completion | **Frontend** | 0.4 Audit | 1 | 4-6h |
-| 0.4 | Landing Page Content & Section Audit | **UI/UX** | None | 0 | 2h |
-| 0.5 | Platform Logo Design | **UI/UX** | 0.1 Platform Direction | 0 | 3-4h |
+| 0.4 | Landing Page Content & Section Audit | **UI/UX** | None | 0 | 2h | ✅ |
+| 0.5 | Platform Logo Design | **UI/UX** | 0.1 Platform Direction | 0 | 3-4h | ✅ |
+| 0.6 | Set Logo Variant 1 as Default | **Frontend** + **UI/UX** | 0.5 Logo Design | 0 | 30min | ✅ |
+| 0.7 | Create Favicon Assets (All Sizes) | **UI/UX** + **Frontend** | 0.6 Logo Default | 0 | 1h | ✅ |
+| 0.8 | Update Navbar with Logo + Nav Links | **Frontend** + **UI/UX** | 0.6 Logo Default | 0 | 2h | ✅ |
+| 0.9 | Update Footer with Logo + Content | **Frontend** + **UI/UX** | 0.6 Logo Default | 0 | 1h | ✅ |
+| 0.10 | Create Social Sharing Assets (OG Images) | **UI/UX** + **Frontend** | 0.6 Logo Default | 0 | 1h | ✅ |
 
 ### P1 - High Priority
 
@@ -46,11 +51,13 @@
 |---------|------|-------|--------------|--------|------------|
 | 0.2 | UI/UX Audit - Missing Flows & Screens | **UI/UX** | None | 0 | 3-4h |
 | 2.1 | Mentor Card Redesign | **UI/UX** (design) + **Frontend** (build) | Design system | 2 | 4-5h |
-| 2.5 | Empty States Design | **UI/UX** (design) + **Frontend** (build) | 0.2 UX Audit | 2 | 2-3h |
 | 1.3 | Pagination - Explore Mentors Page | **Backend** (API) + **Frontend** (UI) | None | 1 | 2-3h |
 | 3.3 | Mentor Filtering & Search | **Backend** (API) + **Frontend** (UI) | None | 3 | 4-5h |
 | 4.1 | AI Interview Feature - PRD | **Manager** + **UI/UX** | 0.1 Platform Direction | 4 | 4-6h |
 | 4.3 | Data Model Review for Scale | **Backend** + **Manager** | 4.1, 4.2 | 4 | 3-4h |
+| 1.6 | Forgot Password Flow | **Frontend** | 1.4 Backend API | 1 | 3-4h |
+| 1.7 | Deep Linking & Post-Auth Redirects | **Frontend** | None | 1 | 2-3h |
+| 1.4 | Forgot Password API | **Backend** | Email service or SMTP | 1 | 3-4h |
 
 ### P2 - Medium Priority
 
@@ -72,6 +79,7 @@
 
 | Task ID | Task | Owner | Dependencies | Sprint | Est. Hours |
 |---------|------|-------|--------------|--------|------------|
+| 2.5 | Empty States Design | **UI/UX** (design) + **Frontend** (build) | 0.2 UX Audit | 2 | 2-3h |
 | 4.5 | Analytics & Tracking Plan | **Manager** + **Frontend** | None | 4 | 2-3h |
 
 ### P5 - Future Consideration
@@ -98,7 +106,7 @@
 
 | Priority | Task | Sprint | Hours | Status |
 |----------|------|--------|-------|--------|
-| P0 | 0.1 Platform Direction Document | 0 | 2-3h | [ ] |
+| P0 | 0.1 Platform Direction Document | 0 | 2-3h | ✅ |
 | P1 | 4.1 AI Interview Feature - PRD (voice-based) | 4 | 4-6h | [ ] |
 | P2 | 4.3 Data Model Review (with Backend) | 4 | 3-4h | [ ] |
 | P4 | 4.5 Analytics & Tracking Plan | 4 | 2-3h | [ ] |
@@ -119,6 +127,8 @@
 | P0 | 1.2 Landing Page Completion | 1 | 4-6h | 0.4 Audit | [ ] |
 | P1 | 2.1 Mentor Card Redesign (build) | 2 | 3-4h | UI/UX design | [ ] |
 | P1 | 2.5 Empty States (build) | 2 | 1-2h | UI/UX design | [ ] |
+| P1 | 1.6 Forgot Password Flow | 1 | 3-4h | 1.4 Backend API | [ ] |
+| P1 | 1.7 Deep Linking & Post-Auth Redirects | 1 | 2-3h | None | [ ] |
 | P2 | 1.4 Error States & Loading UI (build) | 1 | 3-4h | UI/UX design | [ ] |
 | P2 | 1.1 Auth Logic Review (frontend) | 1 | 2-3h | 0.3 E2E | [ ] |
 | P3 | 1.3 Pagination UI | 1 | 1-2h | Backend API | [ ] |
@@ -130,9 +140,9 @@
 | P4 | 3.1 Google Sign-in (frontend) | 3 | 2-3h | Backend OAuth | [ ] |
 | P6 | 3.4 Reviews UI | 3 | 3-4h | Backend API | [ ] |
 
-**Total Estimated:** ~34-47 hours across 4 sprints
+**Total Estimated:** ~39-54 hours across 4 sprints
 
-**Sprint 0-1 Focus:** E2E testing, landing page, error states
+**Sprint 0-1 Focus:** E2E testing, landing page, error states, forgot password, deep linking
 **Sprint 2 Focus:** Mentor card, empty states, scheduling, profile
 
 ---
@@ -145,6 +155,7 @@
 | P0 | 0.3 E2E Flow Testing (with Frontend) | 0 | 1-2h | None | [ ] |
 | P0 | 1.1 Auth Logic & Security Review | 1 | 3-4h | 0.3 E2E | [ ] |
 | P1 | 1.3 Pagination API | 1 | 1-2h | None | [ ] |
+| P1 | 1.4 Forgot Password API | 1 | 3-4h | Email service or SMTP | [ ] |
 | P1 | 3.3 Search/Filter API | 3 | 2-3h | None | [ ] |
 | P1 | 4.3 Data Model Review (with Manager) | 4 | 2-3h | 4.1, 4.2 | [ ] |
 | P2 | 3.1 Google OAuth Integration | 3 | 3-4h | 1.1 Auth | [ ] |
@@ -153,9 +164,9 @@
 | P6 | 3.4 Reviews API | 3 | 3-4h | None | [ ] |
 | P6 | 3.5 Booking Reminders (cron jobs) | 3 | 3-4h | 3.2 Email | [ ] |
 
-**Total Estimated:** ~26-36 hours across 4 sprints
+**Total Estimated:** ~29-40 hours across 4 sprints
 
-**Sprint 0-1 Focus:** E2E testing, auth hardening, pagination API
+**Sprint 0-1 Focus:** E2E testing, auth hardening, pagination API, forgot password API
 **Sprint 3 Focus:** Search, OAuth integrations
 
 ---
@@ -165,7 +176,7 @@
 
 | Priority | Task | Sprint | Hours | Dependencies | Status |
 |----------|------|--------|-------|--------------|--------|
-| P0 | 0.4 Landing Page Audit | 0 | 2h | None | [ ] |
+| P0 | 0.4 Landing Page Audit | 0 | 2h | None | [x] |
 | P1 | 0.2 UI/UX Audit - Missing Flows | 0 | 3-4h | None | [ ] |
 | P1 | 2.1 Mentor Card Design | 2 | 2-3h | None | [ ] |
 | P1 | 4.1 AI Interview PRD (user flows) | 4 | 2-3h | 0.1 Platform | [ ] |
@@ -199,8 +210,9 @@
 **Sprint 0 Deliverables:**
 - [ ] `docs/PLATFORM_VISION.md` (Manager)
 - [ ] `docs/UX_AUDIT.md` (UI/UX)
-- [ ] Landing page checklist (UI/UX)
+- [x] Landing page checklist (UI/UX) - `docs/ui-ux/LANDING_PAGE_AUDIT.md`
 - [ ] E2E test results (Frontend + Backend)
+- [x] Centralized routes (`lib/routes.ts`) + config (`lib/config.ts`)
 
 ---
 
@@ -322,6 +334,8 @@ Also build a community for empowering youth/fresher towards networking and great
 ### Technical Debt
 - [x] Design system standardization (Button, Container atoms)
 - [x] API routes centralization
+- [x] App routes centralization (`lib/routes.ts`)
+- [x] Config centralization (`lib/config.ts`)
 - [ ] Type safety improvements
 - [ ] Error handling standardization
 - [ ] Loading states consistency -> Yeah need to design gloabl loader and innovative ideas here
@@ -435,7 +449,7 @@ Manually test the complete booking flow from a new user's perspective to verify 
 | **Priority** | P1 - High |
 | **Effort** | 2 hours |
 | **Prerequisites** | 0.1 Platform Direction (helpful but not blocking) |
-| **Status** | [ ] Not Started |
+| **Status** | [x] Completed |
 
 **Description:**
 Audit the landing page against standard SaaS/platform landing page best practices to identify missing sections and content gaps.
@@ -1139,6 +1153,10 @@ Define what metrics to track and implement analytics for data-driven decisions.
 | 2024-12-11 | Sprint 0 first | Need direction before building features |
 | 2024-12-11 | Atomic design system | Consistency, reusability |
 | 2024-12-11 | Centralized API routes | Type safety, maintainability |
+| 2024-12-17 | Centralized app routes (`lib/routes.ts`) | No hardcoded URLs, easy refactoring |
+| 2024-12-17 | Centralized config (`lib/config.ts`) | Single source of truth for env vars |
+| 2024-12-17 | Expanded FAQ (3→8 questions) | Address user concerns, reduce support |
+| 2024-12-17 | Added Razorpay trust badges | Build payment confidence |
 
 ---
 
@@ -1165,4 +1183,7 @@ Define what metrics to track and implement analytics for data-driven decisions.
 
 - [Design System](./DESIGN_SYSTEM.md)
 - [API Routes](/lib/api/routes.ts)
+- [App Routes](/lib/routes.ts)
+- [Config](/lib/config.ts)
 - [Component Library](/components/atoms/)
+- [Landing Page Audit](./ui-ux/LANDING_PAGE_AUDIT.md)

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { Button, Container } from "@/components/atoms";
+import { ROUTES } from "@/lib/routes";
 import MentorCard from "./MentorCard";
 
 // Static mentor data
@@ -103,7 +104,7 @@ export default function FeaturedMentors() {
             rounded="full"
             rightIcon={<ArrowRight className="w-4 h-4" />}
           >
-            <Link href="/explore-mentors">View All Mentors</Link>
+            <Link href={ROUTES.exploreMentors}>View All Mentors</Link>
           </Button>
         </div>
       </Container>

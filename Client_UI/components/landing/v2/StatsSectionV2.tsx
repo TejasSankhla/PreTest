@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ShieldCheck } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 
 const features = [
@@ -54,6 +54,14 @@ export default function StatsSectionV2() {
                 </li>
               ))}
             </motion.ul>
+            {/* Trust Badge */}
+            <motion.div
+              variants={fadeInUp}
+              className="mt-8 flex items-center gap-2 text-text-secondary"
+            >
+              <ShieldCheck className="w-4 h-4 text-green-600" />
+              <span className="text-xs font-medium">Secure payments powered by Razorpay</span>
+            </motion.div>
           </motion.div>
 
           {/* Right - Stats Grid */}

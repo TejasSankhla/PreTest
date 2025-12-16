@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ChevronRight, Star } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { Button } from "@/components/atoms";
+import { ROUTES } from "@/lib/routes";
 
 export default function HeroSectionV2() {
   return (
@@ -75,7 +76,7 @@ export default function HeroSectionV2() {
               className="shadow-[0_1px_2px_rgba(249,115,22,0.3)]"
               rightIcon={<ChevronRight className="w-4 h-4 opacity-80 group-hover:translate-x-0.5 transition-transform" />}
             >
-              <Link href="/auth/sign-up" className="group">
+              <Link href={ROUTES.auth.signUp} className="group">
                 Get Started Free
               </Link>
             </Button>

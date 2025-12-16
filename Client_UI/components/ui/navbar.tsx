@@ -10,19 +10,27 @@ import { useAuth } from "@/context/AuthContext";
 import { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 import Link from "next/link";
 import { MenuIcon, XIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Button, Container } from "@/components/atoms";
+import { useRouter, usePathname } from "next/navigation";
+import { Button, Container, Logo } from "@/components/atoms";
+import { ROUTES } from "@/lib/routes";
 
 function Navbar() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen((prev) => !prev);
   };
-  
+
+  // Navigation links
+  const navLinks = [
+    { href: ROUTES.exploreMentors, label: "Find Mentors" },
+    { href: ROUTES.anchors.howItWorks, label: "How It Works" },
+  ];
+
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -43,18 +51,34 @@ function Navbar() {
   return (
     <header className="fixed top-0 w-full z-50 bg-white/60 backdrop-blur-md border-b border-gray-100/50">
       <Container size="full" padding="default" className="h-14 flex items-center justify-between">
+        {/* Logo */}
         <Link
-          href="/"
-          className="flex items-center gap-2"
+          href={ROUTES.home}
+          className="flex items-center"
           prefetch={false}
         >
-          <div className="w-6 h-6 bg-secondary rounded-md flex items-center justify-center text-white text-xs font-bold tracking-tighter">
-            P
-          </div>
-          <span className="text-sm font-semibold tracking-tight text-text-primary">PreTest</span>
+          <Logo variant="variant1" size="md" mode="full" />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-3">
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-8 flex-1 ml-12">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`text-sm font-medium transition-colors hover:text-text-primary ${
+                pathname === link.href
+                  ? "text-text-primary"
+                  : "text-text-secondary"
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Auth Actions */}
+        <div className="hidden md:flex items-center gap-3">
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -64,10 +88,10 @@ function Navbar() {
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="text-[13px] bg-background z-50 shadow-lg border border-border rounded-xl p-1">
-                <DropdownMenuItem onClick={() => router.push("/profile")} className="cursor-pointer rounded-lg px-3 py-2">
+                <DropdownMenuItem onClick={() => router.push(ROUTES.profile.index)} className="cursor-pointer rounded-lg px-3 py-2">
                   My Account
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/profile/my-bookings")} className="cursor-pointer rounded-lg px-3 py-2">
+                <DropdownMenuItem onClick={() => router.push(ROUTES.profile.bookings)} className="cursor-pointer rounded-lg px-3 py-2">
                   Bookings
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -79,23 +103,23 @@ function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center gap-3">
+            <>
               {/* Sign in - Text link */}
               <Link
-                href="/auth/log-in"
+                href={ROUTES.auth.logIn}
                 className="text-[13px] font-medium text-text-secondary hover:text-text-primary transition-colors"
               >
                 Sign in
               </Link>
               {/* Get Started - Dark button */}
               <Button asChild variant="secondary" size="sm" rounded="full">
-                <Link href="/auth/sign-up">
+                <Link href={ROUTES.auth.signUp}>
                   Get Started
                 </Link>
               </Button>
-            </div>
+            </>
           )}
-        </nav>
+        </div>
         <Button
           variant="ghost"
           size="icon-sm"
@@ -118,17 +142,35 @@ function Navbar() {
           className="md:hidden absolute top-14 right-4 w-56 rounded-xl bg-background/95 backdrop-blur-md shadow-xl border border-border overflow-hidden"
         >
           <nav className="flex flex-col p-2">
+            {/* Navigation Links */}
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-[13px] font-medium rounded-lg px-4 py-2.5 transition-colors ${
+                  pathname === link.href
+                    ? "text-text-primary bg-background-subtle"
+                    : "text-text-secondary hover:bg-background-subtle hover:text-text-primary"
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            <div className="border-t border-border my-1" />
+
             {user ? (
               <>
                 <Link
-                  href="/profile"
+                  href={ROUTES.profile.index}
                   className="text-[13px] font-medium text-text-primary hover:bg-background-subtle rounded-lg px-4 py-2.5 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   My Account
                 </Link>
                 <Link
-                  href="/profile/my-bookings"
+                  href={ROUTES.profile.bookings}
                   className="text-[13px] font-medium text-text-primary hover:bg-background-subtle rounded-lg px-4 py-2.5 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -151,7 +193,7 @@ function Navbar() {
             ) : (
               <div className="flex flex-col gap-2 p-2">
                 <Link
-                  href="/auth/log-in"
+                  href={ROUTES.auth.logIn}
                   className="text-[13px] font-medium text-text-secondary hover:text-text-primary text-center py-2 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -159,7 +201,7 @@ function Navbar() {
                 </Link>
                 <Button asChild variant="secondary" size="sm" rounded="full" className="w-full">
                   <Link
-                    href="/auth/sign-up"
+                    href={ROUTES.auth.signUp}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Get Started

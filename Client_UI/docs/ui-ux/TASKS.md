@@ -21,13 +21,168 @@
 
 ## P0 - Critical (Do First)
 
+### 0.6 Set Logo Variant 1 as Default - P0
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 0 |
+| **Hours** | 30min |
+| **Dependencies** | 0.5 Logo Design Complete |
+| **Status** | [x] Completed |
+
+**Description:**
+Set Practice Target (Variant 1) as the default logo across the entire application.
+
+**Tasks:**
+- [x] Update Logo component default prop to variant1
+- [x] Apply logo to navbar
+- [x] Apply logo to footer
+- [x] Test on all pages
+- [x] Verify scales properly (16px-64px)
+
+**Deliverable:** Variant 1 logo live across app
+
+---
+
+### 0.7 Create Favicon Assets - P0
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 0 |
+| **Hours** | 1h |
+| **Dependencies** | 0.6 Logo Default Set |
+| **Status** | [x] Completed |
+
+**Description:**
+Generate favicon files in all required sizes for browsers and devices.
+
+**Favicon Sizes:**
+- [x] favicon.svg (scalable) - COMPLETED
+- [ ] favicon.ico (16x16, 32x32 multi-resolution) - Documentation provided
+- [ ] favicon-16x16.png - Documentation provided
+- [ ] favicon-32x32.png - Documentation provided
+- [ ] apple-touch-icon.png (180x180) - Documentation provided
+- [ ] android-chrome-192x192.png - Documentation provided
+- [ ] android-chrome-512x512.png - Documentation provided
+
+**Tasks:**
+- [x] Export Variant 1 SVG
+- [x] Create site.webmanifest for PWA
+- [x] Update app/layout.tsx with favicon metadata
+- [x] Document PNG/ICO generation process (see /public/FAVICON_GENERATION.md)
+- [ ] Generate PNG files (documented, ready for execution)
+
+**Deliverable:** Favicon SVG + site.webmanifest + metadata configured + generation docs
+
+---
+
+### 0.8 Update Navbar with Logo + Navigation - P0
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 0 |
+| **Hours** | 2h |
+| **Dependencies** | 0.6 Logo Default |
+| **Status** | [x] Completed |
+
+**Description:**
+Redesign navbar with new logo and add primary navigation links.
+
+**Navigation Structure:**
+```
+[Logo: 32px]  [Find Mentors] [How It Works]  ---  [Sign in] [Get Started]
+```
+
+**Tasks:**
+- [x] Set logo size to 32px (md size)
+- [x] Add "Find Mentors" link (→ /explore-mentors)
+- [x] Add "How It Works" anchor link (→ /#how-it-works)
+- [x] Improve spacing between nav items
+- [x] Add active state indicators using usePathname
+- [x] Update mobile menu with nav links
+- [x] Test responsive breakpoints
+- [x] Ensure touch targets 44px+ on mobile
+
+**Deliverable:** Enhanced navbar with logo + navigation
+
+---
+
+### 0.9 Update Footer with Logo + Content - P0
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 0 |
+| **Hours** | 1h |
+| **Dependencies** | 0.6 Logo Default |
+| **Status** | [x] Completed |
+
+**Description:**
+Redesign footer with new logo and replace placeholder content.
+
+**Footer Structure:**
+```
+[Brand Section]  [Product Links]  [Legal Links]
+- Logo + tagline  - Find Mentors   - Privacy Policy
+                  - How It Works   - Terms
+                  - FAQ             - Refunds
+
+[Bottom Bar]
+© 2024 PreTest. All rights reserved.
+```
+
+**Tasks:**
+- [x] Add logo (md size - 32px)
+- [x] Add tagline: "Practice with recent grads from top companies"
+- [x] Remove newsletter (no email service connected)
+- [x] Remove personal social links
+- [x] Add copyright notice with dynamic year
+- [x] Fix "Get Started" link (→ /auth/sign-up)
+- [x] Clean up placeholder content
+- [x] Mobile responsive 4-column grid layout
+
+**Deliverable:** Professional footer with logo
+
+---
+
+### 0.10 Create Social Sharing Assets - P0
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 0 |
+| **Hours** | 1h |
+| **Dependencies** | 0.6 Logo Default |
+| **Status** | [x] Completed |
+
+**Description:**
+Create Open Graph and social media images for link sharing.
+
+**Assets Needed:**
+- [x] og-image.svg (1200x630) source - COMPLETED
+- [x] twitter-card.svg (1200x600) source - COMPLETED
+- [x] og-logo.svg (400x400) source - COMPLETED
+- [ ] PNG generation (documented, ready for execution)
+
+**Design Requirements:**
+- [x] Logo + "PreTest" wordmark
+- [x] Tagline: "Master your next interview"
+- [x] Brand colors (orange #f97316 + white/gray)
+- [x] Clean, professional layout
+- [x] Readable at small sizes
+
+**Tasks:**
+- [x] Design OG image templates (SVG sources)
+- [x] Create assets in public/og/
+- [x] Update app/layout.tsx with OpenGraph and Twitter metadata
+- [x] Document PNG generation process (see /public/og/README.md)
+- [ ] Generate PNG files (documented, ready for social media testing)
+- [ ] Test with validators (after PNG generation)
+
+**Deliverable:** OG SVG templates + metadata configured + generation docs
+
+---
+
 ### 0.4 Landing Page Content & Section Audit - P0
 | Attribute | Details |
 |-----------|---------|
 | **Sprint** | 0 |
 | **Hours** | 2h |
 | **Dependencies** | None |
-| **Status** | [ ] Not Started |
+| **Status** | [x] Completed |
 
 **Description:**
 Audit landing page against SaaS best practices to identify gaps.
@@ -55,7 +210,7 @@ Audit landing page against SaaS best practices to identify gaps.
 | **Sprint** | 0 |
 | **Hours** | 3-4h |
 | **Dependencies** | 0.1 Platform Direction (brand identity) |
-| **Status** | [ ] Not Started |
+| **Status** | [x] Completed |
 
 **Description:**
 Design the PreTest brand logo for use across the platform, marketing, and social media.
@@ -347,6 +502,7 @@ Design card-based bookings page.
 | **Hours** | 1-2h |
 | **Dependencies** | 0.2 UX Audit |
 | **Status** | [ ] Not Started |
+| **Note** | Design is P4, but Frontend build becomes P1 once design is ready |
 
 **Description:**
 Design helpful empty states.

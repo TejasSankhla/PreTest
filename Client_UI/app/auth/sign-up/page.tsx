@@ -4,8 +4,10 @@ import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import pretestLogo from "../../icon.png";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
+import Link from "next/link";
 import { toast } from "react-toastify";
 import { Button } from "@/components/atoms";
+import { ROUTES } from "@/lib/routes";
 function SignUp() {
   const { signUp, ErrorMessage } = useAuth();
   const [name, setName] = useState("");
@@ -39,13 +41,12 @@ function SignUp() {
             </h2>
             <p className="mt-2 text-center text-base text-text-secondary">
               Already have an account?{" "}
-              <a
-                href="/auth/log-in"
-                title=""
+              <Link
+                href={ROUTES.auth.logIn}
                 className="font-medium text-text-primary transition-all duration-200 hover:underline"
               >
                 Sign In
-              </a>
+              </Link>
             </p>
             <form onSubmit={handleSubmit} className="mt-8">
               <div className="space-y-5">
