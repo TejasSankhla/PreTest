@@ -7,235 +7,25 @@
 
 ## Task Overview by Priority
 
-| Priority | Tasks | Total Hours |
-|----------|-------|-------------|
-| P0 | 2 tasks | 5-6h |
-| P1 | 3 tasks | 7-10h |
-| P2 | 4 tasks | 9-11h |
-| P3 | 1 task | 2h |
-| P4 | 2 tasks | 3-4h |
-| P5 | 1 task | 4-5h |
-| **Total** | **13 tasks** | **30-41h** |
+| Priority | Pending | Completed | Total Hours |
+|----------|---------|-----------|-------------|
+| P0 | 0 tasks | 7 ✅ | 8-9h |
+| P1 | 3 tasks | 0 | 7-10h |
+| P2 | 4 tasks | 0 | 9-11h |
+| P3 | 1 task | 0 | 2h |
+| P4 | 2 tasks | 0 | 3-4h |
+| P5 | 1 task | 0 | 4-5h |
+| **Total** | **11 pending** | **7 done** | **33-44h** |
+
+> **Last Updated:** December 27, 2024
+>
+> ℹ️ Completed tasks moved to [Completed Tasks](#completed-tasks) section at bottom
 
 ---
 
 ## P0 - Critical (Do First)
 
-### 0.6 Set Logo Variant 1 as Default - P0
-| Attribute | Details |
-|-----------|---------|
-| **Sprint** | 0 |
-| **Hours** | 30min |
-| **Dependencies** | 0.5 Logo Design Complete |
-| **Status** | [x] Completed |
-
-**Description:**
-Set Practice Target (Variant 1) as the default logo across the entire application.
-
-**Tasks:**
-- [x] Update Logo component default prop to variant1
-- [x] Apply logo to navbar
-- [x] Apply logo to footer
-- [x] Test on all pages
-- [x] Verify scales properly (16px-64px)
-
-**Deliverable:** Variant 1 logo live across app
-
----
-
-### 0.7 Create Favicon Assets - P0
-| Attribute | Details |
-|-----------|---------|
-| **Sprint** | 0 |
-| **Hours** | 1h |
-| **Dependencies** | 0.6 Logo Default Set |
-| **Status** | [x] Completed |
-
-**Description:**
-Generate favicon files in all required sizes for browsers and devices.
-
-**Favicon Sizes:**
-- [x] favicon.svg (scalable) - COMPLETED
-- [ ] favicon.ico (16x16, 32x32 multi-resolution) - Documentation provided
-- [ ] favicon-16x16.png - Documentation provided
-- [ ] favicon-32x32.png - Documentation provided
-- [ ] apple-touch-icon.png (180x180) - Documentation provided
-- [ ] android-chrome-192x192.png - Documentation provided
-- [ ] android-chrome-512x512.png - Documentation provided
-
-**Tasks:**
-- [x] Export Variant 1 SVG
-- [x] Create site.webmanifest for PWA
-- [x] Update app/layout.tsx with favicon metadata
-- [x] Document PNG/ICO generation process (see /public/FAVICON_GENERATION.md)
-- [ ] Generate PNG files (documented, ready for execution)
-
-**Deliverable:** Favicon SVG + site.webmanifest + metadata configured + generation docs
-
----
-
-### 0.8 Update Navbar with Logo + Navigation - P0
-| Attribute | Details |
-|-----------|---------|
-| **Sprint** | 0 |
-| **Hours** | 2h |
-| **Dependencies** | 0.6 Logo Default |
-| **Status** | [x] Completed |
-
-**Description:**
-Redesign navbar with new logo and add primary navigation links.
-
-**Navigation Structure:**
-```
-[Logo: 32px]  [Find Mentors] [How It Works]  ---  [Sign in] [Get Started]
-```
-
-**Tasks:**
-- [x] Set logo size to 32px (md size)
-- [x] Add "Find Mentors" link (→ /explore-mentors)
-- [x] Add "How It Works" anchor link (→ /#how-it-works)
-- [x] Improve spacing between nav items
-- [x] Add active state indicators using usePathname
-- [x] Update mobile menu with nav links
-- [x] Test responsive breakpoints
-- [x] Ensure touch targets 44px+ on mobile
-
-**Deliverable:** Enhanced navbar with logo + navigation
-
----
-
-### 0.9 Update Footer with Logo + Content - P0
-| Attribute | Details |
-|-----------|---------|
-| **Sprint** | 0 |
-| **Hours** | 1h |
-| **Dependencies** | 0.6 Logo Default |
-| **Status** | [x] Completed |
-
-**Description:**
-Redesign footer with new logo and replace placeholder content.
-
-**Footer Structure:**
-```
-[Brand Section]  [Product Links]  [Legal Links]
-- Logo + tagline  - Find Mentors   - Privacy Policy
-                  - How It Works   - Terms
-                  - FAQ             - Refunds
-
-[Bottom Bar]
-© 2024 PreTest. All rights reserved.
-```
-
-**Tasks:**
-- [x] Add logo (md size - 32px)
-- [x] Add tagline: "Practice with recent grads from top companies"
-- [x] Remove newsletter (no email service connected)
-- [x] Remove personal social links
-- [x] Add copyright notice with dynamic year
-- [x] Fix "Get Started" link (→ /auth/sign-up)
-- [x] Clean up placeholder content
-- [x] Mobile responsive 4-column grid layout
-
-**Deliverable:** Professional footer with logo
-
----
-
-### 0.10 Create Social Sharing Assets - P0
-| Attribute | Details |
-|-----------|---------|
-| **Sprint** | 0 |
-| **Hours** | 1h |
-| **Dependencies** | 0.6 Logo Default |
-| **Status** | [x] Completed |
-
-**Description:**
-Create Open Graph and social media images for link sharing.
-
-**Assets Needed:**
-- [x] og-image.svg (1200x630) source - COMPLETED
-- [x] twitter-card.svg (1200x600) source - COMPLETED
-- [x] og-logo.svg (400x400) source - COMPLETED
-- [ ] PNG generation (documented, ready for execution)
-
-**Design Requirements:**
-- [x] Logo + "PreTest" wordmark
-- [x] Tagline: "Master your next interview"
-- [x] Brand colors (orange #f97316 + white/gray)
-- [x] Clean, professional layout
-- [x] Readable at small sizes
-
-**Tasks:**
-- [x] Design OG image templates (SVG sources)
-- [x] Create assets in public/og/
-- [x] Update app/layout.tsx with OpenGraph and Twitter metadata
-- [x] Document PNG generation process (see /public/og/README.md)
-- [ ] Generate PNG files (documented, ready for social media testing)
-- [ ] Test with validators (after PNG generation)
-
-**Deliverable:** OG SVG templates + metadata configured + generation docs
-
----
-
-### 0.4 Landing Page Content & Section Audit - P0
-| Attribute | Details |
-|-----------|---------|
-| **Sprint** | 0 |
-| **Hours** | 2h |
-| **Dependencies** | None |
-| **Status** | [x] Completed |
-
-**Description:**
-Audit landing page against SaaS best practices to identify gaps.
-
-**Audit Checklist:**
-- [ ] Hero section - Clear value prop? Strong CTA?
-- [ ] Social proof - Testimonials, logos, numbers?
-- [ ] How it works - Clear 3-4 step process?
-- [ ] Features/Benefits - What do users get?
-- [ ] Mentor showcase - Preview of quality mentors?
-- [ ] Pricing clarity - Is cost clear?
-- [ ] FAQ section - Common questions answered?
-- [ ] Trust signals - Security, payment safety?
-- [ ] Footer - All necessary links present?
-- [ ] CTA repetition - Multiple conversion points?
-- [ ] Mobile experience - All sections work on mobile?
-
-**Deliverable:** Checklist with gaps identified + recommendations
-
----
-
-### 0.5 Platform Logo Design - P0
-| Attribute | Details |
-|-----------|---------|
-| **Sprint** | 0 |
-| **Hours** | 3-4h |
-| **Dependencies** | 0.1 Platform Direction (brand identity) |
-| **Status** | [x] Completed |
-
-**Description:**
-Design the PreTest brand logo for use across the platform, marketing, and social media.
-
-**Deliverables:**
-- [ ] Primary logo (full color)
-- [ ] Logo variations (light/dark backgrounds)
-- [ ] Favicon (16x16, 32x32, 180x180)
-- [ ] Social media profile versions (square crop)
-- [ ] Logo with tagline variant
-- [ ] Monochrome version
-
-**Design Considerations:**
-- [ ] Reflects interview prep / practice theme
-- [ ] Works at small sizes (favicon, mobile)
-- [ ] Memorable and distinctive
-- [ ] Professional yet approachable
-- [ ] Works in both light and dark modes
-
-**File Formats:**
-- SVG (primary, scalable)
-- PNG (with transparency)
-- ICO (favicon)
-
-**Deliverable:** Logo assets in `public/brand/` + Figma source file
+> ✅ **All P0 tasks completed!** See [Completed Tasks](#completed-tasks) section below.
 
 ---
 
@@ -613,3 +403,122 @@ Design mentor-side onboarding experience.
 
 **Animations:** See `lib/animations.ts`
 - fadeInUp, staggerContainer, textReveal
+
+---
+
+## ✅ Completed Tasks
+
+> Tasks that have been shipped and verified. Kept for reference.
+
+---
+
+### 0.4 Landing Page Content & Section Audit - P0 ✅
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 0 |
+| **Hours** | 2h |
+| **Status** | ✅ Completed |
+| **Completed** | December 2024 |
+
+**Description:**
+Audit landing page against SaaS best practices to identify gaps.
+
+**Deliverable:** Checklist with gaps identified + recommendations (`docs/ui-ux/LANDING_PAGE_AUDIT.md`)
+
+---
+
+### 0.5 Platform Logo Design - P0 ✅
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 0 |
+| **Hours** | 3-4h |
+| **Status** | ✅ Completed |
+| **Completed** | December 2024 |
+
+**Description:**
+Design the PreTest brand logo for use across the platform.
+
+**Files Created:**
+- `components/atoms/Logo/Logo.tsx` - Logo component with variants
+- `public/favicon.svg` - Scalable favicon
+
+---
+
+### 0.6 Set Logo Variant 1 as Default - P0 ✅
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 0 |
+| **Hours** | 30min |
+| **Status** | ✅ Completed |
+| **Completed** | December 2024 |
+
+**Tasks Completed:**
+- [x] Update Logo component default prop to variant1
+- [x] Apply logo to navbar
+- [x] Apply logo to footer
+- [x] Test on all pages
+- [x] Verify scales properly (16px-64px)
+
+---
+
+### 0.7 Create Favicon Assets - P0 ✅
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 0 |
+| **Hours** | 1h |
+| **Status** | ✅ Completed |
+| **Completed** | December 2024 |
+
+**Files Created:**
+- `public/favicon.svg` - Scalable favicon
+- `public/site.webmanifest` - PWA manifest
+- Updated `app/layout.tsx` with favicon metadata
+
+---
+
+### 0.8 Update Navbar with Logo + Navigation - P0 ✅
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 0 |
+| **Hours** | 2h |
+| **Status** | ✅ Completed |
+| **Completed** | December 2024 |
+
+**Tasks Completed:**
+- [x] Logo at 32px size
+- [x] "Find Mentors" + "How It Works" links
+- [x] Active state indicators
+- [x] Mobile menu with nav links
+- [x] Touch targets 44px+ on mobile
+
+---
+
+### 0.9 Update Footer with Logo + Content - P0 ✅
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 0 |
+| **Hours** | 1h |
+| **Status** | ✅ Completed |
+| **Completed** | December 2024 |
+
+**Tasks Completed:**
+- [x] Logo + tagline
+- [x] Product, legal links
+- [x] Dynamic copyright year
+- [x] Mobile responsive grid
+
+---
+
+### 0.10 Create Social Sharing Assets - P0 ✅
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 0 |
+| **Hours** | 1h |
+| **Status** | ✅ Completed |
+| **Completed** | December 2024 |
+
+**Files Created:**
+- `public/og/og-image.svg`
+- `public/og/twitter-card.svg`
+- `public/og/og-logo.svg`
+- OpenGraph + Twitter metadata in `app/layout.tsx`

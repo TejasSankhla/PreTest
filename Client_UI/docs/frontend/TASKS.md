@@ -7,15 +7,19 @@
 
 ## Task Overview by Priority
 
-| Priority | Tasks | Total Hours |
-|----------|-------|-------------|
-| P0 | 2 tasks | 5-8h |
-| P1 | 4 tasks | 10-13h |
-| P2 | 2 tasks | 5-7h |
-| P3 | 6 tasks | 15-21h |
-| P4 | 1 task | 2-3h |
-| P6 | 1 task | 3-4h |
-| **Total** | **16 tasks** | **40-56h** |
+| Priority | Pending | Completed | Total Hours |
+|----------|---------|-----------|-------------|
+| P0 | 2 tasks | 0 | 5-8h |
+| P1 | 2 tasks | 2 ✅ | 10-13h |
+| P2 | 1 task | 1 ✅ | 5-7h |
+| P3 | 6 tasks | 0 | 15-21h |
+| P4 | 2 tasks | 0 | 4-6h |
+| P6 | 1 task | 0 | 3-4h |
+| **Total** | **13 pending** | **3 done** | **42-59h** |
+
+> **Last Updated:** December 27, 2024
+>
+> ℹ️ Completed tasks moved to [Completed Tasks](#completed-tasks) section at bottom
 
 ---
 
@@ -111,31 +115,6 @@ components/
 
 ---
 
-### 2.5 Empty States (Build) - P1
-| Attribute | Details |
-|-----------|---------|
-| **Sprint** | 2 |
-| **Hours** | 1-2h |
-| **Dependencies** | UI/UX designs |
-| **Status** | [ ] Not Started |
-
-**Tasks:**
-- [ ] Build reusable `EmptyState` component
-- [ ] Empty state: No mentors found
-- [ ] Empty state: No bookings yet
-- [ ] Empty state: Search no results
-
-**Files to Create:**
-```
-components/
-  molecules/
-    EmptyState/
-      EmptyState.tsx
-      index.ts
-```
-
----
-
 ### 1.6 Forgot Password Flow - P1
 | Attribute | Details |
 |-----------|---------|
@@ -195,192 +174,7 @@ Success message
 
 ---
 
-### 1.7 Deep Linking & Post-Auth Redirects - P1
-| Attribute | Details |
-|-----------|---------|
-| **Sprint** | 1 |
-| **Hours** | 2-3h |
-| **Dependencies** | None |
-| **Status** | [ ] Not Started |
-
-**Description:**
-Implement deep linking so users are **never blocked** and always return to their intended destination after authentication. Session expiration should not disrupt user flow.
-
-**Core Principle:**
-> Users should never lose their place. If they're on `/explore-mentors` or mid-booking and their session expires, they should land right back where they were after logging in.
-
-**Tasks:**
-- [ ] Capture current URL before redirecting to auth
-- [ ] Store intended destination in:
-  - Query parameter: `?returnTo=/mentor/123`
-  - LocalStorage (fallback if query param lost)
-  - SessionStorage (cleared after auth)
-- [ ] Redirect to stored destination after successful auth
-- [ ] Handle edge cases:
-  - Invalid/malicious `returnTo` URLs (whitelist validation)
-  - External URLs (block, only allow internal paths)
-  - Auth pages as `returnTo` (redirect to `/explore-mentors` instead)
-- [ ] Default behavior when no `returnTo`:
-  - New sign-up → `/explore-mentors` (start browsing)
-  - Returning login → `/explore-mentors` (consistent default)
-- [ ] Clear stored destination after redirect
-- [ ] Add loading state during redirect
-- [ ] Update AuthContext with redirect logic
-- [ ] Test session expiration scenarios
-
-**Implementation Strategy:**
-
-**1. Protected Route Middleware (or HOC)**
-```tsx
-// middleware.ts or useProtectedRoute.tsx
-export function redirectToLogin(currentPath: string) {
-  const returnTo = encodeURIComponent(currentPath);
-  router.push(`/auth/log-in?returnTo=${returnTo}`);
-}
-```
-
-**2. Store Intended Destination**
-```tsx
-// Before redirecting to auth
-const currentPath = window.location.pathname + window.location.search;
-localStorage.setItem('auth_return_to', currentPath);
-
-// Or use query param
-router.push(`/auth/log-in?returnTo=${encodeURIComponent(currentPath)}`);
-```
-
-**3. Redirect After Auth**
-```tsx
-// After successful login/signup
-const returnTo = searchParams.get('returnTo') || localStorage.getItem('auth_return_to');
-
-if (returnTo && isValidInternalPath(returnTo)) {
-  localStorage.removeItem('auth_return_to');
-  router.push(returnTo);
-} else {
-  router.push('/explore-mentors'); // Safe default
-}
-```
-
-**Example Flows:**
-
-**Flow 1: Session Expires During Booking**
-```
-User on /mentor/123 (booking page)
-  ↓ Session expires
-  ↓ Middleware detects unauthenticated state
-  ↓ Redirect to /auth/log-in?returnTo=%2Fmentor%2F123
-User logs in
-  ↓ Read returnTo param
-  ↓ Redirect to /mentor/123 (resume booking)
-```
-
-**Flow 2: Direct Landing on Protected Page**
-```
-User clicks email link to /mentor/456
-  ↓ Not authenticated
-  ↓ Redirect to /auth/log-in?returnTo=%2Fmentor%2F456
-User signs up (new account)
-  ↓ Read returnTo param
-  ↓ Redirect to /mentor/456 (original destination)
-```
-
-**Flow 3: Session Expires on Explore Page**
-```
-User browsing /explore-mentors?expertise=DSA&sort=rating
-  ↓ Session expires
-  ↓ Redirect to /auth/log-in?returnTo=%2Fexplore-mentors%3Fexpertise%3DDSA%26sort%3Drating
-User logs in
-  ↓ Redirect back with filters intact
-  ↓ /explore-mentors?expertise=DSA&sort=rating
-```
-
-**Security Validation:**
-```tsx
-function isValidInternalPath(path: string): boolean {
-  // Remove any protocol/domain (prevent open redirect)
-  const url = path.startsWith('/') ? path : `/${path}`;
-
-  // Blacklist auth pages (prevent redirect loops)
-  const authPages = ['/auth/log-in', '/auth/sign-up', '/auth/forgot-password'];
-  if (authPages.includes(url.split('?')[0])) return false;
-
-  // Only allow paths starting with /
-  if (!url.startsWith('/')) return false;
-
-  // Whitelist internal paths
-  const allowedPrefixes = ['/', '/mentor/', '/explore-mentors', '/profile', '/bookings'];
-  return allowedPrefixes.some(prefix => url.startsWith(prefix));
-}
-```
-
-**Files to Modify:**
-- `context/AuthContext.tsx` - Add redirect logic
-- `app/auth/sign-up/page.tsx` - Read returnTo, redirect after signup
-- `app/auth/log-in/page.tsx` - Read returnTo, redirect after login
-- `middleware.ts` (or create) - Capture current URL before auth redirect
-- `lib/utils/redirects.ts` (create) - Validation helpers
-
-**Testing Scenarios:**
-- [ ] Session expires on `/explore-mentors` → User returns to explore page
-- [ ] Session expires on `/mentor/123` → User returns to mentor profile
-- [ ] Session expires mid-booking → User returns to booking flow
-- [ ] Direct link to protected page → User lands on that page after auth
-- [ ] Malicious `returnTo` (e.g., `https://evil.com`) → Blocked, default redirect
-- [ ] `returnTo=/auth/log-in` (loop prevention) → Redirect to `/explore-mentors`
-- [ ] New sign-up without `returnTo` → Default to `/explore-mentors`
-
----
-
 ## P2 - Medium Priority
-
-### 1.4 Error States & Loading UI (Build) - P2
-| Attribute | Details |
-|-----------|---------|
-| **Sprint** | 1 |
-| **Hours** | 3-4h |
-| **Dependencies** | UI/UX design specs |
-| **Status** | [ ] Not Started |
-
-**Description:**
-Build the global loading and error UI components based on UI/UX designs.
-
-**Tasks:**
-- [ ] Build `components/atoms/Spinner/` - Global loading spinner
-- [ ] Build `components/atoms/Skeleton/` - Skeleton loaders for cards, lists
-- [ ] Build `components/molecules/ErrorBoundary/` - React error boundary
-- [ ] Create `app/not-found.tsx` - Custom 404 page
-- [ ] Create `app/error.tsx` - Global error page
-- [ ] Create `components/molecules/Toast/` - Toast notifications
-- [ ] Add loading states to all API calls in existing pages
-- [ ] Add error handling to all API calls
-
-**Files to Create:**
-```
-components/
-  atoms/
-    Spinner/
-      Spinner.tsx
-      index.ts
-    Skeleton/
-      Skeleton.tsx
-      CardSkeleton.tsx
-      ListSkeleton.tsx
-      index.ts
-  molecules/
-    ErrorBoundary/
-      ErrorBoundary.tsx
-      index.ts
-    Toast/
-      Toast.tsx
-      ToastProvider.tsx
-      index.ts
-app/
-  not-found.tsx
-  error.tsx
-```
-
----
 
 ### 1.1 Auth Logic Review (Frontend) - P2
 | Attribute | Details |
@@ -547,6 +341,63 @@ Review and fix frontend auth implementation.
 
 ## P4 - Nice to Have
 
+### 2.6 MagicUI Component Library Integration - P4
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 2 |
+| **Hours** | 2-3h |
+| **Dependencies** | None |
+| **Status** | [ ] Not Started |
+
+**Description:**
+Integrate MagicUI animated components to enhance UI with subtle, delightful animations. These components work with shadcn/ui and add polish to the user experience.
+
+**Components to Install:**
+```bash
+# Text & Typography
+npx shadcn@latest add @magicui/typing-animation
+npx shadcn@latest add @magicui/aurora-text
+npx shadcn@latest add @magicui/text-reveal
+
+# Layout & Showcase
+npx shadcn@latest add @magicui/bento-grid
+npx shadcn@latest add @magicui/safari
+npx shadcn@latest add @magicui/iphone
+
+# Interactive Elements
+npx shadcn@latest add @magicui/rainbow-button
+npx shadcn@latest add @magicui/animated-theme-toggler
+npx shadcn@latest add @magicui/confetti
+
+# Visual Effects
+npx shadcn@latest add @magicui/animated-beam
+```
+
+**Tasks:**
+- [ ] Install MagicUI components via shadcn CLI
+- [ ] Add typing animation to hero section headline
+- [ ] Add aurora-text effect to key CTAs or headings
+- [ ] Use bento-grid for feature showcase on landing page
+- [ ] Add confetti on successful booking confirmation
+- [ ] Use rainbow-button for primary CTAs
+- [ ] Add safari/iphone mockups for app previews
+- [ ] Document component usage in DESIGN_SYSTEM.md
+
+**Potential Use Cases:**
+| Component | Where to Use |
+|-----------|--------------|
+| `typing-animation` | Hero headline, loading states |
+| `aurora-text` | "Find Your Perfect Mentor" heading |
+| `bento-grid` | Features section, testimonials |
+| `confetti` | Booking success, signup complete |
+| `rainbow-button` | Primary CTAs, special offers |
+| `safari/iphone` | App demo, mentor preview mockups |
+| `animated-beam` | Trust indicators, connection visuals |
+
+**Reference:** https://magicui.design
+
+---
+
 ### 3.1 Google Sign-in (Frontend) - P4
 | Attribute | Details |
 |-----------|---------|
@@ -624,3 +475,113 @@ Backend Reviews API ──> Reviews UI
 **Design Atoms:** `components/atoms/` (Button, Container)
 **Auth Context:** `context/AuthContext.tsx`
 **Animations:** `lib/animations.ts`
+
+---
+
+## ✅ Completed Tasks
+
+> Tasks that have been shipped and verified. Kept for reference.
+
+---
+
+### 2.5 Empty States (Build) - P1 ✅
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 2 |
+| **Hours** | 1-2h |
+| **Dependencies** | UI/UX designs |
+| **Status** | ✅ Completed |
+| **Completed** | December 2024 |
+
+**Tasks:**
+- [x] Build reusable `EmptyState` component
+- [x] Empty state: No mentors found
+- [x] Empty state: No bookings yet
+- [x] Empty state: Search no results
+
+**Files Created:**
+```
+components/molecules/EmptyState/
+  ├── EmptyState.tsx
+  └── index.ts
+```
+
+---
+
+### 1.4 Error States & Loading UI (Build) - P2 ✅
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 1 |
+| **Hours** | 3-4h |
+| **Status** | ✅ Completed |
+| **Completed** | December 27, 2024 |
+
+**Tasks Completed:**
+- [x] `components/atoms/Spinner/` - Global loading spinner
+- [x] `components/atoms/Skeleton/` - Skeleton loaders
+- [x] `app/not-found.tsx` - Custom 404 page with design system
+- [x] `app/error.tsx` - Global 500 error page with retry
+- [x] Toast notifications using react-toastify
+- [x] `hooks/useToast.ts` - Convenience hook for toasts
+
+**Files Created:**
+```
+components/atoms/
+  ├── Spinner/
+  │   ├── Spinner.tsx
+  │   └── index.ts
+  └── Skeleton/
+      ├── Skeleton.tsx
+      └── index.ts
+app/
+  ├── not-found.tsx
+  └── error.tsx
+hooks/
+  └── useToast.ts
+```
+
+---
+
+### 1.7 Deep Linking & Post-Auth Redirects - P1 ✅
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 1 |
+| **Hours** | 2-3h |
+| **Status** | ✅ Completed |
+| **Completed** | December 27, 2024 |
+
+**Description:**
+Implemented deep linking so users are never blocked and always return to their intended destination after authentication.
+
+**Tasks Completed:**
+- [x] Created `lib/auth-redirect.ts` - Centralized redirect utilities
+- [x] Capture current URL before redirecting to auth
+- [x] Store intended destination in query param and localStorage
+- [x] Redirect to stored destination after successful auth
+- [x] Security validation (whitelist, no external URLs, no auth loops)
+- [x] Updated `AuthContext.tsx` with redirect logic
+- [x] Created `hooks/useAuthGuard.ts` - Auth guard hook for protected routes
+- [x] Added 401 interceptor to `lib/api/client.ts` for session expiration
+- [x] Protected `/profile` and `/profile/my-bookings` routes
+
+**Files Created/Modified:**
+```
+lib/
+  ├── auth-redirect.ts (new)
+  └── api/
+      └── client.ts (modified - 401 interceptor)
+hooks/
+  ├── useAuthGuard.ts (new)
+  └── index.ts (modified)
+context/
+  └── AuthContext.tsx (modified)
+app/profile/
+  ├── page.tsx (modified - auth guard)
+  └── my-bookings/page.tsx (modified - auth guard)
+```
+
+**Security Features:**
+- Path whitelist validation (only internal routes)
+- Blocks external URLs (prevents open redirect attacks)
+- Blocks auth pages in returnTo (prevents loops)
+- Clears stored path after redirect

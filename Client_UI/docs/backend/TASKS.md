@@ -7,14 +7,18 @@
 
 ## Task Overview by Priority
 
-| Priority | Tasks | Total Hours |
-|----------|-------|-------------|
-| P0 | 2 tasks | 4-6h |
-| P1 | 4 tasks | 8-11h |
-| P2 | 1 task | 3-4h |
-| P5 | 2 tasks | 8-10h |
-| P6 | 2 tasks | 6-8h |
-| **Total** | **11 tasks** | **29-39h** |
+| Priority | Pending | In Progress | Total Hours |
+|----------|---------|-------------|-------------|
+| P0 | 1 task | 1 🟡 (Auth 30%) | 4-6h |
+| P1 | 4 tasks | 0 | 8-11h |
+| P2 | 1 task | 0 | 3-4h |
+| P5 | 2 tasks | 0 | 8-10h |
+| P6 | 2 tasks | 0 | 6-8h |
+| **Total** | **10 pending** | **1 in progress** | **29-39h** |
+
+> **Last Updated:** December 27, 2024
+>
+> ℹ️ No tasks fully completed yet. Completed tasks will be moved to [Completed Tasks](#completed-tasks) section.
 
 ---
 
@@ -48,19 +52,19 @@ Support frontend testing by ensuring backend is running and test data exists.
 | **Sprint** | 1 |
 | **Hours** | 3-4h |
 | **Dependencies** | 0.3 E2E Testing results |
-| **Status** | [ ] Not Started |
+| **Status** | 🟡 In Progress (30% complete) |
 
 **Description:**
 Review and harden the authentication system.
 
 **Tasks:**
-- [ ] Audit JWT implementation (algorithm, expiration, secret)
+- [x] Audit JWT implementation (algorithm, expiration, secret) - Type safety added ✅
 - [ ] Review token refresh mechanism
 - [ ] Implement/verify rate limiting on auth endpoints
-- [ ] Add proper error codes for auth failures
+- [x] Add proper error codes for auth failures - Improved ✅
 - [ ] Review password hashing (bcrypt rounds)
 - [ ] Add password strength validation
-- [ ] Review protected route middleware
+- [x] Review protected route middleware - JwtAuthGuard improved ✅
 - [ ] Audit session invalidation on logout
 - [ ] Document auth flow for frontend
 
@@ -495,3 +499,35 @@ RAZORPAY_KEY_SECRET=
 - `GET /api/mentor/?page&limit&search&...` (pagination/filter)
 - `POST /api/reviews` (create review)
 - `GET /api/mentor/:id/reviews` (get reviews)
+
+---
+
+## ✅ Completed Tasks
+
+> Tasks that have been shipped and verified. Kept for reference.
+
+*No fully completed tasks yet. Task 1.1 (Auth Security Review) is 30% complete.*
+
+---
+
+### Partial: 1.1 Auth Logic & Security Review - P0 🟡
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 1 |
+| **Hours** | 3-4h |
+| **Status** | 🟡 30% Complete |
+| **Updated** | December 2024 |
+
+**Completed:**
+- [x] JWT guard type safety improvements (`jwt-auth.guard.ts`)
+- [x] Error codes for auth failures improved
+- [x] Protected route middleware reviewed
+
+**Files Modified:**
+- `backend-v2/src/common/guards/jwt-auth.guard.ts`
+
+**Remaining (see active task):**
+- [ ] Rate limiting
+- [ ] Token refresh mechanism
+- [ ] Password strength validation
+- [ ] Session invalidation audit
