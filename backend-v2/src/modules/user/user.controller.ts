@@ -7,10 +7,20 @@ import {
   Query,
   HttpStatus,
   HttpCode,
+  UseGuards,
+  Request,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { BookingService } from '../booking/booking.service';
+import { CreateBookingDto } from '../booking/dto';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+
+// Extended DTO for user booking creation (includes mentorId)
+interface CreateUserBookingDto extends CreateBookingDto {
+  mentorId: string;
+}
 
 @Controller('user')
 export class UserController {
@@ -45,11 +55,18 @@ export class UserController {
 
   // POST /user/:userId/booking - create a booking for user with a mentor
   @Post(':userId/booking')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async createBooking(
     @Param('userId') userId: string,
-    @Body() createBookingDto: any,
+    @Body() createBookingDto: CreateUserBookingDto,
+    @Request() req: { user: { UserId: string } },
   ) {
+    // Verify the authenticated user matches the userId param
+    if (req.user.UserId !== userId) {
+      throw new ForbiddenException('You can only create bookings for yourself');
+    }
+
     const booking = await this.bookingService.createBookingForUser(
       userId,
       createBookingDto,

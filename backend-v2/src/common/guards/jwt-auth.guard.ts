@@ -1,13 +1,29 @@
 import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
+// JWT payload structure from token
+interface JwtPayload {
+  UserId: string;
+  email: string;
+  type: 'user' | 'mentor';
+}
+
+// Auth info from Passport
+interface AuthInfo {
+  message?: string;
+}
+
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   canActivate(context: ExecutionContext) {
     return super.canActivate(context);
   }
 
-  handleRequest(err: any, user: any, info: any) {
+  handleRequest<TUser = JwtPayload>(
+    err: Error | null,
+    user: TUser | false,
+    info?: AuthInfo,
+  ): TUser {
     if (err || !user) {
       throw new UnauthorizedException({
         data: null,
