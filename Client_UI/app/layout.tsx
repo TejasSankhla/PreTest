@@ -1,13 +1,19 @@
 import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Navbar from "../components/ui/navbar"; // Import Navbar component
 import Footer from "../components/ui/footer"; // Import Footer component
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
-  title: "PreTest - Master Your Next Interview",
+  metadataBase: new URL("https://pretest.fun"),
+  title: {
+    default: "PreTest - Master Your Next Interview",
+    template: "%s | PreTest",
+  },
   description: "Practice with recent grads from top companies. Get personalized mock interviews and feedback to ace your next interview.",
   keywords: [
     "mock interview",
@@ -16,6 +22,8 @@ export const metadata: Metadata = {
     "career coaching",
     "mentorship",
     "tech interviews",
+    "placement preparation",
+    "FAANG interview",
   ],
   authors: [{ name: "PreTest" }],
   creator: "PreTest",
@@ -23,24 +31,21 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
     ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
   manifest: "/site.webmanifest",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://pretest.com",
+    url: "https://pretest.fun",
     siteName: "PreTest",
     title: "PreTest - Master Your Next Interview",
-    description: "Practice with recent grads from top companies",
+    description: "Practice with recent grads from top companies. Get personalized mock interviews and feedback to ace your next interview.",
     images: [
       {
-        url: "/og/og-image.png",
+        url: "https://pretest.fun/og/og-image.png",
         width: 1200,
         height: 630,
         alt: "PreTest - Master your next interview with practice sessions from top company grads",
@@ -51,9 +56,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "PreTest - Master Your Next Interview",
-    description: "Practice with recent grads from top companies",
-    images: ["/og/twitter-card.png"],
-    creator: "@pretest",
+    description: "Practice with recent grads from top companies. Get personalized mock interviews and feedback.",
+    images: ["https://pretest.fun/og/twitter-card.png"],
+    creator: "@pretestfun",
   },
 };
 
@@ -75,10 +80,22 @@ export default function RootLayout({
         <AuthProvider>
           <div className="flex flex-col min-h-screen max-w-full">
             <Navbar /> {/* Navbar appears at the top */}
-            <main className="flex-1 ">{children}</main>{" "}
+            <main className="flex-1 pt-14">{children}</main>{" "}
             {/* Main page content */}
             <Footer /> {/* Footer appears at the bottom */}
           </div>
+          <ToastContainer
+            position="top-right"
+            autoClose={4000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
         </AuthProvider>
       </body>
     </html>
