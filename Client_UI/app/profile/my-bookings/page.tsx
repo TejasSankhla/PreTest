@@ -1,14 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/atoms";
+import { Button, Badge, Container, Spinner } from "@/components/atoms";
+import { EmptyState } from "@/components/molecules";
 import { apiClient, API_ROUTES, Booking, User } from "@/lib/api";
+import { useAuthGuard } from "@/hooks";
 import Link from "next/link";
 
 type BookingType = "upcoming" | "past";
 
 function Page() {
-  const { user: authUser } = useAuth();
+  const { user: authUser, isLoading: authLoading, isAuthenticated } = useAuthGuard();
   const [activeButton, setActiveButton] = useState<BookingType>("upcoming");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [bookingsData, setBookingsData] = useState<Record<BookingType, Booking[]>>({
@@ -66,78 +67,103 @@ function Page() {
 
     fetchBookings();
   }, [activeButton, authUser, isDataFetched, bookingsData]);
-  
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  // Will redirect if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
-    <div className="w-full h-full flex mt-8 items-center mx-auto justify-center">
-      <div className="bookings-container w-4/5 flex-col items-center">
-        {/* Button Section */}
-        <div className="flex divide-slate-400 divide-x-2 items-center justify-evenly">
-          <button
+    <Container size="xl" className="py-8">
+      <div className="flex flex-col">
+        {/* Tab Buttons */}
+        <div className="flex gap-2 mb-6">
+          <Button
             onClick={() => handleButtonClick("upcoming")}
-            className={`px-4 py-2 w-1/2 relative rounded-md ${
-              activeButton === "upcoming"
-                ? "bg-secondary text-white shadow-lg"
-                : "bg-gray-200 text-black hover:bg-gray-400"
-            }`}
+            variant={activeButton === "upcoming" ? "primary" : "outline"}
+            rounded="lg"
+            className="flex-1 sm:flex-none"
           >
             Upcoming Bookings
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => handleButtonClick("past")}
-            className={`px-4 py-2 w-1/2 relative rounded-md ${
-              activeButton === "past"
-                ? "bg-secondary text-white shadow-lg"
-                : "bg-gray-200 text-black hover:bg-gray-400"
-            }`}
+            variant={activeButton === "past" ? "primary" : "outline"}
+            rounded="lg"
+            className="flex-1 sm:flex-none"
           >
             Past Bookings
-          </button>
+          </Button>
         </div>
-        {/* // Bookings table */}
-        <div className="my-8 flex flex-col">
-          <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <div className="overflow-hidden border border-gray-200 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr className="divide-x divide-gray-200">
-                      <th
-                        scope="col"
-                        className="px-4 py-3.5 text-left text-sm font-normal text-gray-500"
-                      >
-                        <span>Mentor</span>
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-12 py-3.5 text-left text-sm font-normal text-gray-500"
-                      >
-                        College
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-4 py-3.5 text-left text-sm font-normal text-gray-500"
-                      >
-                        Slot
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-4 py-3.5 text-left text-sm font-normal text-gray-500"
-                      >
-                        Booked on
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-4 py-3.5 text-left text-sm font-normal text-gray-500"
-                      >
-                        Meeting Link
-                      </th>
+
+        {/* Bookings Table */}
+        <div className="overflow-x-auto">
+          <div className="inline-block min-w-full align-middle">
+            <div className="overflow-hidden border border-border rounded-xl">
+              <table className="min-w-full divide-y divide-border">
+                <thead className="bg-background-subtle">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-4 py-3.5 text-left text-body-sm font-medium text-text-secondary"
+                    >
+                      Mentor
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-4 py-3.5 text-left text-body-sm font-medium text-text-secondary"
+                    >
+                      College
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-4 py-3.5 text-left text-body-sm font-medium text-text-secondary"
+                    >
+                      Slot
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-4 py-3.5 text-left text-body-sm font-medium text-text-secondary"
+                    >
+                      Booked on
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-4 py-3.5 text-left text-body-sm font-medium text-text-secondary"
+                    >
+                      Meeting Link
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border bg-background">
+                  {bookings.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-4 py-12">
+                        <EmptyState
+                          icon="calendar"
+                          title={`No ${activeButton} bookings`}
+                          description={
+                            activeButton === "upcoming"
+                              ? "You don't have any upcoming sessions. Book a mentor to get started!"
+                              : "You haven't completed any sessions yet."
+                          }
+                        />
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                    {bookings.map((booking, index) => (
-                      <tr key={index} className="divide-x divide-gray-200">
+                  ) : (
+                    bookings.map((booking, index) => (
+                      <tr key={index}>
                         <td className="whitespace-nowrap px-4 py-4">
-                          <div className="flex items-center">
+                          <div className="flex items-center gap-3">
                             <div className="h-10 w-10 flex-shrink-0">
                               <img
                                 className="h-10 w-10 rounded-full object-cover"
@@ -152,23 +178,21 @@ function Page() {
                                 }}
                               />
                             </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">
-                                {booking.mentor?.name || "N/A"}
-                              </div>
+                            <div className="text-body-sm font-medium text-text-primary">
+                              {booking.mentor?.name || "N/A"}
                             </div>
                           </div>
                         </td>
-                        <td className="whitespace-nowrap px-12 py-4">
-                          <div className="text-sm text-gray-900">
+                        <td className="whitespace-nowrap px-4 py-4">
+                          <div className="text-body-sm text-text-primary">
                             {booking.mentor?.college || "N/A"}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-body-xs text-text-tertiary">
                             {booking.mentor?.branch || "N/A"}
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-4 py-4">
-                          <span className="inline-flex items-center justify-center rounded-lg bg-green-200 px-3 py-1.5 text-sm font-medium text-green-800 shadow-sm ring-1 ring-green-300">
+                          <Badge variant="success" size="md">
                             {new Date(booking.slot).toLocaleString("en-US", {
                               weekday: "short",
                               year: "numeric",
@@ -178,40 +202,39 @@ function Page() {
                               minute: "2-digit",
                               hour12: true,
                             })}
-                          </span>
+                          </Badge>
                         </td>
-                        <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-500">
+                        <td className="whitespace-nowrap px-4 py-4 text-body-sm text-text-secondary">
                           {new Date(booking.createdAt).toLocaleDateString() ||
                             "N/A"}
                         </td>
-                        <td className="whitespace-nowrap px-4 py-4 flex items-center justify-center text-right text-sm font-medium">
+                        <td className="whitespace-nowrap px-4 py-4">
                           {booking.meeting_link ? (
                             <Button
                               asChild
                               variant="primary"
+                              size="sm"
                             >
                               <Link href={booking.meeting_link}>
-                                Meeting Link
+                                Join Meeting
                               </Link>
                             </Button>
                           ) : (
-                            <Button
-                              variant="danger"
-                            >
+                            <Badge variant="warning" size="md">
                               Not available
-                            </Button>
+                            </Badge>
                           )}
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }
 

@@ -8,6 +8,9 @@ const colleges = [
   "IIIT Hyderabad",
   "DTU",
   "VIT",
+  "IIT Madras",
+  "NSUT",
+  "IIT Kanpur",
 ];
 
 export default function TrustBarV2() {
@@ -20,34 +23,30 @@ export default function TrustBarV2() {
       </div>
 
       <div className="relative w-full overflow-hidden">
-        <div className="flex animate-infinite-scroll w-[200%]">
-          {/* Set 1 */}
-          <div className="flex items-center justify-around w-full gap-16 px-6">
-            {colleges.map((college, index) => (
-              <span
-                key={`set1-${index}`}
-                className="text-lg font-bold text-text-tertiary tracking-tight hover:text-text-secondary transition-colors cursor-default whitespace-nowrap"
-              >
-                {college}
-              </span>
-            ))}
-          </div>
-          {/* Set 2 (duplicate for seamless scroll) */}
-          <div className="flex items-center justify-around w-full gap-16 px-6">
-            {colleges.map((college, index) => (
-              <span
-                key={`set2-${index}`}
-                className="text-lg font-bold text-text-tertiary tracking-tight hover:text-text-secondary transition-colors cursor-default whitespace-nowrap"
-              >
-                {college}
-              </span>
-            ))}
-          </div>
+        <div className="flex animate-infinite-scroll w-max">
+          {/* First set of colleges */}
+          {colleges.map((college, index) => (
+            <span
+              key={`set1-${index}`}
+              className="text-lg font-bold text-text-tertiary tracking-tight hover:text-text-secondary transition-colors cursor-default whitespace-nowrap flex-shrink-0 px-8"
+            >
+              {college}
+            </span>
+          ))}
+          {/* Duplicate set for seamless loop */}
+          {colleges.map((college, index) => (
+            <span
+              key={`set2-${index}`}
+              className="text-lg font-bold text-text-tertiary tracking-tight hover:text-text-secondary transition-colors cursor-default whitespace-nowrap flex-shrink-0 px-8"
+            >
+              {college}
+            </span>
+          ))}
         </div>
 
         {/* Fade masks */}
-        <div className="absolute top-0 left-0 h-full w-32 bg-gradient-to-r from-white to-transparent pointer-events-none" />
-        <div className="absolute top-0 right-0 h-full w-32 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+        <div className="absolute top-0 left-0 h-full w-32 bg-gradient-to-r from-background to-transparent pointer-events-none z-10" />
+        <div className="absolute top-0 right-0 h-full w-32 bg-gradient-to-l from-background to-transparent pointer-events-none z-10" />
       </div>
     </section>
   );
