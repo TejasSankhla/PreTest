@@ -49,7 +49,7 @@ function Navbar() {
   }, []);
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-white/60 backdrop-blur-md border-b border-gray-100/50">
+    <header className="fixed top-0 w-full z-50 bg-background border-b border-border/50">
       <Container size="full" padding="default" className="h-14 flex items-center justify-between">
         {/* Logo */}
         <Link

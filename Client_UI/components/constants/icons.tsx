@@ -1,4 +1,8 @@
-function FacebookIcon(props: any) {
+import React from "react";
+
+type IconProps = React.SVGProps<SVGSVGElement>;
+
+function FacebookIcon(props: IconProps) {
   return (
     <svg
       {...props}
@@ -17,7 +21,7 @@ function FacebookIcon(props: any) {
   );
 }
 
-function InstagramIcon(props: any) {
+function InstagramIcon(props: IconProps) {
   return (
     <svg
       {...props}
@@ -38,7 +42,7 @@ function InstagramIcon(props: any) {
   );
 }
 
-function TwitterIcon(props: any) {
+function TwitterIcon(props: IconProps) {
   return (
     <svg
       {...props}
@@ -56,7 +60,8 @@ function TwitterIcon(props: any) {
     </svg>
   );
 }
-function MenuIcon(props: any) {
+
+function MenuIcon(props: IconProps) {
   return (
     <svg
       {...props}
@@ -76,7 +81,8 @@ function MenuIcon(props: any) {
     </svg>
   );
 }
-function LocationIcon({ props }: any) {
+
+function LocationIcon({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -86,14 +92,15 @@ function LocationIcon({ props }: any) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`lucide lucide-map-pin ${props}`}
+      className={`lucide lucide-map-pin ${className || ""}`}
     >
       <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
       <circle cx="12" cy="10" r="3" />
     </svg>
   );
 }
-function LinkedinIcon({ props }: any) {
+
+function LinkedinIcon({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +112,7 @@ function LinkedinIcon({ props }: any) {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="lucide lucide-linkedin"
+      className={`lucide lucide-linkedin ${className || ""}`}
     >
       <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
       <rect width="4" height="12" x="2" y="9" />

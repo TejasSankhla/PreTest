@@ -4,12 +4,15 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronRight, Star } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
-import { Button } from "@/components/atoms";
+import { Button, Badge, Logo } from "@/components/atoms";
 import { ROUTES } from "@/lib/routes";
+import { useAuth } from "@/context/AuthContext";
 
 export default function HeroSectionV2() {
+  const { user } = useAuth();
+
   return (
-    <section className="min-h-screen flex overflow-hidden bg-background w-full pt-14 relative items-center justify-center">
+    <section className="min-h-screen flex overflow-hidden bg-background w-full relative items-center justify-center">
       {/* Background Elements */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -33,16 +36,15 @@ export default function HeroSectionV2() {
           animate="visible"
         >
           {/* Badge */}
-          <motion.div
-            variants={fadeInUp}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100/50 text-secondary text-[11px] font-semibold uppercase tracking-wider mb-8"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
-            </span>
-            <span className="hidden sm:inline">Community Powered Practice</span>
-            <span className="sm:hidden">200+ Practicing</span>
+          <motion.div variants={fadeInUp}>
+            <Badge variant="secondary" size="sm" className="mb-8 gap-2 uppercase tracking-wider">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+              </span>
+              <span className="hidden sm:inline">Community Powered Practice</span>
+              <span className="sm:hidden">200+ Practicing</span>
+            </Badge>
           </motion.div>
 
           {/* Headline */}
@@ -76,8 +78,8 @@ export default function HeroSectionV2() {
               className="shadow-[0_1px_2px_rgba(249,115,22,0.3)]"
               rightIcon={<ChevronRight className="w-4 h-4 opacity-80 group-hover:translate-x-0.5 transition-transform" />}
             >
-              <Link href={ROUTES.auth.signUp} className="group">
-                Get Started Free
+              <Link href={user ? ROUTES.exploreMentors : ROUTES.auth.signUp} className="group">
+                {user ? "Book Now" : "Get Started Free"}
               </Link>
             </Button>
           </motion.div>
@@ -132,14 +134,14 @@ export default function HeroSectionV2() {
           <div className="relative w-[420px] h-[420px]">
             {/* Core */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-background rounded-full shadow-[0_4px_30px_rgba(0,0,0,0.08)] border border-border flex items-center justify-center z-20">
-              <div className="w-16 h-16 bg-gradient-to-br from-secondary to-secondary-dark rounded-full flex items-center justify-center text-white text-2xl font-bold tracking-tighter shadow-lg shadow-orange-500/25">
-                P
+              <div className="w-16 h-16 bg-gradient-to-br from-secondary to-secondary-dark rounded-full flex items-center justify-center shadow-lg shadow-orange-500/25 p-3">
+                <Logo variant="variant1" size="xl" mode="icon" theme="white" />
               </div>
             </div>
 
             {/* Orbit Ring 1 - Inner */}
             <div
-              className="absolute top-1/2 left-1/2 w-[180px] h-[180px] rounded-full border border-dashed border-gray-200/60 animate-orbit-fast z-10"
+              className="absolute top-1/2 left-1/2 w-[180px] h-[180px] rounded-full border border-dashed border-border/60 animate-orbit-fast z-10"
               style={{ marginLeft: "-90px", marginTop: "-90px" }}
             >
               <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-8 h-8 bg-background rounded-full shadow-md border border-border flex items-center justify-center animate-counter-rotate-fast">
@@ -163,17 +165,17 @@ export default function HeroSectionV2() {
               style={{ marginLeft: "-160px", marginTop: "-160px" }}
             >
               {/* Tech Companies */}
-              <div className="absolute top-[5%] left-[75%] w-10 h-10 bg-background rounded-xl shadow-md border border-border flex items-center justify-center animate-counter-rotate-slow">
-                <span className="font-bold text-[10px] tracking-tight text-text-primary">G</span>
+              <div className="absolute top-[5%] left-[75%] w-8 h-8 flex items-center justify-center animate-counter-rotate-slow">
+                <img src="/companies/google.png" alt="Google" className="w-8 h-8 object-contain" />
               </div>
-              <div className="absolute bottom-[15%] left-[5%] w-10 h-10 bg-background rounded-xl shadow-md border border-border flex items-center justify-center animate-counter-rotate-slow">
-                <span className="font-bold text-[10px] tracking-tight text-text-primary">Ms</span>
+              <div className="absolute bottom-[15%] left-[5%] w-8 h-8 flex items-center justify-center animate-counter-rotate-slow">
+                <img src="/companies/microsoft.png" alt="Microsoft" className="w-8 h-8 object-contain" />
               </div>
-              <div className="absolute top-[45%] left-[-16px] w-10 h-10 bg-background rounded-xl shadow-md border border-border flex items-center justify-center animate-counter-rotate-slow">
-                <span className="font-bold text-[10px] tracking-tight text-text-primary">Amz</span>
+              <div className="absolute top-[45%] left-[-16px] w-8 h-8 flex items-center justify-center animate-counter-rotate-slow">
+                <img src="/companies/amazon.png" alt="Amazon" className="w-8 h-8 object-contain" />
               </div>
-              <div className="absolute bottom-[5%] right-[20%] w-10 h-10 bg-background rounded-xl shadow-md border border-border flex items-center justify-center animate-counter-rotate-slow">
-                <span className="font-bold text-[10px] tracking-tight text-text-primary">Fk</span>
+              <div className="absolute bottom-[5%] right-[20%] w-8 h-8 flex items-center justify-center animate-counter-rotate-slow">
+                <img src="/companies/zomato.png" alt="Zomato" className="w-8 h-8 object-contain" />
               </div>
             </div>
 

@@ -112,7 +112,8 @@ export function Logo({
 function LogoVariant1({ theme }: { theme: string }) {
   const strokeColor = theme === "white" ? "#ffffff" : "#f97316";
   const fillColor = theme === "white" ? "#ffffff" : "#f97316";
-  const arrowColor = theme === "white" ? "#ffffff" : "#111827";
+  // Arrow should always be dark for contrast (black on default, dark on white theme)
+  const arrowColor = "#111827";
 
   return (
     <svg

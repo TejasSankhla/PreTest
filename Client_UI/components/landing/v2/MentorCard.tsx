@@ -1,6 +1,7 @@
 "use client";
 
 import { Star } from "lucide-react";
+import { Badge } from "@/components/atoms";
 
 interface MentorCardProps {
   name: string;
@@ -45,9 +46,9 @@ export default function MentorCard({
 
       {/* Company Badge */}
       <div className="mb-4">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-background-subtle rounded-full border border-border">
-          <span className="text-xs font-bold text-text-primary">{company}</span>
-        </div>
+        <Badge variant="default" size="sm">
+          {company}
+        </Badge>
       </div>
 
       {/* Stats */}
@@ -65,12 +66,9 @@ export default function MentorCard({
       {/* Expertise Tags */}
       <div className="flex flex-wrap gap-2">
         {expertise.map((skill, index) => (
-          <span
-            key={index}
-            className="text-xs font-medium text-text-secondary bg-background-subtle px-2.5 py-1 rounded-full border border-border"
-          >
+          <Badge key={index} variant="default" size="sm">
             {skill}
-          </span>
+          </Badge>
         ))}
       </div>
     </div>
