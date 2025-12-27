@@ -1,169 +1,344 @@
 "use client";
-import React, { useState } from "react";
-import { ArrowRight, Eye, EyeOff } from "lucide-react";
-import pretestLogo from "../../icon.png";
+import React, { useState, useMemo, useEffect } from "react";
+import { ArrowRight, AlertCircle, X, Check } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Button } from "@/components/atoms";
+import { Button, Badge, Input, Spinner } from "@/components/atoms";
 import { ROUTES } from "@/lib/routes";
+import {
+  validateName,
+  validateEmail,
+  validatePasswordSignup,
+  isValidName,
+  isValidEmail,
+  isValidPassword,
+} from "@/lib/validation";
+import { checkPasswordStrength, getStrengthColorClasses } from "@/utils/passwordStrength";
+import { LevelUpJourney } from "./components/LevelUpJourney";
+
 function SignUp() {
-  const { signUp, ErrorMessage } = useAuth();
+  const { user, signUp, ErrorMessage, setErrorMessage } = useAuth();
+  const router = useRouter();
+
+  // Redirect authenticated users to explore mentors
+  useEffect(() => {
+    if (user) {
+      router.push(ROUTES.exploreMentors);
+    }
+  }, [user, router]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{ name?: string; email?: string; password?: string }>({});
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  // Calculate password strength
+  const passwordStrength = useMemo(() => {
+    if (!password) return null;
+    return checkPasswordStrength(password);
+  }, [password]);
+
+  // Calculate current stage for the journey visualization
+  const currentStage = useMemo(() => {
+    if (showCelebration) return 4;
+    if (isValidPassword(password)) return 3;
+    if (email && isValidEmail(email)) return 2;
+    if (isValidName(name)) return 1;
+    return 0;
+  }, [name, email, password, showCelebration]);
+
+  // Check if form is valid
+  const isFormValid = useMemo(() => {
+    return (
+      isValidName(name) &&
+      isValidEmail(email) &&
+      isValidPassword(password) &&
+      !isLoading
+    );
+  }, [name, email, password, isLoading]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Clear previous errors
+    setErrorMessage("");
+    setFieldErrors({});
+
+    // Validate all fields using shared validation
+    const nameError = validateName(name);
+    const emailError = validateEmail(email);
+    const passwordError = validatePasswordSignup(password);
+
+    if (nameError || emailError || passwordError) {
+      setFieldErrors({
+        name: nameError,
+        email: emailError,
+        password: passwordError,
+      });
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      await signUp({ name, email, password });
-      toast.success("Sign-up successful");
-    } catch {
+      setShowCelebration(true);
+      await signUp({ name: name.trim(), email: email.trim(), password });
+      toast.success("Welcome to PreTest!");
+      // Auto-login handles redirect to explore mentors
+    } catch (error) {
+      setShowCelebration(false);
       // Error is already handled by useAuth
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Clear field error on input change
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+    if (fieldErrors.name) {
+      setFieldErrors(prev => ({ ...prev, name: "" }));
+    }
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (fieldErrors.email) {
+      setFieldErrors(prev => ({ ...prev, email: "" }));
+    }
+    if (ErrorMessage) setErrorMessage("");
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    if (fieldErrors.password) {
+      setFieldErrors(prev => ({ ...prev, password: "" }));
     }
   };
 
   return (
-    <main className="flex-1 ">
-      <section className=" flex-1 items-center justify-center">
-        <div className="flex items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
-          <div className="xl:mx-auto xl:w-full xl:max-w-sm 2xl:max-w-md">
-            <div className="mb-2 flex justify-center">
-              <Image
-                src={pretestLogo}
-                alt="pretest logo"
-                className="h-20 w-20"
-              />
+    <main className="min-h-screen bg-background relative overflow-hidden">
+      {/* Grid Pattern - Full page background matching landing page */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundSize: "40px 40px",
+          backgroundImage: `
+            linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px)
+          `,
+        }}
+      />
+      {/* Orange Gradient Blur - Top center */}
+      <div className="absolute top-0 left-1/4 -translate-x-1/2 w-[600px] h-[400px] bg-secondary/10 blur-[100px] rounded-[100%] pointer-events-none opacity-50" />
+
+      {/* Back to Home - Top Left */}
+      <Link
+        href={ROUTES.home}
+        className="absolute top-6 left-6 z-20 flex items-center gap-1.5 text-text-secondary hover:text-text-primary transition-colors group"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span className="text-body-sm font-medium group-hover:underline">Back to home</span>
+      </Link>
+
+      <div className="grid lg:grid-cols-2 min-h-screen relative">
+        {/* Left Side - Form */}
+        <section className="flex items-center justify-center px-6 py-16 lg:px-12 lg:py-16 relative">
+
+          <div className="w-full max-w-md relative z-10">
+            {/* Mobile Progress Indicator */}
+            <div className="flex justify-center gap-2 mb-6 lg:hidden">
+              <div className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${currentStage >= 1 ? 'bg-secondary' : 'bg-gray-200'}`} />
+              <div className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${currentStage >= 2 ? 'bg-secondary' : 'bg-gray-200'}`} />
+              <div className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${currentStage >= 3 ? 'bg-secondary' : 'bg-gray-200'}`} />
+              <div className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${showCelebration ? 'bg-green-500' : 'bg-gray-200'}`}>
+                {showCelebration && <Check className="w-2.5 h-2.5 text-white" />}
+              </div>
             </div>
-            <h2 className="text-center text-2xl font-bold leading-tight text-text-primary">
-              Sign up to create account
-            </h2>
-            <p className="mt-2 text-center text-base text-text-secondary">
-              Already have an account?{" "}
-              <Link
-                href={ROUTES.auth.logIn}
-                className="font-medium text-text-primary transition-all duration-200 hover:underline"
-              >
-                Sign In
-              </Link>
-            </p>
-            <form onSubmit={handleSubmit} className="mt-8">
-              <div className="space-y-5">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="text-base font-medium text-text-primary"
-                  >
-                    Full Name
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      className="flex h-10 w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-primary focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                      type="text"
-                      placeholder="Full Name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      id="name"
-                      autoComplete="name"
-                      required
-                    ></input>
-                  </div>
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="text-base font-medium text-text-primary"
-                  >
-                    Email address
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      className="flex h-10 w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-primary focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                      type="email"
-                      placeholder="Email"
-                      id="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      autoComplete="email"
-                      required
-                    ></input>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between">
-                    <label
-                      htmlFor="password"
-                      className="text-base font-medium text-text-primary"
-                    >
-                      Password
-                    </label>
-                  </div>
-                  <div className="mt-2 relative">
-                    <input
-                      className="flex h-10 w-full rounded-md border border-border bg-transparent px-3 py-2 pr-10 text-sm placeholder:text-text-tertiary focus:outline-none focus:ring-1 focus:ring-primary focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Password"
-                      id="password"
+
+            {/* Card Wrapper */}
+            <div className="relative bg-background/80 backdrop-blur-sm rounded-2xl border border-secondary/10 shadow-sm p-5 sm:p-6 lg:p-8">
+              {/* Badge */}
+              <Badge variant="secondary" size="sm" className="mb-6 gap-2 uppercase tracking-wider">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+                </span>
+                <span className="hidden sm:inline">500+ Active Students</span>
+                <span className="sm:hidden">500+ Active</span>
+              </Badge>
+
+              {/* Headline */}
+              <h1 className="text-3xl lg:text-4xl font-bold text-text-primary mb-3">
+                Join PreTest
+              </h1>
+              <p className="text-body-md text-text-secondary mb-4">
+                Practice with recently placed peer mentors
+              </p>
+
+              <p className="text-body-sm text-text-secondary mb-6">
+                Already have an account?{" "}
+                <Link
+                  href={ROUTES.auth.logIn}
+                  className="font-semibold text-text-primary transition-all duration-200 hover:underline"
+                >
+                  Sign In
+                </Link>
+              </p>
+
+              <form onSubmit={handleSubmit} className="mb-4">
+                <div className="space-y-4">
+                  {/* Name Field */}
+                  <Input
+                    label="Full Name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    value={name}
+                    onChange={handleNameChange}
+                    error={fieldErrors.name}
+                    disabled={isLoading}
+                    autoComplete="name"
+                    inputSize="md"
+                  />
+
+                  {/* Email Field */}
+                  <Input
+                    label="Email address"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={handleEmailChange}
+                    error={fieldErrors.email}
+                    disabled={isLoading}
+                    autoComplete="email"
+                    inputSize="md"
+                  />
+
+                  {/* Password Field */}
+                  <div>
+                    <Input
+                      label="Password"
+                      type="password"
+                      placeholder="Create a password (8+ chars)"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={handlePasswordChange}
+                      error={fieldErrors.password}
+                      disabled={isLoading}
                       autoComplete="new-password"
-                      minLength={8}
-                      required
-                    ></input>
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-secondary transition-colors"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      showPasswordToggle
+                      inputSize="md"
+                    />
+                    {/* Password Strength Indicator */}
+                    {password && passwordStrength && (
+                      <div className="mt-2">
+                        <div className="flex gap-1 mb-1">
+                          <div className={`h-1 flex-1 rounded transition-colors ${passwordStrength.score >= 1 ? getStrengthColorClasses(passwordStrength.strength).bg : 'bg-border'}`} />
+                          <div className={`h-1 flex-1 rounded transition-colors ${passwordStrength.score >= 2 ? getStrengthColorClasses(passwordStrength.strength).bg : 'bg-border'}`} />
+                          <div className={`h-1 flex-1 rounded transition-colors ${passwordStrength.score >= 3 ? getStrengthColorClasses(passwordStrength.strength).bg : 'bg-border'}`} />
+                          <div className={`h-1 flex-1 rounded transition-colors ${passwordStrength.score >= 4 ? getStrengthColorClasses(passwordStrength.strength).bg : 'bg-border'}`} />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <p className={`text-body-xs font-medium capitalize ${getStrengthColorClasses(passwordStrength.strength).text}`}>
+                            {passwordStrength.strength} password
+                          </p>
+                          {passwordStrength.feedback.length > 0 && (
+                            <p className="text-body-xs text-text-tertiary">
+                              {passwordStrength.feedback[0]}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Error Message */}
+                  {ErrorMessage && (
+                    <div role="alert" aria-live="polite" className="bg-error/10 border border-error/20 rounded-lg p-3 flex items-start gap-2">
+                      <AlertCircle className="h-5 w-5 text-error flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-body-sm text-error font-medium">{ErrorMessage}</p>
+                      </div>
+                      <button
+                        onClick={() => setErrorMessage("")}
+                        className="text-error hover:text-error/80 transition-colors"
+                        aria-label="Dismiss error"
+                        type="button"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Submit Button */}
+                  <div>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      size="lg"
+                      rounded="full"
+                      className="w-full"
+                      disabled={!isFormValid || isLoading}
+                      rightIcon={isLoading ? null : <ArrowRight className="ml-2" size={16} />}
                     >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
+                      {isLoading ? (
+                        <span className="flex items-center gap-2">
+                          <Spinner size="xs" variant="white" />
+                          Creating Account...
+                        </span>
                       ) : (
-                        <Eye className="h-4 w-4" />
+                        "Create Account"
                       )}
-                    </button>
+                    </Button>
                   </div>
                 </div>
-                {ErrorMessage && (
-                  <div role="alert" className="error-message text-center text-lg font-medium text-error">
-                    {ErrorMessage}
-                  </div>
-                )}
-                <div>
+              </form>
+
+              {/* Google Sign Up (Coming Soon) */}
+              <div>
+                <div className="relative group">
                   <Button
-                    type="submit"
-                    variant="secondary"
-                    className="w-full"
-                    rightIcon={<ArrowRight className="ml-2" size={16} />}
+                    type="button"
+                    variant="outline"
+                    size="lg"
+                    rounded="full"
+                    className="w-full opacity-50 cursor-not-allowed"
+                    disabled
+                    leftIcon={
+                      <svg
+                        className="h-5 w-5 text-rose-500"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.907 8.907 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z"></path>
+                      </svg>
+                    }
                   >
-                    Create Account
+                    Sign up with Google
                   </Button>
+                  <span className="text-body-xs text-text-tertiary text-center block mt-2">
+                    Coming soon
+                  </span>
                 </div>
               </div>
-            </form>
-            <div className="mt-3 space-y-3">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                leftIcon={
-                  <svg
-                    className="h-6 w-6 text-rose-500"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.907 8.907 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z"></path>
-                  </svg>
-                }
-              >
-                Sign up with Google
-              </Button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Right Side - Level Up Journey (Full Bleed) */}
+        <aside className="hidden lg:block relative">
+          <LevelUpJourney
+            currentStage={currentStage}
+            name={name}
+            email={email}
+            showCelebration={showCelebration}
+          />
+        </aside>
+      </div>
     </main>
   );
 }
