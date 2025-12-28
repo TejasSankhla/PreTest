@@ -122,13 +122,7 @@ function Page() {
                       scope="col"
                       className="px-4 py-3.5 text-left text-body-sm font-medium text-text-secondary"
                     >
-                      College
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-4 py-3.5 text-left text-body-sm font-medium text-text-secondary"
-                    >
-                      Slot
+                      Session
                     </th>
                     <th
                       scope="col"
@@ -140,14 +134,14 @@ function Page() {
                       scope="col"
                       className="px-4 py-3.5 text-left text-body-sm font-medium text-text-secondary"
                     >
-                      Meeting Link
+                      {activeButton === "upcoming" ? "Action" : "Details"}
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border bg-background">
                   {bookings.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-4 py-12">
+                      <td colSpan={4} className="px-4 py-12">
                         <EmptyState
                           icon="calendar"
                           title={`No ${activeButton} bookings`}
@@ -178,51 +172,68 @@ function Page() {
                                 }}
                               />
                             </div>
-                            <div className="text-body-sm font-medium text-text-primary">
-                              {booking.mentor?.name || "N/A"}
+                            <div>
+                              <div className="text-body-sm font-medium text-text-primary">
+                                {booking.mentor?.name || "N/A"}
+                              </div>
+                              <div className="text-body-xs text-text-tertiary">
+                                {booking.mentor?.college || "N/A"}
+                              </div>
                             </div>
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-4 py-4">
-                          <div className="text-body-sm text-text-primary">
-                            {booking.mentor?.college || "N/A"}
-                          </div>
-                          <div className="text-body-xs text-text-tertiary">
-                            {booking.mentor?.branch || "N/A"}
-                          </div>
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-4">
-                          <Badge variant="success" size="md">
-                            {new Date(booking.slot).toLocaleString("en-US", {
+                          <div className="text-body-sm font-medium text-text-primary">
+                            {new Date(booking.slot).toLocaleDateString("en-US", {
                               weekday: "short",
-                              year: "numeric",
                               month: "short",
                               day: "numeric",
+                              year: "numeric",
+                            })}
+                          </div>
+                          <div className="text-body-xs text-text-tertiary">
+                            {new Date(booking.slot).toLocaleTimeString("en-US", {
                               hour: "2-digit",
                               minute: "2-digit",
                               hour12: true,
                             })}
-                          </Badge>
+                          </div>
                         </td>
                         <td className="whitespace-nowrap px-4 py-4 text-body-sm text-text-secondary">
-                          {new Date(booking.createdAt).toLocaleDateString() ||
-                            "N/A"}
+                          {new Date(booking.createdAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
                         </td>
                         <td className="whitespace-nowrap px-4 py-4">
-                          {booking.meeting_link ? (
-                            <Button
-                              asChild
-                              variant="primary"
-                              size="sm"
-                            >
-                              <Link href={booking.meeting_link}>
-                                Join Meeting
-                              </Link>
-                            </Button>
+                          {activeButton === "upcoming" ? (
+                            booking.meeting_link ? (
+                              <Button
+                                asChild
+                                variant="primary"
+                                size="sm"
+                              >
+                                <Link href={booking.meeting_link} target="_blank">
+                                  Join Meeting
+                                </Link>
+                              </Button>
+                            ) : (
+                              <Badge variant="warning" size="md">
+                                Link pending
+                              </Badge>
+                            )
                           ) : (
-                            <Badge variant="warning" size="md">
-                              Not available
-                            </Badge>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                // TODO: Implement view details modal/page
+                                console.log("View details for booking:", booking._id);
+                              }}
+                            >
+                              View Details
+                            </Button>
                           )}
                         </td>
                       </tr>

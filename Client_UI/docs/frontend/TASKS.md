@@ -321,21 +321,63 @@ Review and fix frontend auth implementation.
 | **Sprint** | 2 |
 | **Hours** | 3h |
 | **Dependencies** | UI/UX design specs |
-| **Status** | [ ] Not Started |
+| **Status** | [x] Completed |
 
 **Tasks:**
-- [ ] Build card-based booking layout
-- [ ] Separate upcoming vs past tabs
-- [ ] Show mentor info with photo
-- [ ] Show date/time prominently
-- [ ] Add status badges
-- [ ] Add quick action buttons
-- [ ] Add empty state component
+- [x] Build card-based booking layout
+- [x] Separate upcoming vs past tabs
+- [x] Show mentor info with photo (merged with college)
+- [x] Show date/time prominently (readable format)
+- [x] Add status badges
+- [x] Add quick action buttons (Join Meeting / View Details)
+- [x] Add empty state component
 - [ ] Add skeleton loader
 - [ ] Stack cards on mobile
 
 **Files to Modify:**
 - `app/profile/my-bookings/page.tsx`
+
+---
+
+### 2.7 Booking Details View - P3
+| Attribute | Details |
+|-----------|---------|
+| **Sprint** | 2 |
+| **Hours** | 4-5h |
+| **Dependencies** | Backend booking details API, Reviews API |
+| **Status** | [ ] Not Started |
+
+**Description:**
+Build a detailed view for past bookings where users can see session feedback, scores, and other details.
+
+**Tasks:**
+- [ ] Create booking details modal or page (`app/profile/my-bookings/[id]/page.tsx`)
+- [ ] Display session summary (mentor, date, duration)
+- [ ] Show session feedback from mentor (if available)
+- [ ] Show user's rating/review for the session
+- [ ] Add option to leave review (if not already reviewed)
+- [ ] Display session scores/metrics (if applicable)
+- [ ] Add session notes section
+- [ ] Show meeting recording link (if available)
+- [ ] Handle loading and error states
+- [ ] Mobile responsive design
+
+**Backend Requirements:**
+- `GET /api/booking/:id` - Fetch booking details with feedback
+- `POST /api/booking/:id/review` - Submit review for booking
+
+**Files to Create:**
+```
+app/profile/my-bookings/
+  └── [id]/
+      └── page.tsx
+components/molecules/
+  └── BookingDetails/
+      ├── BookingDetails.tsx
+      ├── SessionFeedback.tsx
+      ├── ReviewForm.tsx
+      └── index.ts
+```
 
 ---
 

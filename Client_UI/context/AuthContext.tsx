@@ -34,7 +34,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
+        const parsed = JSON.parse(storedUser);
+        // Handle old format where user was wrapped: { user: {...}, token: "..." }
+        if (parsed.user && parsed.token) {
+          // Migrate to new format
+          setUser(parsed.user);
+          localStorage.setItem("user", JSON.stringify(parsed.user));
+        } else {
+          setUser(parsed);
+        }
       }
       const storedToken = localStorage.getItem("token");
       if (storedToken) {
@@ -58,8 +66,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       const userData = data.data;
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData.user);
+      localStorage.setItem("user", JSON.stringify(userData.user));
       localStorage.setItem("token", JSON.stringify(userData.token));
 
       // Deep linking: redirect to intended destination or default

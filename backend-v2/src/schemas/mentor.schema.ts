@@ -124,7 +124,7 @@ MentorSchema.methods.createToken = function (): string {
   const expiresIn = process.env.JWT_EXPIRY || '7d';
   const token = jwt.sign(
     {
-      UserId: this._id,
+      UserId: this._id.toString(),
       email: this.email,
       type: 'mentor',
     },

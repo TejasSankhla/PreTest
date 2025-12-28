@@ -63,7 +63,7 @@ export class UserController {
     @Request() req: { user: { UserId: string } },
   ) {
     // Verify the authenticated user matches the userId param
-    if (req.user.UserId !== userId) {
+    if (String(req.user.UserId) !== String(userId)) {
       throw new ForbiddenException('You can only create bookings for yourself');
     }
 
