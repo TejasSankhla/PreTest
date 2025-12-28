@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Button, Container } from "@/components/atoms";
 import { ROUTES } from "@/lib/routes";
