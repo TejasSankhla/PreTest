@@ -14,7 +14,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { buildLoginUrl, storeReturnTo, getCurrentPathForReturn } from "@/lib/auth-redirect";
 import { isProtectedRoute } from "@/lib/routes";
@@ -40,7 +40,6 @@ export function useAuthGuard(options: AuthGuardOptions = {}): AuthGuardResult {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [hasChecked, setHasChecked] = useState(false);
 
