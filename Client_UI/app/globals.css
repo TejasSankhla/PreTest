@@ -209,3 +209,22 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ----------------------------------------
+   UTILITY CLASSES
+   ---------------------------------------- */
+@layer utilities {
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Touch manipulation for better mobile interactions */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+}

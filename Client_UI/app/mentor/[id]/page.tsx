@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import MentorProfile from "../../../components/ui/mentor/profile";
 import { usePathname } from "next/navigation";
 import { apiClient, API_ROUTES, Mentor } from "@/lib/api";
+import { Spinner, Container } from "@/components/atoms";
+import { EmptyState } from "@/components/molecules";
 
 const MentorDetails = () => {
   const id = usePathname().split("/").pop();
@@ -25,21 +27,32 @@ const MentorDetails = () => {
     }
   }, [id]);
 
-  return (
-    <div>
-      {loading ? (
-        <div className="w-full h-screen flex justify-center items-center ">
-          <div className="text-2xl flex text-center items-center justify-center font-semibold">
-            Loading profile...
-          </div>
-        </div>
-      ) : mentor ? (
-        <MentorProfile mentor={mentor} />
-      ) : (
-        <p>No mentor found.</p>
-      )}
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex flex-col gap-4 justify-center items-center">
+        <Spinner size="lg" variant="primary" />
+        <p className="text-body-lg text-text-secondary">Loading profile...</p>
+      </div>
+    );
+  }
+
+  if (!mentor) {
+    return (
+      <Container size="lg" className="py-16">
+        <EmptyState
+          icon="user"
+          title="Mentor not found"
+          description="We couldn't find the mentor you're looking for. They may have been removed or the link is incorrect."
+          action={{
+            label: "Browse Mentors",
+            href: "/explore-mentors",
+          }}
+        />
+      </Container>
+    );
+  }
+
+  return <MentorProfile mentor={mentor} />;
 };
 
 export default MentorDetails;

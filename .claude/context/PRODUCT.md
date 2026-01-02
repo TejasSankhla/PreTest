@@ -1,6 +1,7 @@
 # PreTest - Product Context
 
 > This document is read by all Claude personas to understand the product deeply.
+> **This serves as PreTest's Platform Direction Document (Sprint Task 0.1)**
 
 ---
 
@@ -159,6 +160,127 @@ Learning is not enough. Doing, applying, and performing under pressure is what m
 | Discounts system | High | Planned |
 | Subscription model | Medium | Planned |
 | AI Interview | Medium | Planned |
+
+---
+
+## MVP Scope - NOW vs LATER
+
+> **This section defines clear boundaries between current MVP and future features**
+
+### ✅ NOW - In MVP (Current Focus)
+
+**Core User Journey:**
+1. **Discovery**
+   - Landing page with clear value prop
+   - Browse/explore mentors (with basic filtering)
+   - View mentor profiles (company, experience, ratings, reviews)
+
+2. **Booking & Payment**
+   - Select time slot from mentor availability
+   - Razorpay payment integration
+   - Booking confirmation
+
+3. **Session Management**
+   - View upcoming bookings
+   - View past bookings/history
+   - Basic booking details (date, time, mentor, status)
+
+4. **Feedback Loop**
+   - Post-session reviews (star rating + comment)
+   - Display reviews on mentor profiles
+   - Mentor rating aggregation
+
+5. **Auth & Profile**
+   - Email/password signup & login
+   - Basic user profile
+   - Forgot password flow
+   - Deep linking & session management
+
+**Features Being Polished (Pre-Launch):**
+- [ ] Landing page real data integration (pending users)
+- [ ] FAQ expansion (8-10 questions)
+- [ ] Mobile responsiveness audit
+- [ ] E2E flow testing
+- [ ] Auth security hardening
+- [ ] Error handling & loading states
+
+---
+
+### ⏳ LATER - Post-MVP (Deferred)
+
+**Phase 1 - Growth & Retention (3-6 months):**
+- **Pricing Strategy**
+  - Freemium vs paid model decision
+  - Usage limits for free tier
+  - Subscription tiers (if applicable)
+  - Discount/coupon system
+  - Referral program
+
+- **Enhanced Discovery**
+  - Advanced filtering (expertise, price range, availability)
+  - Search functionality
+  - Pagination for mentor listings
+  - Mentor recommendations (personalized)
+
+- **User Experience**
+  - Google OAuth / social login
+  - Email notifications (booking confirmations, reminders)
+  - Booking reminders (24h, 1h before session)
+  - Reschedule/cancel flow
+  - Session recordings & feedback downloads
+
+**Phase 2 - Platform Features (6-12 months):**
+- **AI Interview Feature** 🤖
+  - Voice-based AI interviewer
+  - Customizable (company, role, difficulty)
+  - Instant feedback reports
+  - Unlimited practice (24/7 availability)
+  - Complements human mentors
+
+- **Community Building**
+  - Discussion forums / Q&A
+  - Mentor leaderboards
+  - Student success stories
+  - Alumni network (connect by target company)
+  - WhatsApp/Discord community groups
+
+- **Mentor Platform**
+  - Mentor dashboard (earnings, sessions, ratings)
+  - Availability management (calendar sync)
+  - Payout system automation
+  - Mentor onboarding flow
+  - Performance analytics for mentors
+
+**Phase 3 - Expansion (12+ months):**
+- **Enterprise/B2B**
+  - College partnerships
+  - Bulk booking for placement cells
+  - White-label solutions
+
+- **Advanced Analytics**
+  - Student progress tracking
+  - Interview performance metrics
+  - Personalized improvement roadmaps
+  - Success rate tracking (offers received)
+
+- **Monetization Experiments**
+  - Subscription bundles
+  - Corporate mentor programs
+  - Premium features (priority matching, unlimited AI)
+
+---
+
+### 🚫 OUT OF SCOPE (Not Building)
+
+**We are NOT:**
+- A course platform (we do practice, not teaching)
+- Building for experienced professionals (focus: students & fresh grads)
+- Offering placement guarantees (honest preparation, not false promises)
+- A job board or recruiting platform
+- Building video conferencing (use Google Meet/Zoom for now)
+- Creating a learning management system (LMS)
+
+---
 
 ### AI Interview Feature (Upcoming)
 

@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import moment from 'moment';
 import { Mentor, MentorDocument } from '../../schemas/mentor.schema';
 import { Booking, BookingDocument } from '../../schemas/booking.schema';
@@ -19,6 +19,41 @@ import {
   convertToLowerCase,
   trimBlankSpace,
 } from '../../common/utils/helper';
+
+// Response type for fetchMentorProfile
+export interface AvailableSlot {
+  date: string;
+  slots: Date[];
+}
+
+export interface MentorProfileResponse {
+  _id: Types.ObjectId;
+  profile_pic: string;
+  username: string;
+  email: string;
+  name: string;
+  mobile_number?: string;
+  college: string;
+  location: string;
+  branch: string;
+  grad_year: number;
+  rating?: number;
+  about: string;
+  tagline?: string;
+  session: number;
+  currentCompany?: string;
+  role?: string;
+  linkedin_url?: string;
+  insta_url?: string;
+  isVerified: boolean;
+  isBlocked: boolean;
+  selectedSlots: Record<number, Date[]>;
+  isAvailable: boolean;
+  slots: AvailableSlot[] | null;
+}
+
+// Max days to search for available slots (prevent infinite loop)
+const MAX_SLOT_SEARCH_DAYS = 365;
 
 @Injectable()
 export class MentorService {
@@ -124,7 +159,7 @@ export class MentorService {
    * Fetch mentor profile along with available slots for next 7 days
    * This is the complex slot calculation logic from the original backend
    */
-  async fetchMentorProfile(mentorId: string): Promise<any> {
+  async fetchMentorProfile(mentorId: string): Promise<MentorProfileResponse> {
     const mentor = await this.mentorModel.findById(mentorId).lean();
 
     if (!mentor) {
@@ -160,11 +195,11 @@ export class MentorService {
       currDate.toDate(),
     );
 
-    const availableSlots: { date: string; slots: Date[] }[] = [];
+    const availableSlots: AvailableSlot[] = [];
     availableDays = 0;
 
-    // Until we find 7 available slot dates, keep iterating
-    for (let offsetDays = 0; availableDays < 7; offsetDays++) {
+    // Until we find 7 available slot dates, keep iterating (with max bound to prevent infinite loop)
+    for (let offsetDays = 0; availableDays < 7 && offsetDays < MAX_SLOT_SEARCH_DAYS; offsetDays++) {
       const weekday = (currWeekDay + offsetDays) % 7;
       const slotsForDay = mentor.selectedSlots?.[weekday as keyof typeof mentor.selectedSlots];
 

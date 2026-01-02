@@ -3,6 +3,8 @@ import { createContext, useContext, useState, ReactNode, Dispatch, SetStateActio
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { apiClient, API_ROUTES, User, LoginCredentials, SignUpCredentials } from "@/lib/api";
+import { ROUTES } from "@/lib/routes";
+import { getPostAuthRedirect, clearReturnTo } from "@/lib/auth-redirect";
 import axios from "axios";
 
 // Re-export User type for backwards compatibility
@@ -13,7 +15,7 @@ interface AuthContextType {
   login: (credentials: LoginCredentials) => Promise<void>;
   signUp: (credentials: SignUpCredentials) => Promise<void>;
   logout: () => void;
-  ErrorMessage: string | null;
+  ErrorMessage: string;
   setErrorMessage: Dispatch<SetStateAction<string>>;
 }
 
@@ -29,13 +31,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const router = useRouter();
   const [ErrorMessage, setErrorMessage] = useState("");
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken(JSON.parse(storedToken));
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        // Handle old format where user was wrapped: { user: {...}, token: "..." }
+        if (parsed.user && parsed.token) {
+          // Migrate to new format
+          setUser(parsed.user);
+          localStorage.setItem("user", JSON.stringify(parsed.user));
+        } else {
+          setUser(parsed);
+        }
+      }
+      const storedToken = localStorage.getItem("token");
+      if (storedToken) {
+        setToken(JSON.parse(storedToken));
+      }
+    } catch (error) {
+      // Clear corrupted data
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      console.error("Failed to parse stored auth data:", error);
     }
   }, []);
 
@@ -49,10 +66,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       const userData = data.data;
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData.user);
+      localStorage.setItem("user", JSON.stringify(userData.user));
       localStorage.setItem("token", JSON.stringify(userData.token));
-      router.push("/");
+
+      // Deep linking: redirect to intended destination or default
+      const redirectTo = getPostAuthRedirect(ROUTES.exploreMentors);
+      router.push(redirectTo);
       setErrorMessage("");
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -72,13 +92,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     }
   };
-  const signUp = async (credentials: SignUpCredentials) => {
+  const signUp = async (credentials: SignUpCredentials, autoLogin: boolean = true) => {
     try {
       const response = await apiClient.post(API_ROUTES.auth.signUp(), credentials);
       const data = response.data;
 
       if (!data.success) {
         throw Error(data.msg || "Sign-Up failed, Please try again.");
+      }
+
+      // Auto-login after successful signup
+      if (autoLogin) {
+        await login({ email: credentials.email, password: credentials.password });
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -101,7 +126,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    router.push("/")
+    clearReturnTo(); // Clear any stored return path
+    router.push(ROUTES.home);
   };
 
   const value: AuthContextType = {

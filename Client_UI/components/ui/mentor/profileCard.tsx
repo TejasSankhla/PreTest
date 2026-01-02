@@ -1,29 +1,10 @@
 import React, { memo } from "react";
-import {
-  LocationIcon,
-  LinkedinIcon,
-  InstagramIcon,
-} from "@/components/constants/icons";
-import ToggleLikeButton from "@/components/constants/toggleLikeButton";
-import { Button } from "@/components/atoms";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "../../../components/ui/avatar";
+import { Star, ArrowRight } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
-
-// Define types and import
-interface Mentor {
-  _id: string;
-  name: string;
-  profile_pic?: string;
-  location?: string;
-  college?: string;
-  about?: string;
-  linkedin_url?: string;
-  insta_url?: string;
-}
+import { getMockRating, getMockSessionCount } from "@/lib/utils";
+import { ROUTES } from "@/lib/routes";
+import { Mentor } from "@/lib/api";
 
 interface ProfileCardProps {
   mentor: Mentor;
@@ -37,62 +18,84 @@ function ProfileCard({ mentor }: ProfileCardProps) {
       )
     : "/user-placeholder.png";
 
-  // Truncate the "about" text to 25 words
-  const truncatedAbout = mentor?.about
-    ? mentor.about.split(" ").slice(0, 25).join(" ") +
-      (mentor.about.split(" ").length > 25 ? "..." : "")
-    : "";
+  // Mock data for Phase 1
+  const rating = getMockRating(mentor._id);
+  const sessionCount = getMockSessionCount(mentor._id);
+
+  // Calculate years of experience from grad_year
+  const currentYear = new Date().getFullYear();
+  const yearsOfExp = mentor.grad_year
+    ? Math.max(0, currentYear - mentor.grad_year)
+    : null;
 
   return (
-    <div className="w-full p-2 box-border border-gray-200 rounded-lg border-2 flex-row">
-      <div className="mentor-info flex p-4">
-        <div className="mentor-pic flex-shrink-0">
-          <Avatar className="h-20 w-20 sm:h-32 sm:w-32 md:h-44 md:w-44">
-            <AvatarImage
-              className="object-cover w-full h-full"
-              src={optimizedProfilePic}
-              alt="User avatar"
-              loading="lazy"
-            />
-            <AvatarFallback className="object-cover w-full h-full" />
-          </Avatar>
-        </div>
-        <div className="mentor-details ml-4 w-full relative flex flex-col md:mt-4 sm:gap-y-1">
-          <div className="mentor-name flex text-lg sm:text-2xl">
-            {mentor.name}
+    <Link
+      href={ROUTES.mentor.profile(mentor._id)}
+      className="block w-full bg-white rounded-2xl border border-border hover:border-secondary/40 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group cursor-pointer"
+    >
+      {/* Main Content */}
+      <div className="p-4 sm:p-5">
+        <div className="flex gap-4">
+          {/* Avatar */}
+          <div className="flex-shrink-0">
+            <Avatar className="h-16 w-16 sm:h-[72px] sm:w-[72px] rounded-xl ring-1 ring-border group-hover:ring-secondary/30 transition-all">
+              <AvatarImage
+                className="object-cover w-full h-full rounded-xl"
+                src={optimizedProfilePic}
+                alt={`${mentor.name}'s avatar`}
+                loading="lazy"
+              />
+              <AvatarFallback className="bg-secondary-lightest text-secondary font-bold text-lg sm:text-xl rounded-xl">
+                {mentor.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
           </div>
-          <div className="mentor-college flex text-gray-400 items-center gap-x-2 text-xs sm:text-base">
-            <LocationIcon props="h-4 w-4 sm:h-5 sm:w-5" />
-            {mentor.location}
-          </div>
-          <div className="mentor-bio flex ml-1 font-serif text-gray-700 text-sm sm:text-lg">
-            {mentor.college}
-          </div>
-          <div className="mentor-about ml-1 w-full text-gray-700 text-xs sm:text-sm">
-            {truncatedAbout}
+
+          {/* Details */}
+          <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+            {/* Name - Primary */}
+            <h3 className="text-base sm:text-lg font-semibold text-text-primary truncate group-hover:text-secondary transition-colors">
+              {mentor.name}
+            </h3>
+
+            {/* Company + Role */}
+            {mentor.currentCompany && (
+              <p className="text-sm text-text-secondary truncate">
+                {mentor.currentCompany}
+                {mentor.role && (
+                  <span className="text-text-tertiary"> · {mentor.role}</span>
+                )}
+              </p>
+            )}
+
+            {/* College */}
+            {mentor.college && (
+              <p className="text-sm text-text-tertiary truncate">
+                {mentor.college}
+              </p>
+            )}
+
+            {/* Trust Signals */}
+            <div className="flex items-center gap-2 text-sm mt-0.5">
+              <div className="flex items-center gap-1">
+                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                <span className="font-medium text-text-primary">{rating}</span>
+              </div>
+              <span className="text-text-tertiary">·</span>
+              <span className="text-text-secondary">{sessionCount} sessions</span>
+            </div>
           </div>
         </div>
       </div>
-      <hr />
-      <div className="mentor-actions items-center px-4 py-2 flex gap-x-4">
-        {mentor.linkedin_url && (
-          <Link href={mentor.linkedin_url || "#"}>
-            <LinkedinIcon />
-          </Link>
-        )}
-        {mentor.insta_url && (
-          <Link href={mentor.insta_url || "#"}>
-            <InstagramIcon />
-          </Link>
-        )}
-        <ToggleLikeButton />
-        <Link href={`/mentor/${mentor._id}`} className="ml-auto">
-          <Button variant="primary" rounded="default">
-            View Profile
-          </Button>
-        </Link>
+
+      {/* Footer */}
+      <div className="bg-gray-50 px-4 sm:px-5 py-3 flex items-center justify-end border-t border-border/50">
+        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-secondary group-hover:text-secondary-dark transition-colors">
+          Book Now
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }
 

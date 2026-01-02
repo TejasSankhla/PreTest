@@ -1,0 +1,17 @@
+{
+  "name": "PreTest - Master Your Next Interview",
+  "short_name": "PreTest",
+  "description": "Practice with recent grads from top companies. Get personalized mock interviews and feedback.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f97316",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

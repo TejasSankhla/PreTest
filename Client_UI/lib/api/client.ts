@@ -29,12 +29,30 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor
+// Response interceptor - handle 401 and session expiration
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    // Global error handling can be added here
-    // e.g., redirect to login on 401, show toast on 500, etc.
+    // Handle 401 Unauthorized - session expired or invalid token
+    if (error.response?.status === 401 && typeof window !== "undefined") {
+      const currentPath = window.location.pathname;
+
+      // Don't redirect if already on auth pages
+      if (!currentPath.startsWith("/auth")) {
+        // Clear auth state
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+
+        // Store current path for return after login
+        const fullPath = window.location.pathname + window.location.search;
+        localStorage.setItem("auth_return_to", fullPath);
+
+        // Redirect to login with returnTo parameter
+        const returnTo = encodeURIComponent(fullPath);
+        window.location.href = `/auth/log-in?returnTo=${returnTo}&expired=true`;
+      }
+    }
+
     return Promise.reject(error);
   }
 );

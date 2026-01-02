@@ -44,5 +44,13 @@ export class UpdateMentorDto {
 
   @IsOptional()
   @IsString()
+  currentCompany?: string;
+
+  @IsOptional()
+  @IsString()
+  role?: string;
+
+  @IsOptional()
+  @IsString()
   profile_pic?: string;
 }

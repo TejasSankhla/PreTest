@@ -7,6 +7,17 @@ import { CalendarService } from '../../services/calendar.service';
 import { EmailService } from '../../services/email.service';
 import { CreateBookingDto } from './dto';
 
+// Interface for populated booking with mentor and client details
+interface PopulatedUser {
+  name: string;
+  email: string;
+}
+
+interface PopulatedBooking extends Omit<BookingDocument, 'mentor' | 'client'> {
+  mentor: PopulatedUser;
+  client: PopulatedUser;
+}
+
 @Injectable()
 export class BookingService {
   constructor(
@@ -82,11 +93,11 @@ export class BookingService {
     const newBooking = await this.bookingModel.create(bookingDetails);
 
     // Populate mentor and client details
-    const populatedBooking = await this.bookingModel
+    const populatedBooking = (await this.bookingModel
       .findById(newBooking._id)
       .populate('mentor', 'email name')
       .populate('client', 'email name')
-      .exec();
+      .exec()) as PopulatedBooking | null;
 
     if (!populatedBooking) {
       throw new BadRequestException('Failed to create booking');
@@ -95,12 +106,12 @@ export class BookingService {
     // Send confirmation emails
     await this.emailService.sendBookingConfirmationEmail({
       client: {
-        name: (populatedBooking.client as any).name,
-        email: (populatedBooking.client as any).email,
+        name: populatedBooking.client.name,
+        email: populatedBooking.client.email,
       },
       mentor: {
-        name: (populatedBooking.mentor as any).name,
-        email: (populatedBooking.mentor as any).email,
+        name: populatedBooking.mentor.name,
+        email: populatedBooking.mentor.email,
       },
       slot: populatedBooking.slot,
     });
@@ -108,10 +119,10 @@ export class BookingService {
     // Create Google Calendar event with Meet link
     const meetingLink = await this.calendarService.createEvent({
       startTime: populatedBooking.slot,
-      summary: `1:1 Mentorship Session with ${(populatedBooking.mentor as any).name}`,
+      summary: `1:1 Mentorship Session with ${populatedBooking.mentor.name}`,
       location: 'Virtual',
-      client: (populatedBooking.client as any).email,
-      mentor: (populatedBooking.mentor as any).email,
+      client: populatedBooking.client.email,
+      mentor: populatedBooking.mentor.email,
     });
 
     // Update booking with meeting link
