@@ -11,17 +11,17 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const reflector = app.get(Reflector);
 
-  // CORS Configuration
+  // CORS Configuration - URLs are validated at startup via env.validation.ts
+  const allowedOrigins = [
+    configService.getOrThrow<string>('app.clientFrontendUrl'),
+    configService.getOrThrow<string>('app.mentorFrontendUrl'),
+  ].map((url) => url.replace(/\/$/, '')); // Remove trailing slashes
+
   app.enableCors({
-    origin: [
-      configService.get<string>('app.clientFrontendUrl'),
-      configService.get<string>('app.mentorFrontendUrl'),
-      'http://localhost:4000',
-      'http://localhost:4002',
-    ].filter(Boolean),
+    origin: allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
   });
 
   // Global prefix to match existing API routes
