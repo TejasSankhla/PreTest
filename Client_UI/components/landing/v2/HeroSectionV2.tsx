@@ -1,14 +1,18 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronRight, Star } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import { Button, Badge, Logo } from "@/components/atoms";
+import { ROUTES } from "@/lib/routes";
+import { useAuth } from "@/context/AuthContext";
 
 export default function HeroSectionV2() {
+  const { user } = useAuth();
+
   return (
-    <section className="min-h-screen flex overflow-hidden bg-white w-full pt-14 relative items-center justify-center">
+    <section className="min-h-screen flex overflow-hidden bg-background w-full relative items-center justify-center">
       {/* Background Elements */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -23,7 +27,7 @@ export default function HeroSectionV2() {
       />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-secondary/10 blur-[100px] rounded-[100%] pointer-events-none opacity-50" />
 
-      <div className="relative w-full max-w-screen-xl mx-auto px-6 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center h-full py-12 lg:py-0">
+      <div className="relative w-full max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center h-full py-12 lg:py-0">
         {/* Hero Content */}
         <motion.div
           className="relative z-10 flex flex-col items-start max-w-2xl"
@@ -32,34 +36,33 @@ export default function HeroSectionV2() {
           animate="visible"
         >
           {/* Badge */}
-          <motion.div
-            variants={fadeInUp}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-100/50 text-secondary text-[11px] font-semibold uppercase tracking-wider mb-8"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
-            </span>
-            Community Powered Practice
+          <motion.div variants={fadeInUp}>
+            <Badge variant="secondary" size="sm" className="mb-8 gap-2 uppercase tracking-wider">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+              </span>
+              <span className="hidden sm:inline">Community Powered Practice</span>
+              <span className="sm:hidden">200+ Practicing</span>
+            </Badge>
           </motion.div>
 
           {/* Headline */}
           <motion.h1
             variants={fadeInUp}
-            className="text-5xl sm:text-6xl lg:text-[5.5rem] font-bold tracking-tighter text-gray-900 leading-[0.95] mb-8"
-            style={{ letterSpacing: "-0.04em" }}
+            className="text-4xl sm:text-5xl lg:text-[5.5rem] font-bold tracking-tighter tracking-tight-v2 text-text-primary leading-[0.95] mb-8"
           >
             Master your <br />
-            <span className="text-gray-300">next interview.</span>
+            <span className="text-text-tertiary">next interview.</span>
           </motion.h1>
 
           {/* Subheadline */}
           <motion.p
             variants={fadeInUp}
-            className="text-lg sm:text-xl text-gray-500 mb-10 max-w-lg leading-relaxed font-medium tracking-tight"
+            className="text-lg sm:text-xl text-text-secondary mb-10 max-w-lg leading-relaxed font-medium tracking-tight"
           >
-            Direct access to mentors from top tech companies. No fluff, just
-            real mock interviews and actionable feedback.
+            Practice with engineers who recently cracked Google, Amazon, Flipkart.
+            Get honest feedback before your real interview.
           </motion.p>
 
           {/* CTAs */}
@@ -67,16 +70,18 @@ export default function HeroSectionV2() {
             variants={fadeInUp}
             className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto"
           >
-            <Link
-              href="/explore-mentors"
-              className="group bg-secondary hover:bg-secondary-dark text-white text-sm font-semibold px-6 py-3.5 rounded-full shadow-[0_1px_2px_rgba(249,115,22,0.3)] transition-all flex items-center justify-center gap-2"
+            <Button
+              asChild
+              variant="primary"
+              size="lg"
+              rounded="full"
+              className="shadow-[0_1px_2px_rgba(249,115,22,0.3)]"
+              rightIcon={<ChevronRight className="w-4 h-4 opacity-80 group-hover:translate-x-0.5 transition-transform" />}
             >
-              Find a Mentor
-              <ChevronRight className="w-4 h-4 opacity-80 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-            <button className="bg-white border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 text-sm font-semibold px-6 py-3.5 rounded-full transition-all flex items-center justify-center">
-              View Sample Report
-            </button>
+              <Link href={user ? ROUTES.exploreMentors : ROUTES.auth.signUp} className="group">
+                {user ? "Book Now" : "Get Started Free"}
+              </Link>
+            </Button>
           </motion.div>
 
           {/* Social Proof */}
@@ -88,19 +93,19 @@ export default function HeroSectionV2() {
               <img
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
                 alt=""
-                className="w-10 h-10 rounded-full border-2 border-white bg-gray-50"
+                className="w-10 h-10 rounded-full border-2 border-white bg-background-subtle"
               />
               <img
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka"
                 alt=""
-                className="w-10 h-10 rounded-full border-2 border-white bg-gray-50"
+                className="w-10 h-10 rounded-full border-2 border-white bg-background-subtle"
               />
               <img
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=John"
                 alt=""
-                className="w-10 h-10 rounded-full border-2 border-white bg-gray-50"
+                className="w-10 h-10 rounded-full border-2 border-white bg-background-subtle"
               />
-              <div className="w-10 h-10 rounded-full border-2 border-white bg-gray-50 flex items-center justify-center text-[10px] font-bold text-gray-500">
+              <div className="w-10 h-10 rounded-full border-2 border-white bg-background-subtle flex items-center justify-center text-[10px] font-bold text-text-secondary">
                 +2k
               </div>
             </div>
@@ -113,7 +118,7 @@ export default function HeroSectionV2() {
                   />
                 ))}
               </div>
-              <span className="text-xs font-medium text-gray-500 mt-0.5">
+              <span className="text-xs font-medium text-text-secondary mt-0.5">
                 Rated 4.9/5 by students
               </span>
             </div>
@@ -128,24 +133,24 @@ export default function HeroSectionV2() {
           {/* Main Orbital System - Centered in the visual area */}
           <div className="relative w-[420px] h-[420px]">
             {/* Core */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-white rounded-full shadow-[0_4px_30px_rgba(0,0,0,0.08)] border border-gray-100 flex items-center justify-center z-20">
-              <div className="w-16 h-16 bg-gradient-to-br from-secondary to-secondary-dark rounded-full flex items-center justify-center text-white text-2xl font-bold tracking-tighter shadow-lg shadow-orange-500/25">
-                P
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-background rounded-full shadow-[0_4px_30px_rgba(0,0,0,0.08)] border border-border flex items-center justify-center z-20">
+              <div className="w-16 h-16 bg-gradient-to-br from-secondary to-secondary-dark rounded-full flex items-center justify-center shadow-lg shadow-orange-500/25 p-3">
+                <Logo variant="variant1" size="xl" mode="icon" theme="white" />
               </div>
             </div>
 
             {/* Orbit Ring 1 - Inner */}
             <div
-              className="absolute top-1/2 left-1/2 w-[180px] h-[180px] rounded-full border border-dashed border-gray-200/60 animate-orbit-fast z-10"
+              className="absolute top-1/2 left-1/2 w-[180px] h-[180px] rounded-full border border-dashed border-border/60 animate-orbit-fast z-10"
               style={{ marginLeft: "-90px", marginTop: "-90px" }}
             >
-              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-8 h-8 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center animate-counter-rotate-fast">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-blue-500">
+              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-8 h-8 bg-background rounded-full shadow-md border border-border flex items-center justify-center animate-counter-rotate-fast">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-info">
                   <path d="m5 12 7-7 7 7" />
                   <path d="M12 19V5" />
                 </svg>
               </div>
-              <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-8 h-8 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center animate-counter-rotate-fast">
+              <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-8 h-8 bg-background rounded-full shadow-md border border-border flex items-center justify-center animate-counter-rotate-fast">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-500">
                   <path d="m18 16 4-4-4-4" />
                   <path d="m6 8-4 4 4 4" />
@@ -156,54 +161,54 @@ export default function HeroSectionV2() {
 
             {/* Orbit Ring 2 - Outer */}
             <div
-              className="absolute top-1/2 left-1/2 w-[320px] h-[320px] rounded-full border border-gray-100/80 animate-orbit-slow z-0"
+              className="absolute top-1/2 left-1/2 w-[320px] h-[320px] rounded-full border border-border/80 animate-orbit-slow z-0"
               style={{ marginLeft: "-160px", marginTop: "-160px" }}
             >
               {/* Tech Companies */}
-              <div className="absolute top-[5%] left-[75%] w-10 h-10 bg-white rounded-xl shadow-md border border-gray-100 flex items-center justify-center animate-counter-rotate-slow">
-                <span className="font-bold text-[10px] tracking-tight text-gray-800">G</span>
+              <div className="absolute top-[5%] left-[75%] w-8 h-8 flex items-center justify-center animate-counter-rotate-slow">
+                <img src="/companies/google.png" alt="Google" className="w-8 h-8 object-contain" />
               </div>
-              <div className="absolute bottom-[15%] left-[5%] w-10 h-10 bg-white rounded-xl shadow-md border border-gray-100 flex items-center justify-center animate-counter-rotate-slow">
-                <span className="font-bold text-[10px] tracking-tight text-gray-800">Ms</span>
+              <div className="absolute bottom-[15%] left-[5%] w-8 h-8 flex items-center justify-center animate-counter-rotate-slow">
+                <img src="/companies/microsoft.png" alt="Microsoft" className="w-8 h-8 object-contain" />
               </div>
-              <div className="absolute top-[45%] left-[-16px] w-10 h-10 bg-white rounded-xl shadow-md border border-gray-100 flex items-center justify-center animate-counter-rotate-slow">
-                <span className="font-bold text-[10px] tracking-tight text-gray-800">Amz</span>
+              <div className="absolute top-[45%] left-[-16px] w-8 h-8 flex items-center justify-center animate-counter-rotate-slow">
+                <img src="/companies/amazon.png" alt="Amazon" className="w-8 h-8 object-contain" />
               </div>
-              <div className="absolute bottom-[5%] right-[20%] w-10 h-10 bg-white rounded-xl shadow-md border border-gray-100 flex items-center justify-center animate-counter-rotate-slow">
-                <span className="font-bold text-[10px] tracking-tight text-gray-800">Fk</span>
+              <div className="absolute bottom-[5%] right-[20%] w-8 h-8 flex items-center justify-center animate-counter-rotate-slow">
+                <img src="/companies/zomato.png" alt="Zomato" className="w-8 h-8 object-contain" />
               </div>
             </div>
 
             {/* Floating Card 1 - Offer Received (Top Right) */}
             <motion.div
-              className="absolute -right-16 top-4 bg-white/95 backdrop-blur-sm p-3 rounded-xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.1)] w-44 z-30"
+              className="absolute -right-16 top-4 bg-white/95 backdrop-blur-sm p-3 rounded-xl border border-border shadow-[0_8px_30px_rgba(0,0,0,0.1)] w-44 z-30"
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             >
               <div className="flex items-center gap-2.5 mb-2">
-                <div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
+                <div className="w-6 h-6 rounded-full bg-success-light flex items-center justify-center text-success border border-green-100">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                     <path d="M20 6 9 17l-5-5" />
                   </svg>
                 </div>
                 <div>
-                  <div className="text-[11px] font-semibold text-gray-900">Offer Received</div>
-                  <div className="text-[9px] text-gray-500">Google L3</div>
+                  <div className="text-[11px] font-semibold text-text-primary">Offer Received</div>
+                  <div className="text-[9px] text-text-secondary">Google L3</div>
                 </div>
               </div>
-              <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full w-full bg-green-500 rounded-full" />
+              <div className="h-1 w-full bg-border rounded-full overflow-hidden">
+                <div className="h-full w-full bg-success rounded-full" />
               </div>
             </motion.div>
 
             {/* Floating Card 2 - Detailed Feedback (Bottom Left) */}
             <motion.div
-              className="absolute -left-20 bottom-8 bg-white/95 backdrop-blur-sm p-3.5 rounded-xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.1)] w-56 z-30"
+              className="absolute -left-20 bottom-8 bg-white/95 backdrop-blur-sm p-3.5 rounded-xl border border-border shadow-[0_8px_30px_rgba(0,0,0,0.1)] w-56 z-30"
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
             >
               <div className="flex justify-between items-center mb-3">
-                <span className="text-[11px] font-semibold text-gray-900 flex items-center gap-1.5">
+                <span className="text-[11px] font-semibold text-text-primary flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-secondary rounded-full" />
                   Interview Feedback
                 </span>
@@ -212,19 +217,19 @@ export default function HeroSectionV2() {
               <div className="space-y-2">
                 {/* Introduction */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-500 font-medium">Introduction</span>
+                  <span className="text-[10px] text-text-secondary font-medium">Introduction</span>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full w-[90%] bg-green-500 rounded-full" />
+                    <div className="w-16 h-1 bg-border rounded-full overflow-hidden">
+                      <div className="h-full w-[90%] bg-success rounded-full" />
                     </div>
-                    <span className="text-[9px] text-green-600 font-semibold">9.0</span>
+                    <span className="text-[9px] text-success font-semibold">9.0</span>
                   </div>
                 </div>
                 {/* Problem Solving */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-500 font-medium">Problem Solving</span>
+                  <span className="text-[10px] text-text-secondary font-medium">Problem Solving</span>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="w-16 h-1 bg-border rounded-full overflow-hidden">
                       <div className="h-full w-[95%] bg-secondary rounded-full" />
                     </div>
                     <span className="text-[9px] text-secondary font-semibold">9.5</span>
@@ -232,19 +237,19 @@ export default function HeroSectionV2() {
                 </div>
                 {/* Communication */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-500 font-medium">Communication</span>
+                  <span className="text-[10px] text-text-secondary font-medium">Communication</span>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full w-[85%] bg-blue-500 rounded-full" />
+                    <div className="w-16 h-1 bg-border rounded-full overflow-hidden">
+                      <div className="h-full w-[85%] bg-info rounded-full" />
                     </div>
-                    <span className="text-[9px] text-blue-600 font-semibold">8.5</span>
+                    <span className="text-[9px] text-info font-semibold">8.5</span>
                   </div>
                 </div>
                 {/* Projects */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-500 font-medium">Projects</span>
+                  <span className="text-[10px] text-text-secondary font-medium">Projects</span>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="w-16 h-1 bg-border rounded-full overflow-hidden">
                       <div className="h-full w-[92%] bg-purple-500 rounded-full" />
                     </div>
                     <span className="text-[9px] text-purple-600 font-semibold">9.2</span>
@@ -252,9 +257,9 @@ export default function HeroSectionV2() {
                 </div>
                 {/* Code Quality */}
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-500 font-medium">Code Quality</span>
+                  <span className="text-[10px] text-text-secondary font-medium">Code Quality</span>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="w-16 h-1 bg-border rounded-full overflow-hidden">
                       <div className="h-full w-[88%] bg-emerald-500 rounded-full" />
                     </div>
                     <span className="text-[9px] text-emerald-600 font-semibold">8.8</span>

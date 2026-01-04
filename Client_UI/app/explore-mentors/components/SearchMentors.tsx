@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import ProfileCard from "@/components/ui/mentor/profileCard";
 import { Button, Skeleton, SkeletonButton } from "@/components/atoms";
 import { EmptyState } from "@/components/molecules";
@@ -7,6 +7,66 @@ import { Search, X, ChevronDown, Loader2, SlidersHorizontal } from "lucide-react
 import { getMockRating, getMockSessionCount } from "@/lib/utils";
 import { apiClient, API_ROUTES, Mentor, ApiResponse } from "@/lib/api";
 import debounce from "lodash.debounce";
+
+const MENTORS_PER_PAGE = 8;
+
+// Skeleton loader component for mentor cards
+function MentorCardSkeleton() {
+  return (
+    <div className="w-full bg-white rounded-2xl border border-border/80 overflow-hidden shadow-sm shadow-orange-100/50">
+      <div className="p-4 sm:p-6">
+        <div className="flex gap-4 sm:gap-5">
+          {/* Avatar skeleton */}
+          <div className="flex-shrink-0">
+            <Skeleton shape="circle" className="h-16 w-16 sm:h-24 sm:w-24" />
+          </div>
+          {/* Content skeleton */}
+          <div className="flex-1 space-y-2 sm:space-y-3">
+            <Skeleton className="h-6 sm:h-7 w-3/4" />
+            <Skeleton shape="text" className="w-1/2" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 sm:h-5 w-full" />
+              <Skeleton shape="text" className="w-2/3" />
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Footer skeleton */}
+      <div className="border-t border-border bg-background-subtle px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+        <div className="flex gap-3">
+          <Skeleton className="w-5 h-5" />
+          <Skeleton className="w-5 h-5" />
+        </div>
+        <SkeletonButton size="sm" rounded="full" />
+      </div>
+    </div>
+  );
+}
+
+// Filter Pill Component with micro-interactions
+function FilterPill({
+  label,
+  isSelected,
+  onClick,
+}: {
+  label: string;
+  isSelected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 px-3 py-2 text-body-sm font-medium rounded-full border transition-all duration-150 hover:scale-105 active:scale-95 ${
+        isSelected
+          ? "bg-secondary text-white border-secondary hover:bg-secondary-dark shadow-sm"
+          : "bg-white text-text-secondary border-border hover:border-secondary/50 hover:text-text-primary hover:shadow-sm"
+      }`}
+    >
+      {label}
+      {isSelected && <X className="w-3 h-3" />}
+    </button>
+  );
+}
 
 function SearchMentors() {
   const [mentors, setMentors] = useState<Mentor[]>([]);
@@ -283,28 +343,118 @@ function SearchMentors() {
   );
 
   return (
-    <div>
-      <div className="search-page-header">
-        <div className="flex items-center justify-center search-bar-container py-8 md:py-12 bg-orange-50">
-          <div className="search-input flex items-center justify-center w-full mx-auto">
-            <div className="flex items-center max-w-xl sm:w-full relative mx-auto">
-              <label htmlFor="simple-search" className="sr-only">
-                Search
-              </label>
-              <div className="relative w-full">
-                <input
-                  type="text"
-                  id="simple-search"
-                  onChange={handleInputChange}
-                  className="bg-gray-50 w-full border border-gray-300 text-black text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block pl-5 p-2 sm:p-3"
-                  placeholder="Search mentor, college ..."
-                />
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-background relative">
+      {/* Grid Pattern Background - Matching Landing Page */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundSize: "40px 40px",
+          backgroundImage: `
+            linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px)
+          `,
+        }}
+      />
+
+      {/* Orange Gradient Glow - Top Center (Matching Landing) */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-secondary/10 blur-[100px] rounded-[100%] pointer-events-none opacity-50" />
+
+      {/* Page Header - Transparent to blend with page gradient */}
+      <header className="relative pt-6 pb-4 sm:pt-10 sm:pb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-primary tracking-tight mb-1 sm:mb-2">
+            Find your mentor
+          </h1>
+          <p className="text-body-sm sm:text-body-md text-text-secondary max-w-lg">
+            Practice with engineers from Google, Amazon, Microsoft, and more
+          </p>
         </div>
-        <div className="search-result flex text-base font-semibold md:text-2xl gap-x-2 m-4">
-          Showing <div className="totalMentors font-sans">{totUsers}</div> Mentors
+      </header>
+
+      {/* Sticky Filter Bar */}
+      <div className="sticky top-14 z-30 bg-white border-b border-border shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          {/* Search + Sort + Filter Toggle Row */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                id="mentor-search"
+                onChange={handleInputChange}
+                className="w-full text-text-primary text-body-sm rounded-full border border-border bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 pl-9 sm:pl-11 pr-4 h-10 sm:h-11 transition-all placeholder:text-text-tertiary"
+                placeholder="Search mentors..."
+              />
+              <label htmlFor="mentor-search" className="sr-only">
+                Search mentors
+              </label>
+            </div>
+
+            {/* Sort Dropdown */}
+            <div className="relative hidden sm:block">
+              <select
+                id="sort"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                className="appearance-none bg-white text-text-primary text-body-sm rounded-full pl-4 pr-9 h-11 border border-border focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 cursor-pointer hover:border-text-tertiary transition-all"
+              >
+                <option value="rating">Top Rated</option>
+                <option value="sessions">Most Sessions</option>
+                <option value="name">Name A-Z</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary pointer-events-none" />
+            </div>
+
+            {/* Mobile Filter Toggle Button */}
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="sm:hidden inline-flex items-center gap-1.5 px-3 h-10 rounded-full border border-border bg-white text-text-secondary hover:border-secondary/50 transition-colors"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              {activeFilterCount > 0 && (
+                <span className="w-5 h-5 rounded-full bg-secondary text-white text-xs font-bold flex items-center justify-center">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Mobile Sort (visible on mobile only) */}
+          <div className="mt-3 sm:hidden">
+            <select
+              id="sort-mobile"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className="w-full appearance-none bg-white text-text-primary text-body-sm rounded-full pl-4 pr-9 h-10 border border-border focus:outline-none focus:border-secondary cursor-pointer"
+            >
+              <option value="rating">Sort: Top Rated</option>
+              <option value="sessions">Sort: Most Sessions</option>
+              <option value="name">Sort: Name A-Z</option>
+            </select>
+          </div>
+
+          {/* Mobile Filter Drawer */}
+          {isFilterOpen && (
+            <div className="sm:hidden mt-3 pt-3 border-t border-border/50">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-body-sm font-semibold text-text-primary">Filters</span>
+                <button
+                  onClick={() => setIsFilterOpen(false)}
+                  className="text-text-tertiary hover:text-text-primary p-1"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <FilterContent />
+            </div>
+          )}
+
+          {/* Desktop Filter Pills Row (hidden on mobile) */}
+          <div className="hidden sm:block mt-3">
+            <FilterContent />
+          </div>
         </div>
       </div>
 

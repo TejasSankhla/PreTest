@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Razorpay from 'razorpay';
+import type { Orders } from 'razorpay/dist/types/orders';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -20,7 +21,7 @@ export class PaymentService {
     });
   }
 
-  async createOrder(amount: number): Promise<any> {
+  async createOrder(amount: number): Promise<Orders.RazorpayOrder> {
     const options = {
       amount: amount, // amount in the smallest currency unit (paise)
       currency: 'INR',

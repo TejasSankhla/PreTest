@@ -67,6 +67,23 @@ const config: Config = {
           light: "var(--tertiary-light)",
           accent: "var(--tertiary-accent)",
         },
+        // State Colors - Semantic
+        success: {
+          DEFAULT: "var(--success)",
+          light: "var(--success-light)",
+        },
+        info: {
+          DEFAULT: "var(--info)",
+          light: "var(--info-light)",
+        },
+        warning: {
+          DEFAULT: "var(--warning)",
+          light: "var(--warning-light)",
+        },
+        error: {
+          DEFAULT: "var(--error)",
+          light: "var(--error-light)",
+        },
         // Semantic colors
         text: {
           primary: "var(--text-primary)",
@@ -78,11 +95,19 @@ const config: Config = {
           subtle: "var(--background-subtle)",
         },
         border: "var(--border)",
-        // Legacy support
-        textp: "var(--textp)",
       },
       letterSpacing: {
         tightest: "-.075em",
+        "tight-v2": "-0.04em",  // V2 headline style
+      },
+      borderRadius: {
+        sm: "var(--radius-sm)",
+        md: "var(--radius-md)",
+        lg: "var(--radius-lg)",
+        xl: "var(--radius-xl)",
+        "2xl": "var(--radius-2xl)",
+        "3xl": "var(--radius-3xl)",
+        full: "var(--radius-full)",
       },
 
       animation: {
@@ -98,10 +123,10 @@ const config: Config = {
       keyframes: {
         "infinite-scroll": {
           from: { transform: "translateX(0)" },
-          to: { transform: "translateX(-100%)" },
+          to: { transform: "translateX(-50%)" },
         },
         "infinite-scroll-reverse": {
-          from: { transform: "translateX(-100%)" },
+          from: { transform: "translateX(-50%)" },
           to: { transform: "translateX(0)" },
         },
         "orbit": {

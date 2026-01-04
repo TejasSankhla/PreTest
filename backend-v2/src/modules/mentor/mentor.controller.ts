@@ -6,6 +6,7 @@ import {
   Put,
   Body,
   Param,
+  Query,
   HttpStatus,
   HttpCode,
 } from '@nestjs/common';
@@ -45,8 +46,18 @@ export class MentorController {
     };
   }
 
+  // GET /mentor - fetch all mentors, optionally filter by college
   @Get()
-  async getAllMentors() {
+  async getAllMentors(@Query('college') college?: string) {
+    if (college) {
+      const mentors = await this.mentorService.getAllMentorsFromCollege(college);
+      return {
+        data: mentors,
+        success: true,
+        msg: 'Mentors fetched successfully',
+        err: null,
+      };
+    }
     const mentors = await this.mentorService.getAllMentors();
     return {
       data: mentors,
@@ -56,6 +67,7 @@ export class MentorController {
     };
   }
 
+  // GET /mentor/:userId - fetch mentor profile
   @Get(':userId')
   async fetchMentorProfile(@Param('userId') userId: string) {
     const mentor = await this.mentorService.fetchMentorProfile(userId);
@@ -67,7 +79,8 @@ export class MentorController {
     };
   }
 
-  @Patch('update/:userId')
+  // PATCH /mentor/:userId - update mentor profile
+  @Patch(':userId')
   async updateMentor(
     @Param('userId') userId: string,
     @Body() updateMentorDto: UpdateMentorDto,
@@ -84,7 +97,8 @@ export class MentorController {
     };
   }
 
-  @Put('slots/:userId')
+  // PUT /mentor/:userId/slots - update mentor availability slots
+  @Put(':userId/slots')
   async updateMentorAvailability(
     @Param('userId') userId: string,
     @Body() updateSlotsDto: UpdateSlotsDto,
@@ -101,13 +115,18 @@ export class MentorController {
     };
   }
 
-  @Get('explore/:college')
-  async getAllMentorsFromCollege(@Param('college') college: string) {
-    const mentors = await this.mentorService.getAllMentorsFromCollege(college);
+  // GET /mentor/:userId/bookings?status=upcoming|previous - fetch mentor bookings
+  @Get(':userId/bookings')
+  async getMentorBookings(
+    @Param('userId') userId: string,
+    @Query('status') status: string,
+  ) {
+    const isUpcoming = status === 'upcoming';
+    const bookings = await this.mentorService.fetchMentorBookings(userId, isUpcoming);
     return {
-      data: mentors,
+      data: bookings,
       success: true,
-      msg: 'Mentors fetched successfully',
+      msg: 'Bookings fetched successfully',
       err: null,
     };
   }

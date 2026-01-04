@@ -7,7 +7,8 @@ import { SkipResponseTransform } from '../../common/decorators/skip-response-tra
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Post('create-order')
+  // POST /order - create a Razorpay order
+  @Post()
   @HttpCode(HttpStatus.OK)
   @SkipResponseTransform()
   async createOrder(@Body() createOrderDto: CreateOrderDto) {
