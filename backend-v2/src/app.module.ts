@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import configs from './config';
+import { validate } from './config/env.validation';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { MentorModule } from './modules/mentor/mentor.module';
@@ -15,6 +16,7 @@ import { BookingModule } from './modules/booking/booking.module';
     ConfigModule.forRoot({
       isGlobal: true,
       load: configs,
+      validate,
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
