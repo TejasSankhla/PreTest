@@ -19,8 +19,9 @@ async function bootstrap() {
       'http://localhost:4000',
       'http://localhost:4002',
     ].filter(Boolean),
-    methods: 'GET,POST,PUT,DELETE,PATCH',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 
   // Global prefix to match existing API routes
