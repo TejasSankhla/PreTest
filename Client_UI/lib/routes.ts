@@ -52,6 +52,15 @@ export const ROUTES = {
     mentors: "/#mentors",
   },
 
+  // AI Interview routes
+  aiInterview: {
+    index: "/ai-interview",
+    history: "/ai-interview/history",
+    brief: (id: string) => `/ai-interview/${id}/brief` as const,
+    session: (id: string) => `/ai-interview/${id}/session` as const,
+    results: (id: string) => `/ai-interview/${id}/results` as const,
+  },
+
   // External links
   external: {
     support: "mailto:support@pretest.in",

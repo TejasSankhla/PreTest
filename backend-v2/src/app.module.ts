@@ -10,6 +10,7 @@ import { UserModule } from './modules/user/user.module';
 import { MentorModule } from './modules/mentor/mentor.module';
 import { OrderModule } from './modules/order/order.module';
 import { BookingModule } from './modules/booking/booking.module';
+import { AiInterviewModule } from './modules/ai-interview/ai-interview.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { BookingModule } from './modules/booking/booking.module';
     MentorModule,
     OrderModule,
     BookingModule,
+    AiInterviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],
