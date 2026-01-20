@@ -1,16 +1,43 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OpenAIService } from './openai.service';
 import {
-  TranscriptEntry,
   EvaluationResult,
-  StageResult,
-  CriterionScore,
+  RubricScore,
 } from '../schemas/interview-attempt.schema';
-import { InterviewDocument, InterviewType } from '../schemas/interview.schema';
-import {
-  getEvaluationConfig,
-  EvaluationConfig,
-} from '../config/evaluation.config';
+import { InterviewDocument } from '../schemas/interview.schema';
+import { RubricDocument } from '../schemas/rubric.schema';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TYPES
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ElevenLabs transcript item structure
+interface ElevenLabsTranscriptItem {
+  role: 'agent' | 'user';
+  message: string;
+  time_in_call_secs: number;
+}
+
+// GPT response structure for evaluation
+interface GPTEvaluationResponse {
+  overallScore: number;
+  overallFeedback: string;
+  rubricScores: {
+    rubricId: string;
+    rubricName: string;
+    score: number;
+    feedbacks: { point: string; evidence?: string }[];
+    strengths: { point: string; evidence?: string }[];
+  }[];
+}
+
+// Interview with populated rubrics
+export interface InterviewWithRubrics extends Omit<
+  InterviewDocument,
+  'rubrics'
+> {
+  rubrics: RubricDocument[];
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // EVALUATION SERVICE
@@ -23,49 +50,47 @@ export class EvaluationService {
   constructor(private readonly openaiService: OpenAIService) {}
 
   /**
-   * Evaluate an interview transcript
+   * Evaluate an interview transcript using the interview's rubrics
    */
   async evaluate(
-    interview: InterviewDocument,
-    transcript: TranscriptEntry[],
+    interview: InterviewWithRubrics,
+    rawTranscript: Record<string, unknown>,
   ): Promise<EvaluationResult> {
-    const startTime = Date.now();
-
     if (!this.openaiService.isConfigured()) {
       this.logger.warn(
         'OpenAI not configured, returning placeholder evaluation',
       );
-      return this.createPlaceholderEvaluation(startTime);
+      return this.createPlaceholderEvaluation();
     }
 
-    if (transcript.length === 0) {
+    // Extract transcript items from raw ElevenLabs response
+    const transcriptItems = this.extractTranscript(rawTranscript);
+
+    if (transcriptItems.length === 0) {
       this.logger.warn('Empty transcript, returning placeholder evaluation');
-      return this.createPlaceholderEvaluation(startTime);
+      return this.createPlaceholderEvaluation();
+    }
+
+    if (!interview.rubrics || interview.rubrics.length === 0) {
+      this.logger.warn('No rubrics defined, returning placeholder evaluation');
+      return this.createPlaceholderEvaluation();
     }
 
     try {
-      // Get type-specific evaluation config
-      const interviewType = interview.type || InterviewType.FULL_MOCK;
-      const config = getEvaluationConfig(interviewType);
-
       this.logger.log(
-        `Using evaluation config for type: ${interviewType}, criteria count: ${config.criteria.length}`,
+        `Evaluating interview "${interview.name}" with ${interview.rubrics.length} rubrics`,
       );
 
       // Format transcript for the prompt
-      const formattedTranscript = this.formatTranscript(transcript);
+      const formattedTranscript = this.formatTranscript(transcriptItems);
 
-      // Build the evaluation prompt with type-specific config
-      const systemPrompt = this.buildSystemPrompt(interview, config);
-      const userPrompt = this.buildUserPrompt(
-        interview,
-        formattedTranscript,
-        config,
-      );
+      // Build the evaluation prompts
+      const systemPrompt = this.buildSystemPrompt(interview);
+      const userPrompt = this.buildUserPrompt(interview, formattedTranscript);
 
       // Call OpenAI for evaluation
       const result =
-        await this.openaiService.createJsonCompletion<EvaluationResponse>({
+        await this.openaiService.createJsonCompletion<GPTEvaluationResponse>({
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPrompt },
@@ -74,18 +99,7 @@ export class EvaluationService {
           maxTokens: 4000,
         });
 
-      const evaluation = this.parseEvaluationResponse(
-        result.data,
-        interview,
-        config,
-      );
-
-      return {
-        ...evaluation,
-        evaluatedAt: new Date(),
-        evaluationModel: 'gpt-4o',
-        evaluationDurationMs: Date.now() - startTime,
-      };
+      return this.parseEvaluationResponse(result.data);
     } catch (error) {
       this.logger.error('Evaluation failed:', error);
       throw error;
@@ -93,29 +107,60 @@ export class EvaluationService {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
+  // TRANSCRIPT HANDLING
+  // ─────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Extract transcript items from raw ElevenLabs response
+   */
+  private extractTranscript(
+    rawTranscript: Record<string, unknown>,
+  ): ElevenLabsTranscriptItem[] {
+    // ElevenLabs returns transcript in a 'transcript' array
+    const transcript = rawTranscript?.transcript;
+
+    if (Array.isArray(transcript)) {
+      return transcript as ElevenLabsTranscriptItem[];
+    }
+
+    return [];
+  }
+
+  /**
+   * Format transcript for the evaluation prompt
+   */
+  private formatTranscript(transcript: ElevenLabsTranscriptItem[]): string {
+    return transcript
+      .map((entry) => {
+        const speaker = entry.role === 'agent' ? 'Interviewer' : 'Candidate';
+        const timestamp = this.formatTimestamp(entry.time_in_call_secs);
+        return `[${timestamp}] ${speaker}: ${entry.message}`;
+      })
+      .join('\n\n');
+  }
+
+  private formatTimestamp(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
   // PROMPT BUILDING
   // ─────────────────────────────────────────────────────────────────────────
 
-  private buildSystemPrompt(
-    interview: InterviewDocument,
-    config: EvaluationConfig,
-  ): string {
+  private buildSystemPrompt(interview: InterviewWithRubrics): string {
     return `You are an expert interview evaluator and career coach. Your task is to analyze a mock interview transcript and provide detailed, constructive feedback.
 
 INTERVIEW CONTEXT:
 - Interview: ${interview.name}
-- Interview Type: ${config.type}
 - Target Role: ${interview.role || 'Software Engineer'}
 - Difficulty: ${interview.difficulty}
 - Focus Areas: ${interview.tags?.join(', ') || 'General'}
-${config.systemPromptContext}
-
-KEY AREAS TO EVALUATE:
-${config.focusAreas.map((area) => `- ${area}`).join('\n')}
 
 YOUR EVALUATION STYLE:
 - Be constructive and specific
-- Reference exact quotes from the transcript when giving feedback
+- Reference exact quotes from the transcript when giving feedback (include timestamp)
 - Balance positive feedback with areas for improvement
 - Be encouraging while maintaining high standards
 - Provide actionable suggestions
@@ -124,91 +169,56 @@ IMPORTANT: You must respond with valid JSON matching the required schema.`;
   }
 
   private buildUserPrompt(
-    interview: InterviewDocument,
+    interview: InterviewWithRubrics,
     transcript: string,
-    config: EvaluationConfig,
   ): string {
-    const criteriaSection = config.criteria
+    // Build rubrics section
+    const rubricsSection = interview.rubrics
       .map(
-        (c, i) =>
-          `${i + 1}. ${c.name} (weight: ${Math.round(c.weight * 100)}%): ${c.description}`,
+        (r, i) =>
+          `${i + 1}. ${r.name} (ID: ${r._id.toString()})\n   ${r.description}`,
       )
-      .join('\n');
+      .join('\n\n');
 
-    // Use config stages if available, otherwise fall back to interview stages
-    const stages =
-      config.stages.length > 0
-        ? config.stages.map((s) => s.name)
-        : interview.stages?.length
-          ? interview.stages
-          : ['Introduction', 'Main Discussion', 'Wrap-up'];
+    return `Please evaluate the following interview transcript.
 
-    const stagesSection = `Interview Stages: ${stages.join(', ')}`;
-
-    return `Please evaluate the following interview transcript for a "${config.type}" interview.
-
-${stagesSection}
-
-EVALUATION CRITERIA (score each from 0-10):
-${criteriaSection}
+EVALUATION RUBRICS (score each from 0-100, all rubrics have equal weight):
+${rubricsSection}
 
 TRANSCRIPT:
 ${transcript}
 
 Please provide your evaluation in the following JSON format:
 {
-  "overallScore": <number 0-100>,
-  "overallFeedback": "<2-3 paragraph summary of performance>",
-  "criteriaScores": [
+  "overallScore": <number 0-100, average of all rubric scores>,
+  "overallFeedback": "<2-3 paragraph summary of overall performance>",
+  "rubricScores": [
     {
-      "criterionName": "<criterion name - must match exactly from criteria above>",
-      "score": <number 0-10>,
-      "maxScore": 10,
-      "weight": <weight from criteria above>,
-      "feedback": "<specific feedback with examples from transcript>"
+      "rubricId": "<rubric ID from above>",
+      "rubricName": "<rubric name>",
+      "score": <number 0-100>,
+      "feedbacks": [
+        {
+          "point": "<specific area for improvement>",
+          "evidence": "<quote from transcript with timestamp, e.g. 'At 2:34 - I helped improve...'>"
+        }
+      ],
+      "strengths": [
+        {
+          "point": "<what they did well>",
+          "evidence": "<quote from transcript with timestamp>"
+        }
+      ]
     }
-  ],
-  "stageResults": [
-    {
-      "stageIndex": <number starting from 0>,
-      "stageName": "<stage name from stages above>",
-      "stageScore": <number 0-100>,
-      "feedback": "<stage-specific feedback>",
-      "strengths": ["<strength 1>", "<strength 2>"],
-      "improvements": ["<improvement 1>", "<improvement 2>"]
-    }
-  ],
-  "strengths": ["<top strength 1>", "<top strength 2>", "<top strength 3>"],
-  "areasForImprovement": ["<area 1>", "<area 2>", "<area 3>"]
+  ]
 }
 
 IMPORTANT:
-1. Score EACH criterion listed above from 0-10
-2. The overall score should reflect the weighted average (0-100)
-3. Reference specific moments from the transcript with quotes
-4. Be constructive and provide actionable suggestions
-5. Create stage results for each stage listed above`;
-  }
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // TRANSCRIPT FORMATTING
-  // ─────────────────────────────────────────────────────────────────────────
-
-  private formatTranscript(transcript: TranscriptEntry[]): string {
-    return transcript
-      .map((entry) => {
-        const speaker = entry.role === 'agent' ? 'Interviewer' : 'Candidate';
-        const timestamp = this.formatTimestamp(entry.timestampMs);
-        return `[${timestamp}] ${speaker}: ${entry.text}`;
-      })
-      .join('\n\n');
-  }
-
-  private formatTimestamp(ms: number): string {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+1. Score EACH rubric from 0-100
+2. The overall score should be the average of all rubric scores
+3. Include specific evidence (quotes with timestamps) for both feedbacks and strengths
+4. Provide at least 2-3 feedbacks and 2-3 strengths for each rubric
+5. Be constructive and actionable in your feedback`;
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -216,116 +226,51 @@ IMPORTANT:
   // ─────────────────────────────────────────────────────────────────────────
 
   private parseEvaluationResponse(
-    response: EvaluationResponse,
-    interview: InterviewDocument,
-    config: EvaluationConfig,
-  ): Omit<
-    EvaluationResult,
-    'evaluatedAt' | 'evaluationModel' | 'evaluationDurationMs'
-  > {
-    // Map criteria scores to stage results if stages not provided
-    const stageResults: StageResult[] = response.stageResults?.length
-      ? response.stageResults.map((sr) => ({
-          stageIndex: sr.stageIndex,
-          stageName: sr.stageName,
-          stageScore: sr.stageScore,
-          criteriaScores: [], // Criteria scores are kept at the top level
-          feedback: sr.feedback,
-          strengths: sr.strengths || [],
-          improvements: sr.improvements || [],
-        }))
-      : this.generateDefaultStageResults(interview, response, config);
+    response: GPTEvaluationResponse,
+  ): EvaluationResult {
+    // Validate and normalize rubric scores
+    const rubricScores: RubricScore[] =
+      response.rubricScores?.map((rs) => ({
+        rubricId: rs.rubricId,
+        rubricName: rs.rubricName,
+        score: Math.min(100, Math.max(0, rs.score)),
+        feedbacks: rs.feedbacks || [],
+        strengths: rs.strengths || [],
+      })) || [];
+
+    // Calculate overall score as average if not provided correctly
+    const calculatedOverall =
+      rubricScores.length > 0
+        ? Math.round(
+            rubricScores.reduce((sum, r) => sum + r.score, 0) /
+              rubricScores.length,
+          )
+        : 0;
 
     return {
-      overallScore: Math.min(100, Math.max(0, response.overallScore)),
-      overallFeedback: response.overallFeedback,
-      stageResults,
-      strengths: response.strengths || [],
-      areasForImprovement: response.areasForImprovement || [],
+      overallScore: Math.min(
+        100,
+        Math.max(0, response.overallScore || calculatedOverall),
+      ),
+      overallFeedback: response.overallFeedback || '',
+      rubricScores,
+      evaluatedAt: new Date(),
+      evaluationModel: 'gpt-4o',
     };
-  }
-
-  private generateDefaultStageResults(
-    interview: InterviewDocument,
-    response: EvaluationResponse,
-    config: EvaluationConfig,
-  ): StageResult[] {
-    // Use config stages first, then interview stages, then defaults
-    const stages =
-      config.stages.length > 0
-        ? config.stages.map((s) => s.name)
-        : interview.stages?.length
-          ? interview.stages
-          : ['Introduction', 'Main Discussion', 'Wrap-up'];
-
-    const criteriaPerStage = Math.ceil(
-      (response.criteriaScores?.length || 0) / stages.length,
-    );
-
-    return stages.map((stageName, index) => {
-      const stageCriteria =
-        response.criteriaScores?.slice(
-          index * criteriaPerStage,
-          (index + 1) * criteriaPerStage,
-        ) || [];
-
-      const stageScore =
-        stageCriteria.length > 0
-          ? Math.round(
-              stageCriteria.reduce(
-                (sum, c) => sum + (c.score / c.maxScore) * 100,
-                0,
-              ) / stageCriteria.length,
-            )
-          : response.overallScore;
-
-      return {
-        stageIndex: index,
-        stageName,
-        stageScore,
-        criteriaScores: stageCriteria,
-        feedback: `Performance in ${stageName} stage.`,
-        strengths: [],
-        improvements: [],
-      };
-    });
   }
 
   // ─────────────────────────────────────────────────────────────────────────
   // PLACEHOLDER
   // ─────────────────────────────────────────────────────────────────────────
 
-  private createPlaceholderEvaluation(startTime: number): EvaluationResult {
+  private createPlaceholderEvaluation(): EvaluationResult {
     return {
       overallScore: 0,
       overallFeedback:
-        'Evaluation could not be completed. OpenAI API key may not be configured or transcript was empty.',
-      stageResults: [],
-      strengths: [],
-      areasForImprovement: [],
+        'Evaluation could not be completed. OpenAI API key may not be configured, transcript was empty, or no rubrics were defined.',
+      rubricScores: [],
       evaluatedAt: new Date(),
       evaluationModel: 'none',
-      evaluationDurationMs: Date.now() - startTime,
     };
   }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// TYPES
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface EvaluationResponse {
-  overallScore: number;
-  overallFeedback: string;
-  criteriaScores?: CriterionScore[];
-  stageResults?: {
-    stageIndex: number;
-    stageName: string;
-    stageScore: number;
-    feedback: string;
-    strengths?: string[];
-    improvements?: string[];
-  }[];
-  strengths?: string[];
-  areasForImprovement?: string[];
 }

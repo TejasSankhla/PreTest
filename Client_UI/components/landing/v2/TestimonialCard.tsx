@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Quote } from "lucide-react";
 
 interface TestimonialCardProps {
@@ -31,10 +32,13 @@ export default function TestimonialCard({
 
       {/* Student Info */}
       <div className="flex items-center gap-4 mb-4">
-        <img
+        <Image
           src={avatar}
           alt={name}
+          width={48}
+          height={48}
           className="w-12 h-12 rounded-full border-2 border-border bg-background"
+          unoptimized
         />
         <div>
           <h4 className="text-sm font-bold text-text-primary">{name}</h4>

@@ -41,4 +41,13 @@ export const API_ROUTES = {
     sessionResults: (conversationId: string) =>
       `/api/ai-interview/session/${conversationId}/results`,
   },
+
+  // Interview Attempts (history tracking)
+  attempts: {
+    create: (interviewId: string) => `/api/interviews/${interviewId}/attempts`,
+    list: () => "/api/attempts",
+    detail: (attemptId: string) => `/api/attempts/${attemptId}`,
+    end: (attemptId: string) => `/api/attempts/${attemptId}/end`,
+    status: (attemptId: string) => `/api/attempts/${attemptId}/status`,
+  },
 } as const;

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, ThumbsUp } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
@@ -95,10 +96,13 @@ export default function HowItWorksV2() {
               <div className="flex flex-col gap-3 md:absolute md:top-2 md:-right-10 md:w-[110%] group-hover:translate-x-2 transition-transform duration-500">
                 {/* Mentor Card 1 */}
                 <div className="bg-background p-3 rounded-xl border border-border shadow-sm flex items-center gap-3">
-                  <img
+                  <Image
                     src="https://api.dicebear.com/7.x/avataaars/svg?seed=John"
                     className="w-10 h-10 rounded-full bg-background-subtle"
                     alt=""
+                    width={40}
+                    height={40}
+                    unoptimized
                   />
                   <div>
                     <div className="text-xs font-bold text-text-primary">
@@ -114,10 +118,13 @@ export default function HowItWorksV2() {
                 </div>
                 {/* Mentor Card 2 */}
                 <div className="bg-background p-3 rounded-xl border border-border shadow-sm flex items-center gap-3 opacity-80">
-                  <img
+                  <Image
                     src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
                     className="w-10 h-10 rounded-full bg-background-subtle"
                     alt=""
+                    width={40}
+                    height={40}
+                    unoptimized
                   />
                   <div>
                     <div className="text-xs font-bold text-text-primary">

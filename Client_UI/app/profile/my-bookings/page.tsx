@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Button, Badge, Container, Spinner } from "@/components/atoms";
 import { EmptyState } from "@/components/molecules";
 import { apiClient, API_ROUTES, Booking, User } from "@/lib/api";
@@ -159,17 +160,16 @@ function Page() {
                         <td className="whitespace-nowrap px-4 py-4">
                           <div className="flex items-center gap-3">
                             <div className="h-10 w-10 flex-shrink-0">
-                              <img
+                              <Image
                                 className="h-10 w-10 rounded-full object-cover"
                                 src={
                                   booking.mentor?.profile_pic ||
                                   "/default-avatar.jpg"
                                 }
                                 alt="Mentor Profile"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.src = "/default-avatar.jpg";
-                                }}
+                                width={40}
+                                height={40}
+                                unoptimized
                               />
                             </div>
                             <div>
@@ -229,7 +229,6 @@ function Page() {
                               size="sm"
                               onClick={() => {
                                 // TODO: Implement view details modal/page
-                                console.log("View details for booking:", booking._id);
                               }}
                             >
                               View Details

@@ -183,12 +183,13 @@ function SearchMentors() {
     return result;
   }, [searchInput, selectedColleges, selectedCompanies, sortBy, mentors]);
 
-  // Debounced search update
-  const debouncedSetSearch = useCallback(
-    debounce((value: string) => {
-      setSearchInput(value);
-      setIsSearching(false);
-    }, 300),
+  // Debounced search update - useMemo for stable debounced function reference
+  const debouncedSetSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        setSearchInput(value);
+        setIsSearching(false);
+      }, 300),
     []
   );
 

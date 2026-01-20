@@ -31,29 +31,21 @@ const AgentSchema = new mongoose.Schema(
   { timestamps: true, collection: 'agents' },
 );
 
-// Interview Types (must match backend/src/schemas/interview.schema.ts)
-const InterviewType = {
-  RESUME_PREP: 'resume_prep',
-  INTRODUCTION: 'introduction',
-  TECHNICAL: 'technical',
-  BEHAVIORAL: 'behavioral',
-  SYSTEM_DESIGN: 'system_design',
-  FULL_MOCK: 'full_mock',
-} as const;
+const RubricSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    tags: { type: [String], default: [] },
+  },
+  { timestamps: true, collection: 'rubrics' },
+);
 
 const InterviewSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
-    type: {
-      type: String,
-      enum: Object.values(InterviewType),
-      default: InterviewType.FULL_MOCK,
-      required: true,
-    },
     role: { type: String },
     tags: { type: [String], default: [] },
-    stages: { type: [String], default: [] },
     durationMins: { type: Number, required: true },
     difficulty: {
       type: String,
@@ -65,14 +57,18 @@ const InterviewSchema = new mongoose.Schema(
       ref: 'Agent',
       required: true,
     },
-    totalAttempts: { type: Number, default: 0 },
-    avgScore: { type: Number, default: 0 },
+    systemPrompt: { type: String, required: true },
+    rubrics: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Rubric' }],
+      default: [],
+    },
     isActive: { type: Boolean, default: true },
   },
   { timestamps: true, collection: 'interviews' },
 );
 
 const Agent = mongoose.model('Agent', AgentSchema);
+const Rubric = mongoose.model('Rubric', RubricSchema);
 const Interview = mongoose.model('Interview', InterviewSchema);
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -790,6 +786,73 @@ WRAPPING UP:
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// RUBRIC SEED DATA
+// ─────────────────────────────────────────────────────────────────────────────
+
+const rubricSeedData = [
+  {
+    name: 'Communication Clarity',
+    description:
+      'Ability to articulate thoughts clearly and concisely. Uses appropriate technical vocabulary, explains concepts without jargon when needed, and structures responses logically.',
+    tags: ['communication', 'soft-skills'],
+  },
+  {
+    name: 'Technical Depth',
+    description:
+      'Demonstrates strong understanding of technical concepts, can explain trade-offs, and shows awareness of best practices and potential pitfalls.',
+    tags: ['technical', 'knowledge'],
+  },
+  {
+    name: 'Problem Solving',
+    description:
+      'Approaches problems systematically, breaks down complex issues, considers edge cases, and iterates on solutions effectively.',
+    tags: ['technical', 'problem-solving'],
+  },
+  {
+    name: 'STAR Method Structure',
+    description:
+      'Structures behavioral answers using Situation, Task, Action, Result format. Clearly distinguishes individual contributions from team efforts.',
+    tags: ['behavioral', 'star-method'],
+  },
+  {
+    name: 'Leadership & Ownership',
+    description:
+      'Demonstrates ownership mindset, takes initiative, and shows examples of leading projects or taking responsibility beyond their defined role.',
+    tags: ['behavioral', 'leadership'],
+  },
+  {
+    name: 'Self Introduction',
+    description:
+      'Delivers a compelling 60-90 second introduction with a strong hook, relevant highlights, clear motivation, and enthusiasm.',
+    tags: ['introduction', 'communication'],
+  },
+  {
+    name: 'Project Articulation',
+    description:
+      'Explains projects with clear context, quantifiable impact, technical decisions rationale, and lessons learned.',
+    tags: ['resume', 'communication'],
+  },
+  {
+    name: 'System Design Thinking',
+    description:
+      'Demonstrates ability to design scalable systems, considers trade-offs, handles requirements gathering, and addresses failure scenarios.',
+    tags: ['system-design', 'technical'],
+  },
+  {
+    name: 'Cultural Fit & Collaboration',
+    description:
+      'Shows alignment with company values, demonstrates ability to work in teams, handles disagreements constructively, and shows intellectual humility.',
+    tags: ['behavioral', 'culture-fit'],
+  },
+  {
+    name: 'Adaptability & Ambiguity',
+    description:
+      'Comfortable with unclear requirements, can make decisions with incomplete information, and adapts approach based on feedback.',
+    tags: ['behavioral', 'startup'],
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // INTERVIEW SEED DATA
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -798,41 +861,28 @@ const interviewSeedData = [
     name: 'Practice Introduction',
     description:
       'Master your tech interview introduction. Practice delivering a compelling "Tell me about yourself" with real-time feedback from a senior recruiter.',
-    type: InterviewType.INTRODUCTION,
     role: 'All Levels',
     tags: ['introduction', 'soft-skills', 'beginner', 'communication'],
-    stages: [
-      'Warm-up & Rapport',
-      'First Attempt',
-      'Feedback',
-      'Second Attempt',
-    ],
     durationMins: 10,
     difficulty: 'Easy',
     agentName: 'Alex', // Will be resolved to ObjectId
+    rubricNames: ['Self Introduction', 'Communication Clarity'],
   },
   {
     name: 'Resume Deep Dive',
     description:
       'Practice explaining your resume in detail. Learn to articulate your projects, technologies, and impact clearly with an Engineering Manager.',
-    type: InterviewType.RESUME_PREP,
     role: 'All Levels',
     tags: ['resume', 'experience', 'projects', 'beginner', 'communication'],
-    stages: [
-      'Introduction',
-      'Project Deep-Dive',
-      'Technical Decisions',
-      'Gaps Discussion',
-    ],
     durationMins: 15,
     difficulty: 'Easy',
     agentName: 'Sarah',
+    rubricNames: ['Project Articulation', 'Communication Clarity', 'Technical Depth'],
   },
   {
     name: 'SDE1 - MERN Stack Developer',
     description:
       'Technical interview for junior developers. Covers JavaScript fundamentals, React, Node.js, MongoDB, and includes a practical coding exercise.',
-    type: InterviewType.TECHNICAL,
     role: 'SDE 1 / Junior Developer',
     tags: [
       'mern',
@@ -844,22 +894,15 @@ const interviewSeedData = [
       'technical',
       'coding',
     ],
-    stages: [
-      'Introduction',
-      'JavaScript',
-      'React & Frontend',
-      'Node.js & Backend',
-      'Coding Problem',
-    ],
     durationMins: 30,
     difficulty: 'Medium',
     agentName: 'Mike',
+    rubricNames: ['Technical Depth', 'Problem Solving', 'Communication Clarity'],
   },
   {
     name: 'Amazon SDE Interview',
     description:
       "Practice for Amazon's rigorous interview process. Combines Leadership Principles behavioral questions with a technical coding problem and system design thinking.",
-    type: InterviewType.FULL_MOCK,
     role: 'SDE 2 / Software Engineer',
     tags: [
       'amazon',
@@ -870,22 +913,20 @@ const interviewSeedData = [
       'technical',
       'behavioral',
     ],
-    stages: [
-      'Introduction',
-      'Behavioral (LP)',
-      'Technical (DSA)',
-      'System Design',
-      'Questions',
-    ],
     durationMins: 45,
     difficulty: 'Hard',
     agentName: 'David',
+    rubricNames: [
+      'STAR Method Structure',
+      'Leadership & Ownership',
+      'Technical Depth',
+      'Problem Solving',
+    ],
   },
   {
     name: 'Founding Engineer - Startup',
     description:
       'Interview for a founding engineer role at an early-stage startup. Tests versatility, ownership mindset, full-stack capabilities, and comfort with ambiguity.',
-    type: InterviewType.FULL_MOCK,
     role: 'Founding Engineer',
     tags: [
       'startup',
@@ -895,22 +936,20 @@ const interviewSeedData = [
       'leadership',
       'ownership',
     ],
-    stages: [
-      'Startup Fit',
-      'Technical Breadth',
-      'Ambiguity Handling',
-      'Build Scenario',
-      'Ownership',
-    ],
     durationMins: 40,
     difficulty: 'Hard',
     agentName: 'Priya',
+    rubricNames: [
+      'Technical Depth',
+      'Leadership & Ownership',
+      'Adaptability & Ambiguity',
+      'System Design Thinking',
+    ],
   },
   {
     name: 'Amazon Leadership Principles',
     description:
       "Deep dive into Amazon's 16 Leadership Principles. Practice STAR-format answers for behavioral questions that Amazon interviewers actually ask.",
-    type: InterviewType.BEHAVIORAL,
     role: 'All Levels (Amazon)',
     tags: [
       'amazon',
@@ -919,40 +958,30 @@ const interviewSeedData = [
       'behavioral',
       'star-method',
     ],
-    stages: [
-      'LP Overview',
-      'Customer & Ownership',
-      'Dive Deep & Bias for Action',
-      'Earn Trust & Results',
-      'Wrap-up',
-    ],
     durationMins: 30,
     difficulty: 'Medium',
     agentName: 'Rachel',
+    rubricNames: ['STAR Method Structure', 'Leadership & Ownership', 'Communication Clarity'],
   },
   {
     name: 'Googliness Round - Google',
     description:
       'Practice Google\'s unique "Googliness" interview. Assess your collaboration, ambiguity handling, and alignment with Google\'s culture.',
-    type: InterviewType.BEHAVIORAL,
     role: 'All Levels (Google)',
     tags: ['google', 'faang', 'googliness', 'behavioral', 'culture-fit'],
-    stages: [
-      'Introduction',
-      'Collaboration',
-      'Navigating Ambiguity',
-      'Intellectual Humility',
-      'Wrap-up',
-    ],
     durationMins: 30,
     difficulty: 'Medium',
     agentName: 'Kevin',
+    rubricNames: [
+      'Cultural Fit & Collaboration',
+      'Adaptability & Ambiguity',
+      'Communication Clarity',
+    ],
   },
   {
     name: 'System Design - Meta',
     description:
       'Practice Meta\'s system design interview. Design scalable systems like Instagram Stories with a Meta engineering manager guiding you through the process.',
-    type: InterviewType.SYSTEM_DESIGN,
     role: 'Senior Engineer / Staff',
     tags: [
       'meta',
@@ -962,16 +991,10 @@ const interviewSeedData = [
       'scalability',
       'technical',
     ],
-    stages: [
-      'Problem Framing',
-      'Requirements',
-      'High-Level Design',
-      'Component Deep Dive',
-      'Trade-offs & Scaling',
-    ],
     durationMins: 45,
     difficulty: 'Hard',
     agentName: 'Jessica',
+    rubricNames: ['System Design Thinking', 'Technical Depth', 'Communication Clarity'],
   },
 ];
 
@@ -993,8 +1016,9 @@ async function seed() {
     console.log('✅ Connected to MongoDB');
 
     // Clear existing data (optional - comment out if you want to preserve existing data)
-    console.log('\n🗑️  Clearing existing agents and interviews...');
+    console.log('\n🗑️  Clearing existing agents, rubrics, and interviews...');
     await Agent.deleteMany({});
+    await Rubric.deleteMany({});
     await Interview.deleteMany({});
     console.log('✅ Cleared existing data');
 
@@ -1003,39 +1027,77 @@ async function seed() {
     const insertedAgents = await Agent.insertMany(agentSeedData);
     console.log(`✅ Inserted ${insertedAgents.length} agents`);
 
-    // Create agent name to ID map
+    // Create agent name to ID and systemPrompt maps
     const agentMap = new Map<string, mongoose.Types.ObjectId>();
+    const agentSystemPromptMap = new Map<string, string>();
     insertedAgents.forEach((agent) => {
       agentMap.set(agent.name, agent._id as mongoose.Types.ObjectId);
     });
+    // Get systemPrompts from seed data (not from inserted docs which may not have it)
+    agentSeedData.forEach((agent) => {
+      agentSystemPromptMap.set(agent.name, agent.systemPrompt);
+    });
 
-    // Prepare interviews with agent references
-    const interviewsWithAgentRefs = interviewSeedData.map((interview) => {
+    // Insert rubrics
+    console.log('\n📊 Inserting rubrics...');
+    const insertedRubrics = await Rubric.insertMany(rubricSeedData);
+    console.log(`✅ Inserted ${insertedRubrics.length} rubrics`);
+
+    // Create rubric name to ID map
+    const rubricMap = new Map<string, mongoose.Types.ObjectId>();
+    insertedRubrics.forEach((rubric) => {
+      rubricMap.set(rubric.name, rubric._id as mongoose.Types.ObjectId);
+    });
+
+    // Prepare interviews with agent and rubric references
+    const interviewsWithRefs = interviewSeedData.map((interview) => {
       const agentId = agentMap.get(interview.agentName);
       if (!agentId) {
         throw new Error(`Agent not found: ${interview.agentName}`);
       }
-      const { agentName, ...interviewData } = interview;
+
+      // Get systemPrompt from the associated agent
+      const systemPrompt = agentSystemPromptMap.get(interview.agentName);
+      if (!systemPrompt) {
+        throw new Error(`SystemPrompt not found for agent: ${interview.agentName}`);
+      }
+
+      // Resolve rubric names to ObjectIds
+      const rubricIds = interview.rubricNames.map((name) => {
+        const rubricId = rubricMap.get(name);
+        if (!rubricId) {
+          throw new Error(`Rubric not found: ${name}`);
+        }
+        return rubricId;
+      });
+
+      const { agentName, rubricNames, ...interviewData } = interview;
       return {
         ...interviewData,
         agent: agentId,
+        systemPrompt,
+        rubrics: rubricIds,
       };
     });
 
     // Insert interviews
     console.log('\n📋 Inserting interviews...');
-    const insertedInterviews = await Interview.insertMany(
-      interviewsWithAgentRefs,
-    );
+    const insertedInterviews = await Interview.insertMany(interviewsWithRefs);
     console.log(`✅ Inserted ${insertedInterviews.length} interviews`);
 
     // Summary
     console.log('\n' + '═'.repeat(60));
     console.log('📊 SEED SUMMARY');
     console.log('═'.repeat(60));
+
     console.log(`\nAgents created: ${insertedAgents.length}`);
     insertedAgents.forEach((agent, i) => {
       console.log(`  ${i + 1}. ${agent.name} (${agent.company}) - ${agent.role}`);
+    });
+
+    console.log(`\nRubrics created: ${insertedRubrics.length}`);
+    insertedRubrics.forEach((rubric, i) => {
+      console.log(`  ${i + 1}. ${rubric.name}`);
     });
 
     console.log(`\nInterviews created: ${insertedInterviews.length}`);
@@ -1048,8 +1110,6 @@ async function seed() {
     console.log('\n' + '═'.repeat(60));
     console.log('✅ Seed completed successfully!');
     console.log('═'.repeat(60));
-
-    console.log('\n✅ ElevenLabs Agent ID configured for all agents\n');
   } catch (error) {
     console.error('❌ Seed failed:', error);
     process.exit(1);

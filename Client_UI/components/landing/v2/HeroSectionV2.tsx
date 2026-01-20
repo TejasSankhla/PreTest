@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ChevronRight, Star } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
@@ -90,20 +91,29 @@ export default function HeroSectionV2() {
             className="mt-12 flex items-center gap-4"
           >
             <div className="flex -space-x-3">
-              <img
+              <Image
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
                 alt=""
+                width={40}
+                height={40}
                 className="w-10 h-10 rounded-full border-2 border-white bg-background-subtle"
+                unoptimized
               />
-              <img
+              <Image
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka"
                 alt=""
+                width={40}
+                height={40}
                 className="w-10 h-10 rounded-full border-2 border-white bg-background-subtle"
+                unoptimized
               />
-              <img
+              <Image
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=John"
                 alt=""
+                width={40}
+                height={40}
                 className="w-10 h-10 rounded-full border-2 border-white bg-background-subtle"
+                unoptimized
               />
               <div className="w-10 h-10 rounded-full border-2 border-white bg-background-subtle flex items-center justify-center text-[10px] font-bold text-text-secondary">
                 +2k
@@ -166,16 +176,16 @@ export default function HeroSectionV2() {
             >
               {/* Tech Companies */}
               <div className="absolute top-[5%] left-[75%] w-8 h-8 flex items-center justify-center animate-counter-rotate-slow">
-                <img src="/companies/google.png" alt="Google" className="w-8 h-8 object-contain" />
+                <Image src="/companies/google.png" alt="Google" width={32} height={32} className="w-8 h-8 object-contain" />
               </div>
               <div className="absolute bottom-[15%] left-[5%] w-8 h-8 flex items-center justify-center animate-counter-rotate-slow">
-                <img src="/companies/microsoft.png" alt="Microsoft" className="w-8 h-8 object-contain" />
+                <Image src="/companies/microsoft.png" alt="Microsoft" width={32} height={32} className="w-8 h-8 object-contain" />
               </div>
               <div className="absolute top-[45%] left-[-16px] w-8 h-8 flex items-center justify-center animate-counter-rotate-slow">
-                <img src="/companies/amazon.png" alt="Amazon" className="w-8 h-8 object-contain" />
+                <Image src="/companies/amazon.png" alt="Amazon" width={32} height={32} className="w-8 h-8 object-contain" />
               </div>
               <div className="absolute bottom-[5%] right-[20%] w-8 h-8 flex items-center justify-center animate-counter-rotate-slow">
-                <img src="/companies/zomato.png" alt="Zomato" className="w-8 h-8 object-contain" />
+                <Image src="/companies/zomato.png" alt="Zomato" width={32} height={32} className="w-8 h-8 object-contain" />
               </div>
             </div>
 

@@ -5,8 +5,15 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button, Badge } from "@/components/atoms";
 import { ROUTES } from "@/lib/routes";
-import { AIInterview, Difficulty } from "../../types";
-import { getInterviewById } from "../../data";
+import { Difficulty } from "../../types";
+import {
+  AIInterviewWithAgent,
+  GetInterviewResponse,
+  transformInterview,
+} from "../../utils";
+import { apiClient, API_ROUTES } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
+import { buildLoginUrl, getCurrentPathForReturn } from "@/lib/auth-redirect";
 import {
   ArrowLeft,
   ArrowRight,
@@ -82,24 +89,43 @@ function NotFoundState() {
 export default function InterviewBriefPage() {
   const params = useParams();
   const router = useRouter();
-  const [interview, setInterview] = useState<AIInterview | null>(null);
+  const { user } = useAuth();
+  const [interview, setInterview] = useState<AIInterviewWithAgent | null>(null);
   const [loading, setLoading] = useState(true);
   const [showTips, setShowTips] = useState(false);
 
-  // Fetch interview data
+  // Fetch interview data from API
   useEffect(() => {
     const id = params.id as string;
-    // Simulate loading delay for better UX
-    const timer = setTimeout(() => {
-      const data = getInterviewById(id);
-      setInterview(data || null);
-      setLoading(false);
-    }, 300);
+    if (!id) return;
 
-    return () => clearTimeout(timer);
+    const fetchInterview = async () => {
+      try {
+        const response = await apiClient.get<GetInterviewResponse>(API_ROUTES.aiInterview.detail(id));
+        if (response.data.success) {
+          const transformed = transformInterview(response.data.data.interview);
+          setInterview(transformed);
+        } else {
+          setInterview(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch interview:", error);
+        setInterview(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInterview();
   }, [params.id]);
 
   const handleStartInterview = () => {
+    // Require login to start interview
+    if (!user) {
+      const returnPath = getCurrentPathForReturn();
+      router.push(buildLoginUrl(returnPath));
+      return;
+    }
     router.push(ROUTES.aiInterview.session(params.id as string));
   };
 
@@ -199,13 +225,13 @@ export default function InterviewBriefPage() {
 
             {/* Name & Role */}
             <h3 className="text-heading-md font-semibold text-text-primary mb-1">
-              Alex
+              {interview.agent?.name || "AI Interviewer"}
             </h3>
             <p className="text-body-sm text-text-secondary mb-2">
-              Senior Technical Interviewer
+              {interview.agent?.role || "Technical Interviewer"}
             </p>
             <p className="text-body-xs text-text-tertiary italic mb-4">
-              &quot;Professional, supportive, thorough&quot;
+              {interview.agent?.company ? `at ${interview.agent.company}` : "Professional, supportive, thorough"}
             </p>
 
             {/* Features */}
@@ -286,7 +312,7 @@ export default function InterviewBriefPage() {
                   Voice Conversation
                 </p>
                 <p className="text-body-xs text-text-tertiary">
-                  Speak naturally with Alex using your microphone
+                  Speak naturally with {interview.agent?.name || "your AI interviewer"} using your microphone
                 </p>
               </div>
             </div>
@@ -398,7 +424,7 @@ export default function InterviewBriefPage() {
             className="min-w-[180px]"
             onClick={handleStartInterview}
           >
-            Start Interview
+            {user ? "Start Interview" : "Sign in to Start"}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
@@ -418,7 +444,7 @@ export default function InterviewBriefPage() {
             className="w-full"
             onClick={handleStartInterview}
           >
-            Start Interview
+            {user ? "Start Interview" : "Sign in to Start"}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>

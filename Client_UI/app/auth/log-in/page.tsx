@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/atoms";
@@ -153,10 +154,13 @@ function LogIn() {
                       className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md hover:border-orange-200 transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
-                        <img
+                        <Image
                           src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul"
                           alt=""
+                          width={48}
+                          height={48}
                           className="w-12 h-12 rounded-full bg-gray-100"
+                          unoptimized
                         />
                         <div className="flex-1">
                           <p className="font-semibold text-text-primary text-body-sm">Rahul Kumar</p>
@@ -181,10 +185,13 @@ function LogIn() {
                       className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md hover:border-orange-200 transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
-                        <img
+                        <Image
                           src="https://api.dicebear.com/7.x/avataaars/svg?seed=Priya"
                           alt=""
+                          width={48}
+                          height={48}
                           className="w-12 h-12 rounded-full bg-gray-100"
+                          unoptimized
                         />
                         <div className="flex-1">
                           <p className="font-semibold text-text-primary text-body-sm">Priya Singh</p>
@@ -209,10 +216,13 @@ function LogIn() {
                       className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md hover:border-orange-200 transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
-                        <img
+                        <Image
                           src="https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun"
                           alt=""
+                          width={48}
+                          height={48}
                           className="w-12 h-12 rounded-full bg-gray-100"
+                          unoptimized
                         />
                         <div className="flex-1">
                           <p className="font-semibold text-text-primary text-body-sm">Arjun Patel</p>
@@ -237,10 +247,13 @@ function LogIn() {
                       className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md hover:border-orange-200 transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
-                        <img
+                        <Image
                           src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sneha"
                           alt=""
+                          width={48}
+                          height={48}
                           className="w-12 h-12 rounded-full bg-gray-100"
+                          unoptimized
                         />
                         <div className="flex-1">
                           <p className="font-semibold text-text-primary text-body-sm">Sneha Reddy</p>

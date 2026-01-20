@@ -580,7 +580,7 @@ export default function MentorProfile({ mentor }: MentorProfileProps) {
               <Button
                 disabled={bookingInProgress || !selectedTimeSlot}
                 variant="primary"
-                size="default"
+                size="md"
                 className="w-full"
                 onClick={handlePaymentAndBooking}
                 isLoading={isLoading}

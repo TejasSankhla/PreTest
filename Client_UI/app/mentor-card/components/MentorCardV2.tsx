@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Badge, Button } from "@/components/atoms";
 import { Mentor, MentorCardVariant } from "../types";
 import {
@@ -36,10 +37,13 @@ function MentorCardV2Component({ mentor, variant = "browse" }: MentorCardV2Props
 
       {/* Avatar - Overlapping header */}
       <div className="flex flex-col items-center -mt-10 px-5">
-        <img
+        <Image
           src={mentor.avatar}
           alt={mentor.name}
+          width={80}
+          height={80}
           className="w-20 h-20 rounded-full bg-background-subtle border-4 border-white shadow-sm object-cover"
+          unoptimized
         />
 
         {/* Rating beside avatar */}
@@ -109,10 +113,13 @@ function MentorCardV2Component({ mentor, variant = "browse" }: MentorCardV2Props
     <div className="group relative bg-white rounded-xl border border-border p-4 transition-all duration-200 hover:border-secondary/40 hover:shadow-md flex flex-col w-full">
       {/* Header - Left aligned, scannable */}
       <div className="flex items-start gap-3">
-        <img
+        <Image
           src={mentor.avatar}
           alt={mentor.name}
+          width={64}
+          height={64}
           className="w-16 h-16 rounded-xl bg-background-subtle border border-border object-cover flex-shrink-0"
+          unoptimized
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
@@ -181,10 +188,13 @@ function MentorCardV2Component({ mentor, variant = "browse" }: MentorCardV2Props
     <div className="group relative bg-white rounded-2xl border border-border p-5 transition-all duration-200 hover:border-secondary/40 hover:shadow-md flex flex-col h-[340px] w-full">
       {/* Header */}
       <div className="flex items-start gap-4 mb-3">
-        <img
+        <Image
           src={mentor.avatar}
           alt={mentor.name}
+          width={56}
+          height={56}
           className="w-14 h-14 rounded-full bg-background-subtle border-2 border-border object-cover flex-shrink-0"
+          unoptimized
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
