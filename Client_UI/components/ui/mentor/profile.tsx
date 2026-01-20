@@ -12,8 +12,8 @@ import {
 } from "../carousel";
 import { Button } from "@/components/atoms";
 import { Star, MapPin, Clock, Video, GraduationCap, ArrowLeft, MessageSquare } from "lucide-react";
-import { getMockRating, getMockSessionCount, getExpertiseTags, getMockReviews, cn } from "@/lib/utils";
-import ProfileCard from "./profileCard";
+import { getMockRating, getMockSessionCount, getExpertiseTags, getMockReviews, cn, mapApiMentorToCardMentor } from "@/lib/utils";
+import { MentorCardV2 } from "@/app/mentor-card/components";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -629,7 +629,7 @@ export default function MentorProfile({ mentor }: MentorProfileProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {similarMentors.slice(0, 2).map((m) => (
-              <ProfileCard key={m._id} mentor={m} />
+              <MentorCardV2 key={m._id} mentor={mapApiMentorToCardMentor(m)} variant="browse" />
             ))}
           </div>
         </div>

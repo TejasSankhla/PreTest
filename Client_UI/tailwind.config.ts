@@ -119,6 +119,10 @@ const config: Config = {
         "counter-rotate-fast": "counter-rotate-reverse 20s linear infinite",
         "float": "float 6s ease-in-out infinite",
         "pulse-glow": "pulse-glow 4s ease-in-out infinite",
+        // AI Interview Session animations
+        "breathe": "breathe 4s ease-in-out infinite",
+        "speak-ring": "speak-ring 1.5s ease-out infinite",
+        "listen-pulse": "listen-pulse 2s ease-in-out infinite",
       },
       keyframes: {
         "infinite-scroll": {
@@ -152,6 +156,19 @@ const config: Config = {
         "pulse-glow": {
           "0%, 100%": { opacity: "0.5" },
           "50%": { opacity: "0.8" },
+        },
+        // AI Interview Session keyframes
+        "breathe": {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.02)" },
+        },
+        "speak-ring": {
+          "0%": { transform: "scale(1)", opacity: "0.6" },
+          "100%": { transform: "scale(1.5)", opacity: "0" },
+        },
+        "listen-pulse": {
+          "0%, 100%": { transform: "scale(1)", boxShadow: "0 0 20px rgba(139, 92, 246, 0.5)" },
+          "50%": { transform: "scale(1.01)", boxShadow: "0 0 40px rgba(139, 92, 246, 0.7)" },
         },
       },
     },

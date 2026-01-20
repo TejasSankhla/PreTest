@@ -20,7 +20,7 @@ export class Agent {
   @Prop()
   photo: string; // URL to agent's avatar/photo
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   elevenLabsAgentId: string; // ElevenLabs agent ID for API calls
 
   @Prop()

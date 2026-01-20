@@ -6,49 +6,66 @@ import { ArrowRight } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { Button, Container } from "@/components/atoms";
 import { ROUTES } from "@/lib/routes";
-import MentorCard from "./MentorCard";
+import { MentorCardV2 } from "@/app/mentor-card/components";
+import { Mentor } from "@/app/mentor-card/types";
 
 // Static mentor data
-const mentors = [
+const mentors: Mentor[] = [
   {
+    id: "priya-sharma",
     name: "Priya Sharma",
-    role: "SDE II @ Google",
-    college: "Ex-IIT Bombay",
-    rating: 4.9,
-    sessions: 23,
-    expertise: ["DSA", "System Design"],
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
+    role: "SDE II",
     company: "Google",
+    college: "IIT Bombay",
+    rating: 4.9,
+    totalSessions: 23,
+    sessionDuration: 45,
+    expertise: ["DSA", "System Design", "Behavioral"],
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
+    price: 49,
+    isTopMentor: true,
   },
   {
+    id: "arjun-patel",
     name: "Arjun Patel",
-    role: "SDE @ Amazon",
-    college: "Ex-BITS Pilani",
-    rating: 4.8,
-    sessions: 18,
-    expertise: ["DSA", "Behavioral"],
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun",
+    role: "SDE",
     company: "Amazon",
+    college: "BITS Pilani",
+    rating: 4.8,
+    totalSessions: 18,
+    sessionDuration: 45,
+    expertise: ["DSA", "Behavioral", "Leadership"],
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun",
+    price: 49,
+    isTopMentor: true,
   },
   {
+    id: "sneha-reddy",
     name: "Sneha Reddy",
-    role: "SDE @ Microsoft",
-    college: "Ex-NIT Trichy",
-    rating: 5.0,
-    sessions: 31,
-    expertise: ["System Design", "DSA"],
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sneha",
+    role: "SDE",
     company: "Microsoft",
+    college: "NIT Trichy",
+    rating: 5.0,
+    totalSessions: 31,
+    sessionDuration: 45,
+    expertise: ["System Design", "DSA", "Backend"],
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sneha",
+    price: 49,
+    isTopMentor: true,
   },
   {
+    id: "rahul-kumar",
     name: "Rahul Kumar",
-    role: "SDE II @ Flipkart",
-    college: "Ex-IIIT Hyderabad",
-    rating: 4.7,
-    sessions: 15,
-    expertise: ["DSA", "Backend"],
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul",
+    role: "SDE II",
     company: "Flipkart",
+    college: "IIIT Hyderabad",
+    rating: 4.7,
+    totalSessions: 15,
+    sessionDuration: 45,
+    expertise: ["DSA", "Backend", "Java"],
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul",
+    price: 49,
+    isTopMentor: false,
   },
 ];
 
@@ -84,13 +101,13 @@ export default function FeaturedMentors() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {mentors.map((mentor, index) => (
             <motion.div
-              key={mentor.name}
+              key={mentor.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <MentorCard {...mentor} />
+              <MentorCardV2 mentor={mentor} variant="featured" />
             </motion.div>
           ))}
         </div>

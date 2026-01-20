@@ -1,43 +1,49 @@
 "use client";
 import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
-import ProfileCard from "@/components/ui/mentor/profileCard";
-import { Button, Skeleton, SkeletonButton } from "@/components/atoms";
+import { MentorCardV2 } from "@/app/mentor-card/components";
+import { Button, Skeleton } from "@/components/atoms";
 import { EmptyState } from "@/components/molecules";
 import { Search, X, ChevronDown, Loader2, SlidersHorizontal } from "lucide-react";
-import { getMockRating, getMockSessionCount } from "@/lib/utils";
+import { getMockRating, getMockSessionCount, mapApiMentorToCardMentor } from "@/lib/utils";
 import { apiClient, API_ROUTES, Mentor, ApiResponse } from "@/lib/api";
 import debounce from "lodash.debounce";
 
 const MENTORS_PER_PAGE = 8;
 
-// Skeleton loader component for mentor cards
+// Skeleton loader component for mentor cards (matches MentorCardV2 browse variant)
 function MentorCardSkeleton() {
   return (
-    <div className="w-full bg-white rounded-2xl border border-border/80 overflow-hidden shadow-sm shadow-orange-100/50">
-      <div className="p-4 sm:p-6">
-        <div className="flex gap-4 sm:gap-5">
-          {/* Avatar skeleton */}
-          <div className="flex-shrink-0">
-            <Skeleton shape="circle" className="h-16 w-16 sm:h-24 sm:w-24" />
+    <div className="w-full bg-white rounded-xl border border-border p-4">
+      {/* Header */}
+      <div className="flex gap-3">
+        <Skeleton className="w-16 h-16 rounded-xl flex-shrink-0" />
+        <div className="flex-1 space-y-2">
+          <div className="flex justify-between">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-4 w-8" />
           </div>
-          {/* Content skeleton */}
-          <div className="flex-1 space-y-2 sm:space-y-3">
-            <Skeleton className="h-6 sm:h-7 w-3/4" />
-            <Skeleton shape="text" className="w-1/2" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 sm:h-5 w-full" />
-              <Skeleton shape="text" className="w-2/3" />
-            </div>
-          </div>
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="h-3 w-24" />
         </div>
       </div>
-      {/* Footer skeleton */}
-      <div className="border-t border-border bg-background-subtle px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+      {/* About */}
+      <div className="mt-3 space-y-1.5">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+      </div>
+      {/* Tags */}
+      <div className="flex gap-1.5 mt-3">
+        <Skeleton className="h-5 w-12 rounded" />
+        <Skeleton className="h-5 w-16 rounded" />
+        <Skeleton className="h-5 w-14 rounded" />
+      </div>
+      {/* Footer */}
+      <div className="flex justify-between items-center mt-4 pt-3 border-t border-border">
         <div className="flex gap-3">
-          <Skeleton className="w-5 h-5" />
-          <Skeleton className="w-5 h-5" />
+          <Skeleton className="h-4 w-14" />
+          <Skeleton className="h-4 w-20" />
         </div>
-        <SkeletonButton size="sm" rounded="full" />
+        <Skeleton className="h-4 w-20" />
       </div>
     </div>
   );
@@ -343,7 +349,7 @@ function SearchMentors() {
   );
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
       {/* Grid Pattern Background - Matching Landing Page */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -357,7 +363,7 @@ function SearchMentors() {
       />
 
       {/* Orange Gradient Glow - Top Center (Matching Landing) */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-secondary/10 blur-[100px] rounded-[100%] pointer-events-none opacity-50" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[400px] bg-secondary/10 blur-[100px] rounded-[100%] pointer-events-none opacity-50" />
 
       {/* Page Header - Transparent to blend with page gradient */}
       <header className="relative pt-6 pb-4 sm:pt-10 sm:pb-6">
@@ -470,7 +476,7 @@ function SearchMentors() {
         </p>
 
         {/* Mentor Cards Grid */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {isLoading || isSearching ? (
             /* Loading State - Show skeletons */
             <>
@@ -497,7 +503,7 @@ function SearchMentors() {
                 key={mentor._id}
                 className="transform transition-all duration-200 hover:-translate-y-1 rounded-2xl"
               >
-                <ProfileCard mentor={mentor} />
+                <MentorCardV2 mentor={mapApiMentorToCardMentor(mentor)} variant="browse" />
               </div>
             ))
           ) : (

@@ -12,7 +12,9 @@ import {
   Container,
 } from "@/components/atoms";
 import { EmptyState } from "@/components/molecules";
-import ProfileCard from "@/components/ui/mentor/profileCard";
+import { MentorCardV2 } from "@/app/mentor-card/components";
+import { mapApiMentorToCardMentor } from "@/lib/utils";
+import type { Mentor as ApiMentor } from "@/lib/api";
 import { Check, Copy, ArrowRight, Search, Plus, Trash2 } from "lucide-react";
 
 // Color swatch component
@@ -121,8 +123,8 @@ export default function DesignSystemPage() {
     { id: "mentor-card", label: "Mentor Card" },
   ];
 
-  // Sample mentor data for design system
-  const sampleMentor = {
+  // Sample mentor data for design system (API format)
+  const sampleMentor: ApiMentor = {
     _id: "sample-123",
     name: "Rahul Kumar",
     profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul",
@@ -136,7 +138,7 @@ export default function DesignSystemPage() {
     insta_url: "https://instagram.com/rahul",
   };
 
-  const sampleMentorMinimal = {
+  const sampleMentorMinimal: ApiMentor = {
     _id: "sample-456",
     name: "Priya Singh",
     profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
@@ -1013,26 +1015,35 @@ export default function DesignSystemPage() {
 
                 {/* Full Example */}
                 <div>
-                  <h3 className="text-heading-sm text-text-primary mb-4">Full Card (All Fields)</h3>
-                  <div className="max-w-xl">
-                    <ProfileCard mentor={sampleMentor} />
+                  <h3 className="text-heading-sm text-text-primary mb-4">Featured Variant</h3>
+                  <div className="max-w-sm">
+                    <MentorCardV2 mentor={mapApiMentorToCardMentor(sampleMentor)} variant="featured" />
                   </div>
                 </div>
 
-                {/* Minimal Example */}
+                {/* Browse Example */}
                 <div>
-                  <h3 className="text-heading-sm text-text-primary mb-4">Minimal Card (Required Fields Only)</h3>
-                  <div className="max-w-xl">
-                    <ProfileCard mentor={sampleMentorMinimal} />
+                  <h3 className="text-heading-sm text-text-primary mb-4">Browse Variant</h3>
+                  <div className="max-w-sm">
+                    <MentorCardV2 mentor={mapApiMentorToCardMentor(sampleMentorMinimal)} variant="browse" />
                   </div>
                 </div>
 
                 {/* Grid Layout */}
                 <div>
-                  <h3 className="text-heading-sm text-text-primary mb-4">Grid Layout (2 Columns)</h3>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <ProfileCard mentor={sampleMentor} />
-                    <ProfileCard mentor={sampleMentorMinimal} />
+                  <h3 className="text-heading-sm text-text-primary mb-4">Grid Layout (3 Columns)</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <MentorCardV2 mentor={mapApiMentorToCardMentor(sampleMentor)} variant="featured" />
+                    <MentorCardV2 mentor={mapApiMentorToCardMentor(sampleMentorMinimal)} variant="browse" />
+                    <MentorCardV2
+                      mentor={{
+                        ...mapApiMentorToCardMentor(sampleMentor),
+                        lastSessionDate: "Jan 5, 2025",
+                        userRating: 5,
+                        userSessionCount: 3,
+                      }}
+                      variant="past"
+                    />
                   </div>
                 </div>
 
@@ -1070,29 +1081,29 @@ export default function DesignSystemPage() {
                   </div>
                 </div>
 
-                <CodeBlock>{`import ProfileCard from "@/components/ui/mentor/profileCard";
+                <CodeBlock>{`import { MentorCardV2 } from "@/app/mentor-card/components";
+import { Mentor } from "@/app/mentor-card/types";
 
-// Full card with all fields
-<ProfileCard
+// Featured variant (for landing page)
+<MentorCardV2 mentor={mentor} variant="featured" />
+
+// Browse variant (for explore page)
+<MentorCardV2 mentor={mentor} variant="browse" />
+
+// Past variant (for dashboard/history)
+<MentorCardV2
   mentor={{
-    _id: "123",
-    name: "Rahul Kumar",
-    profile_pic: "https://...",
-    currentCompany: "Google",
-    role: "SDE-2",
-    college: "IIT Delhi",
-    grad_year: 2022,
-    tagline: "Helping you crack FAANG interviews",
-    branch: "Computer Science",
-    linkedin_url: "https://linkedin.com/in/rahul",
-    insta_url: "https://instagram.com/rahul"
+    ...mentor,
+    lastSessionDate: "Jan 5, 2025",
+    userRating: 5,
+    userSessionCount: 3,
   }}
+  variant="past"
 />
 
-// Trust signals displayed:
-// ★ 4.8/5 • 85 sessions • 3 yrs exp
-// (rating & sessions are mock data for Phase 1)
-// (experience derived from grad_year)`}</CodeBlock>
+// Use mapApiMentorToCardMentor() to convert API data
+import { mapApiMentorToCardMentor } from "@/lib/utils";
+<MentorCardV2 mentor={mapApiMentorToCardMentor(apiMentor)} variant="browse" />`}</CodeBlock>
               </div>
             </Section>
           </main>

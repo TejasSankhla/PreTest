@@ -1,5 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import type { Mentor as ApiMentor } from "@/lib/api"
+import type { Mentor as CardMentor } from "@/app/mentor-card/types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -148,4 +150,33 @@ export function getMockReviews(mentorId: string): Array<{
   }
 
   return selectedReviews;
+}
+
+/**
+ * Map API Mentor type to MentorCardV2 Mentor type
+ * Handles field name differences and generates mock data where needed
+ */
+export function mapApiMentorToCardMentor(apiMentor: ApiMentor): CardMentor {
+  const optimizedAvatar = apiMentor.profile_pic
+    ? apiMentor.profile_pic.replace(
+        "/upload/",
+        "/upload/c_fill,w_400,h_400,q_auto,f_auto/"
+      )
+    : "https://api.dicebear.com/7.x/avataaars/svg?seed=" + apiMentor.name;
+
+  return {
+    id: apiMentor._id,
+    name: apiMentor.name,
+    role: apiMentor.role || "Software Engineer",
+    company: apiMentor.currentCompany || "Tech Company",
+    college: apiMentor.college,
+    avatar: optimizedAvatar,
+    rating: getMockRating(apiMentor._id),
+    totalSessions: getMockSessionCount(apiMentor._id),
+    sessionDuration: 45, // Default session duration
+    expertise: getExpertiseTags(apiMentor).slice(0, 4),
+    price: 49, // Launch price
+    tagline: apiMentor.tagline,
+    about: apiMentor.about,
+  };
 }

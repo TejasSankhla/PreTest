@@ -288,3 +288,8 @@ export function filterInterviews(
 
   return result;
 }
+
+// Helper to get interview by ID
+export function getInterviewById(id: string): AIInterview | undefined {
+  return mockInterviews.find((interview) => interview.id === id);
+}
