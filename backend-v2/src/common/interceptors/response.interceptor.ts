@@ -17,7 +17,10 @@ export interface ApiResponse<T> {
 }
 
 @Injectable()
-export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T> | T> {
+export class ResponseInterceptor<T> implements NestInterceptor<
+  T,
+  ApiResponse<T> | T
+> {
   constructor(private reflector: Reflector) {}
 
   intercept(
@@ -30,7 +33,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>
     );
 
     return next.handle().pipe(
-      map((data) => {
+      map((data: T): ApiResponse<T> | T => {
         // Skip transformation if decorator is present
         if (skipTransform) {
           return data;

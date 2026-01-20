@@ -1,0 +1,55 @@
+#!/bin/sh
+
+# Run lint-staged for linting
+npx lint-staged
+
+# Detect which projects have changes and build them
+CHANGED_FILES=$(git diff --cached --name-only)
+
+BUILD_CLIENT=false
+BUILD_MENTOR=false
+BUILD_BACKEND=false
+
+for file in $CHANGED_FILES; do
+  case "$file" in
+    Client_UI/*) BUILD_CLIENT=true ;;
+    Mentor_UI/*) BUILD_MENTOR=true ;;
+    backend-v2/*) BUILD_BACKEND=true ;;
+  esac
+done
+
+# Build only the projects that have changes
+if [ "$BUILD_CLIENT" = true ]; then
+  echo "🔨 Building Client_UI..."
+  cd Client_UI && npm run build
+  if [ $? -ne 0 ]; then
+    echo "❌ Client_UI build failed"
+    exit 1
+  fi
+  cd ..
+  echo "✅ Client_UI build passed"
+fi
+
+if [ "$BUILD_MENTOR" = true ]; then
+  echo "🔨 Building Mentor_UI..."
+  cd Mentor_UI && npm run build
+  if [ $? -ne 0 ]; then
+    echo "❌ Mentor_UI build failed"
+    exit 1
+  fi
+  cd ..
+  echo "✅ Mentor_UI build passed"
+fi
+
+if [ "$BUILD_BACKEND" = true ]; then
+  echo "🔨 Building backend-v2..."
+  cd backend-v2 && npm run build
+  if [ $? -ne 0 ]; then
+    echo "❌ backend-v2 build failed"
+    exit 1
+  fi
+  cd ..
+  echo "✅ backend-v2 build passed"
+fi
+
+echo "✅ All pre-commit checks passed!"

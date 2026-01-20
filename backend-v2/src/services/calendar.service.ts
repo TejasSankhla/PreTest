@@ -58,7 +58,11 @@ export class CalendarService {
       },
       attendees: [
         { email: options.client, responseStatus: 'needsAction' },
-        { email: options.mentor, organizer: true, responseStatus: 'needsAction' },
+        {
+          email: options.mentor,
+          organizer: true,
+          responseStatus: 'needsAction',
+        },
       ],
       reminders: {
         useDefault: false,

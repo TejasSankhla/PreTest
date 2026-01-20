@@ -15,10 +15,7 @@ import {
   UpdateMentorDto,
   UpdateSlotsDto,
 } from './dto';
-import {
-  convertToLowerCase,
-  trimBlankSpace,
-} from '../../common/utils/helper';
+import { convertToLowerCase, trimBlankSpace } from '../../common/utils/helper';
 
 // Response type for fetchMentorProfile
 export interface AvailableSlot {
@@ -78,8 +75,13 @@ export class MentorService {
       const newMentor = await this.mentorModel.create(mentorData);
       const token = newMentor.createToken();
       return { mentor: newMentor, token };
-    } catch (error: any) {
-      if (error.code === 11000) {
+    } catch (error: unknown) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 11000
+      ) {
         throw new ConflictException('Username/email already exists');
       }
       throw error;
@@ -145,7 +147,10 @@ export class MentorService {
     return updatedMentor;
   }
 
-  async getAllFutureBookings(mentorId: string, currDate: Date): Promise<Date[]> {
+  async getAllFutureBookings(
+    mentorId: string,
+    currDate: Date,
+  ): Promise<Date[]> {
     const allFutureBookings = await this.bookingModel.find({
       mentor: mentorId,
       slot: { $gt: currDate },
@@ -199,9 +204,14 @@ export class MentorService {
     availableDays = 0;
 
     // Until we find 7 available slot dates, keep iterating (with max bound to prevent infinite loop)
-    for (let offsetDays = 0; availableDays < 7 && offsetDays < MAX_SLOT_SEARCH_DAYS; offsetDays++) {
+    for (
+      let offsetDays = 0;
+      availableDays < 7 && offsetDays < MAX_SLOT_SEARCH_DAYS;
+      offsetDays++
+    ) {
       const weekday = (currWeekDay + offsetDays) % 7;
-      const slotsForDay = mentor.selectedSlots?.[weekday as keyof typeof mentor.selectedSlots];
+      const slotsForDay =
+        mentor.selectedSlots?.[weekday as keyof typeof mentor.selectedSlots];
 
       if (Array.isArray(slotsForDay) && slotsForDay.length > 0) {
         // Get date on this day which is offsetDays ahead from currDate

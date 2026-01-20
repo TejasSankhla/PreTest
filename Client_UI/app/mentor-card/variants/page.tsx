@@ -219,7 +219,7 @@ export default function MentorCardVariantsPage() {
               Browse Variant
             </h2>
             <p className="text-body-sm text-text-secondary">
-              For explore/search pages. Left-aligned, scannable, "View Profile" CTA for comparison.
+              For explore/search pages. Left-aligned, scannable, &quot;View Profile&quot; CTA for comparison.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

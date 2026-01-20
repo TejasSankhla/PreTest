@@ -105,7 +105,7 @@ export class Mentor {
 export const MentorSchema = SchemaFactory.createForClass(Mentor);
 
 // Pre-save hook for password hashing
-MentorSchema.pre('save', async function (next) {
+MentorSchema.pre('save', function (next) {
   if (this.isModified('password')) {
     const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
     this.password = bcrypt.hashSync(this.password, saltRounds);
@@ -114,17 +114,20 @@ MentorSchema.pre('save', async function (next) {
 });
 
 // Instance method: Compare password
-MentorSchema.methods.comparePassword = function (password: string): boolean {
+MentorSchema.methods.comparePassword = function (
+  this: MentorDocument,
+  password: string,
+): boolean {
   return bcrypt.compareSync(password, this.password);
 };
 
 // Instance method: Create JWT token
-MentorSchema.methods.createToken = function (): string {
+MentorSchema.methods.createToken = function (this: MentorDocument): string {
   const secret = process.env.JWT_SECRET || 'default_secret';
   const expiresIn = process.env.JWT_EXPIRY || '7d';
   const token = jwt.sign(
     {
-      UserId: this._id.toString(),
+      UserId: String(this._id),
       email: this.email,
       type: 'mentor',
     },

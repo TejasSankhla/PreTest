@@ -14,6 +14,7 @@ const ALLOWED_PATH_PREFIXES = [
   "/explore-mentors",
   "/profile",
   "/booking",
+  "/ai-interview",
 ];
 
 // Paths that should never be used as returnTo (prevent loops)

@@ -9,12 +9,12 @@ export class ListInterviewsDto {
 
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: string }) => value?.trim())
   tag?: string; // Single tag filter (can be extended to array if needed)
 
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: string }) => value?.trim())
   search?: string; // Search in name/description
 
   @IsOptional()

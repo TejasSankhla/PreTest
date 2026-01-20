@@ -11,7 +11,7 @@ const TermsAndConditions = () => {
 
       <h2 className="text-xl font-semibold mb-4">1. Introduction</h2>
       <p className="mb-6">
-        Welcome to <strong>pretest</strong>. These Terms and Conditions ("Terms") govern your use of our platform, including any content, functionality, and services offered on or through <strong>pretest</strong> (the "Service"). By accessing or using the Service, you agree to comply with and be bound by these Terms. Please note that <strong>pretest</strong> is designed for fun and educational purposes only. We are not responsible for any legal issues that may arise from the use of this platform.
+        Welcome to <strong>pretest</strong>. These Terms and Conditions (&quot;Terms&quot;) govern your use of our platform, including any content, functionality, and services offered on or through <strong>pretest</strong> (the &quot;Service&quot;). By accessing or using the Service, you agree to comply with and be bound by these Terms. Please note that <strong>pretest</strong> is designed for fun and educational purposes only. We are not responsible for any legal issues that may arise from the use of this platform.
       </p>
 
       <h2 className="text-xl font-semibold mb-4">2. Use of the Service</h2>
@@ -20,7 +20,7 @@ const TermsAndConditions = () => {
       </p>
       <ul className="list-disc list-inside mb-6">
         <li>In any way that violates any applicable federal, state, local, or international law or regulation.</li>
-        <li>To engage in any conduct that restricts or inhibits anyone's use or enjoyment of the Service.</li>
+        <li>To engage in any conduct that restricts or inhibits anyone&apos;s use or enjoyment of the Service.</li>
         <li>To transmit or upload any harmful or unlawful content.</li>
       </ul>
 
@@ -42,7 +42,7 @@ const TermsAndConditions = () => {
 
       <h2 className="text-xl font-semibold mb-4">5. Disclaimers</h2>
       <p className="mb-6">
-        The Service is provided on an "as is" and "as available" basis. We make no warranties, express or implied, regarding the Service, including but not limited to, the accuracy, reliability, or completeness of any content provided through the Service. <strong>pretest</strong> is intended for fun and educational purposes, and we are not responsible for any legal issues that may arise from its use.
+        The Service is provided on an &quot;as is&quot; and &quot;as available&quot; basis. We make no warranties, express or implied, regarding the Service, including but not limited to, the accuracy, reliability, or completeness of any content provided through the Service. <strong>pretest</strong> is intended for fun and educational purposes, and we are not responsible for any legal issues that may arise from its use.
       </p>
 
       <h2 className="text-xl font-semibold mb-4">6. Limitation of Liability</h2>

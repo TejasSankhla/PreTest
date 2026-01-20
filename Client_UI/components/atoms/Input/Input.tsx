@@ -70,7 +70,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     ref
   ) => {
     const [showPassword, setShowPassword] = React.useState(false);
-    const inputId = id || React.useId();
+    const generatedId = React.useId();
+    const inputId = id || generatedId;
 
     // Determine if we should show the password toggle
     const isPasswordType = type === "password";

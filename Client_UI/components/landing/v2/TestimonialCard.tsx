@@ -26,7 +26,7 @@ export default function TestimonialCard({
 
       {/* Quote Text */}
       <p className="text-base text-text-primary leading-relaxed mb-6 flex-1">
-        "{quote}"
+        &quot;{quote}&quot;
       </p>
 
       {/* Student Info */}

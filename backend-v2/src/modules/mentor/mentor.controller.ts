@@ -50,7 +50,8 @@ export class MentorController {
   @Get()
   async getAllMentors(@Query('college') college?: string) {
     if (college) {
-      const mentors = await this.mentorService.getAllMentorsFromCollege(college);
+      const mentors =
+        await this.mentorService.getAllMentorsFromCollege(college);
       return {
         data: mentors,
         success: true,
@@ -122,7 +123,10 @@ export class MentorController {
     @Query('status') status: string,
   ) {
     const isUpcoming = status === 'upcoming';
-    const bookings = await this.mentorService.fetchMentorBookings(userId, isUpcoming);
+    const bookings = await this.mentorService.fetchMentorBookings(
+      userId,
+      isUpcoming,
+    );
     return {
       data: bookings,
       success: true,

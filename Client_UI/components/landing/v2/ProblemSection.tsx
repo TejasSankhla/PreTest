@@ -37,13 +37,13 @@ export default function ProblemSection() {
               className="text-3xl md:text-5xl font-bold tracking-tight-v2 text-text-primary mb-6 leading-tight"
             >
               You can solve 300 LeetCode problems and still{" "}
-              <span className="text-secondary">freeze when someone's watching.</span>
+              <span className="text-secondary">freeze when someone&apos;s watching.</span>
             </motion.h2>
             <motion.p
               variants={fadeInUp}
               className="text-xl text-text-secondary mb-12 font-medium"
             >
-              That's the gap. <span className="font-bold text-text-primary">Preparation ≠ Practice.</span>
+              That&apos;s the gap. <span className="font-bold text-text-primary">Preparation ≠ Practice.</span>
             </motion.p>
 
             {/* Pain Points */}
@@ -152,7 +152,7 @@ export default function ProblemSection() {
             {/* Bottom Text */}
             <div className="mt-8 text-center">
               <p className="text-sm font-semibold text-text-primary">
-                That's the gap <span className="text-secondary">we close.</span>
+                That&apos;s the gap <span className="text-secondary">we close.</span>
               </p>
             </div>
           </motion.div>

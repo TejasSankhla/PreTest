@@ -6,8 +6,9 @@ import debounce from "lodash.debounce";
 import { Button } from "@/components/atoms";
 import { EmptyState } from "@/components/molecules/EmptyState";
 import { InterviewCard, InterviewCardSkeleton } from "./components";
-import { mockInterviews, filterInterviews, DifficultyFilter } from "./data";
-import { Difficulty } from "./types";
+import { AIInterview, Difficulty } from "./types";
+import { ListInterviewsResponse, transformInterview } from "./utils";
+import { apiClient, API_ROUTES } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import {
   Search,
@@ -18,6 +19,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 
+type DifficultyFilter = Difficulty | "All";
 type SortOption = "popular" | "newest" | "highest_rated";
 
 const difficultyOptions: { value: DifficultyFilter; label: string }[] = [
@@ -33,19 +35,78 @@ const sortOptions: { value: SortOption; label: string }[] = [
   { value: "highest_rated", label: "Highest Rated" },
 ];
 
+// Client-side sorting (API currently sorts by createdAt desc)
+function sortInterviews(interviews: AIInterview[], sortBy: SortOption): AIInterview[] {
+  const sorted = [...interviews];
+  switch (sortBy) {
+    case "popular":
+      sorted.sort((a, b) => b.totalTaken - a.totalTaken);
+      break;
+    case "newest":
+      sorted.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      break;
+    case "highest_rated":
+      sorted.sort((a, b) => b.avgScore - a.avgScore);
+      break;
+  }
+  return sorted;
+}
+
 export default function AIInterviewsPage() {
+  const [interviews, setInterviews] = useState<AIInterview[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("All");
   const [sortBy, setSortBy] = useState<SortOption>("popular");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch interviews from API
+  useEffect(() => {
+    const fetchInterviews = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const params: Record<string, string> = { limit: "50" };
+
+        if (debouncedSearch) {
+          params.search = debouncedSearch;
+        }
+
+        if (difficulty !== "All") {
+          params.difficulty = difficulty;
+        }
+
+        const response = await apiClient.get<ListInterviewsResponse>(API_ROUTES.aiInterview.list(), {
+          params,
+        });
+
+        if (response.data.success) {
+          const transformed = response.data.data.data.map(transformInterview);
+          setInterviews(transformed);
+        } else {
+          setError(response.data.msg || "Failed to fetch interviews");
+        }
+      } catch (err) {
+        console.error("Failed to fetch interviews:", err);
+        setError("Failed to load interviews. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInterviews();
+  }, [debouncedSearch, difficulty]);
 
   // Debounced search handler
   const debouncedSetSearch = useMemo(
     () =>
       debounce((value: string) => {
         setDebouncedSearch(value);
-        setIsLoading(false);
       }, 300),
     []
   );
@@ -61,23 +122,18 @@ export default function AIInterviewsPage() {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setSearchQuery(value);
-      setIsLoading(true);
       debouncedSetSearch(value);
     },
     [debouncedSetSearch]
   );
 
-  // Filter interviews
-  const filteredInterviews = useMemo(() => {
-    return filterInterviews(mockInterviews, {
-      search: debouncedSearch,
-      difficulty,
-      sortBy,
-    });
-  }, [debouncedSearch, difficulty, sortBy]);
+  // Sort interviews client-side
+  const sortedInterviews = useMemo(() => {
+    return sortInterviews(interviews, sortBy);
+  }, [interviews, sortBy]);
 
   // Available interviews count
-  const availableCount = filteredInterviews.filter(
+  const availableCount = sortedInterviews.filter(
     (i) => i.status === "available"
   ).length;
 
@@ -220,17 +276,19 @@ export default function AIInterviewsPage() {
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <p className="text-body-sm text-text-secondary">
             {isLoading ? (
-              "Searching..."
+              "Loading..."
+            ) : error ? (
+              <span className="text-error">{error}</span>
             ) : (
               <>
                 <span className="font-medium text-text-primary">
                   {availableCount}
                 </span>{" "}
                 interview{availableCount !== 1 ? "s" : ""} available
-                {filteredInterviews.length > availableCount && (
+                {sortedInterviews.length > availableCount && (
                   <span className="text-text-tertiary">
                     {" "}
-                    • {filteredInterviews.length - availableCount} coming soon
+                    • {sortedInterviews.length - availableCount} coming soon
                   </span>
                 )}
               </>
@@ -264,7 +322,7 @@ export default function AIInterviewsPage() {
         )}
 
         {/* Empty State */}
-        {!isLoading && filteredInterviews.length === 0 && (
+        {!isLoading && !error && sortedInterviews.length === 0 && (
           <EmptyState
             icon="search"
             title="No interviews found"
@@ -277,16 +335,16 @@ export default function AIInterviewsPage() {
         )}
 
         {/* Interview Grid */}
-        {!isLoading && filteredInterviews.length > 0 && (
+        {!isLoading && !error && sortedInterviews.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {filteredInterviews.map((interview) => (
+            {sortedInterviews.map((interview) => (
               <InterviewCard key={interview.id} interview={interview} />
             ))}
           </div>
         )}
 
         {/* Promo Banner */}
-        {!isLoading && filteredInterviews.length > 0 && (
+        {!isLoading && !error && sortedInterviews.length > 0 && (
           <div className="mt-10 sm:mt-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-6 sm:p-8 text-white">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-start gap-4">

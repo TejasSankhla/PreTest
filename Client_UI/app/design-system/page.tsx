@@ -940,13 +940,13 @@ export default function DesignSystemPage() {
                           <td className="py-2 pr-4 font-mono text-xs">currentCompany</td>
                           <td className="py-2 pr-4">string</td>
                           <td className="py-2 pr-4">No</td>
-                          <td className="py-2">Company name (e.g., "Google")</td>
+                          <td className="py-2">Company name (e.g., &quot;Google&quot;)</td>
                         </tr>
                         <tr className="border-b border-border/50">
                           <td className="py-2 pr-4 font-mono text-xs">role</td>
                           <td className="py-2 pr-4">string</td>
                           <td className="py-2 pr-4">No</td>
-                          <td className="py-2">Role at company (e.g., "SDE-2")</td>
+                          <td className="py-2">Role at company (e.g., &quot;SDE-2&quot;)</td>
                         </tr>
                         <tr className="border-b border-border/50">
                           <td className="py-2 pr-4 font-mono text-xs">college</td>

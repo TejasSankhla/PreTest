@@ -11,17 +11,23 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const reflector = app.get(Reflector);
 
-  // CORS Configuration - URLs are validated at startup via env.validation.ts
-  const allowedOrigins = [
-    configService.getOrThrow<string>('app.clientFrontendUrl'),
-    configService.getOrThrow<string>('app.mentorFrontendUrl'),
-  ].map((url) => url.replace(/\/$/, '')); // Remove trailing slashes
-
+  // CORS Configuration
   app.enableCors({
-    origin: allowedOrigins,
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, origin?: string | boolean) => void,
+    ) => {
+      // Reflect the requesting origin to support credentials
+      callback(null, origin || '*');
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'X-Requested-With',
+    ],
   });
 
   // Global prefix to match existing API routes
@@ -42,7 +48,8 @@ async function bootstrap() {
   );
 
   // Use process.env.PORT directly for Render deployment compatibility
-  const port = process.env.PORT || configService.get<number>('app.port') || 4000;
+  const port =
+    process.env.PORT || configService.get<number>('app.port') || 4000;
 
   // Bind to 0.0.0.0 for Render (required for external access)
   await app.listen(port, '0.0.0.0');
@@ -50,4 +57,4 @@ async function bootstrap() {
   console.log(`Server started on port ${port}`);
 }
 
-bootstrap();
+void bootstrap();

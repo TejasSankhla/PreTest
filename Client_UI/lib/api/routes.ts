@@ -32,4 +32,13 @@ export const API_ROUTES = {
   order: {
     create: () => "/api/order",
   },
+
+  // AI Interview endpoints
+  aiInterview: {
+    list: () => "/api/ai-interview",
+    detail: (id: string) => `/api/ai-interview/${id}`,
+    startSession: (id: string) => `/api/ai-interview/${id}/session/start`,
+    sessionResults: (conversationId: string) =>
+      `/api/ai-interview/session/${conversationId}/results`,
+  },
 } as const;

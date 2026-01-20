@@ -1,0 +1,32 @@
+{
+  "name": "pretest-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PreTest Monorepo - Client UI, Mentor UI, and Backend",
+  "scripts": {
+    "build:client": "cd Client_UI && npm run build",
+    "build:mentor": "cd Mentor_UI && npm run build",
+    "build:backend": "cd backend-v2 && npm run build",
+    "build:all": "npm run build:client && npm run build:mentor && npm run build:backend",
+    "lint:client": "cd Client_UI && npm run lint",
+    "lint:mentor": "cd Mentor_UI && npm run lint",
+    "lint:backend": "cd backend-v2 && npm run lint",
+    "lint:all": "npm run lint:client && npm run lint:mentor && npm run lint:backend",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10"
+  },
+  "lint-staged": {
+    "Client_UI/**/*.{ts,tsx}": [
+      "bash -c 'cd Client_UI && npm run lint'"
+    ],
+    "Mentor_UI/**/*.{ts,tsx}": [
+      "bash -c 'cd Mentor_UI && npm run lint'"
+    ],
+    "backend-v2/**/*.ts": [
+      "bash -c 'cd backend-v2 && npm run lint'"
+    ]
+  }
+}

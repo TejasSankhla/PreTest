@@ -1,5 +1,11 @@
 import { plainToInstance } from 'class-transformer';
-import { IsNotEmpty, IsString, IsOptional, IsNumber, validateSync } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsNumber,
+  validateSync,
+} from 'class-validator';
 
 class EnvironmentVariables {
   @IsNumber()
@@ -49,6 +55,18 @@ class EnvironmentVariables {
   @IsString()
   @IsNotEmpty({ message: 'Resend_API_KEY is required' })
   Resend_API_KEY: string;
+
+  @IsString()
+  @IsOptional()
+  ELEVENLABS_API_KEY?: string;
+
+  @IsString()
+  @IsOptional()
+  ELEVENLABS_WEBHOOK_SECRET?: string;
+
+  @IsString()
+  @IsOptional()
+  OPENAI_API_KEY?: string;
 }
 
 export function validate(config: Record<string, unknown>) {

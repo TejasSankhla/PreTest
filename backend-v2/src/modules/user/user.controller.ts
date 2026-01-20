@@ -86,7 +86,10 @@ export class UserController {
     @Query('status') status: string,
   ) {
     const isUpcoming = status === 'upcoming';
-    const bookings = await this.bookingService.fetchUserBookings(userId, isUpcoming);
+    const bookings = await this.bookingService.fetchUserBookings(
+      userId,
+      isUpcoming,
+    );
     return {
       data: bookings,
       success: true,

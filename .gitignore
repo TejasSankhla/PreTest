@@ -1,2 +1,5 @@
 # OpenMemory - IDE/Assistant specific rules
 .cursor/rules/openmemory.mdc
+
+# Root node_modules (for husky/lint-staged)
+node_modules/

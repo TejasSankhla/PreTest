@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, IsDateString, ValidateNested, IsObject } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsDateString,
+  ValidateNested,
+  IsObject,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 class PaymentResponseDto {

@@ -32,7 +32,7 @@ export class User {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 // Pre-save hook for password hashing
-UserSchema.pre('save', async function (next) {
+UserSchema.pre('save', function (next) {
   if (this.isModified('password')) {
     const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
     this.password = bcrypt.hashSync(this.password, saltRounds);
@@ -41,17 +41,20 @@ UserSchema.pre('save', async function (next) {
 });
 
 // Instance method: Compare password
-UserSchema.methods.comparePassword = function (password: string): boolean {
+UserSchema.methods.comparePassword = function (
+  this: UserDocument,
+  password: string,
+): boolean {
   return bcrypt.compareSync(password, this.password);
 };
 
 // Instance method: Create JWT token
-UserSchema.methods.createToken = function (): string {
+UserSchema.methods.createToken = function (this: UserDocument): string {
   const secret = process.env.JWT_SECRET || 'default_secret';
   const expiresIn = process.env.JWT_EXPIRY || '7d';
   const token = jwt.sign(
     {
-      UserId: this._id.toString(),
+      UserId: String(this._id),
       email: this.email,
       type: 'user',
     },

@@ -31,11 +31,29 @@ const AgentSchema = new mongoose.Schema(
   { timestamps: true, collection: 'agents' },
 );
 
+// Interview Types (must match backend/src/schemas/interview.schema.ts)
+const InterviewType = {
+  RESUME_PREP: 'resume_prep',
+  INTRODUCTION: 'introduction',
+  TECHNICAL: 'technical',
+  BEHAVIORAL: 'behavioral',
+  SYSTEM_DESIGN: 'system_design',
+  FULL_MOCK: 'full_mock',
+} as const;
+
 const InterviewSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
+    type: {
+      type: String,
+      enum: Object.values(InterviewType),
+      default: InterviewType.FULL_MOCK,
+      required: true,
+    },
+    role: { type: String },
     tags: { type: [String], default: [] },
+    stages: { type: [String], default: [] },
     durationMins: { type: Number, required: true },
     difficulty: {
       type: String,
@@ -47,6 +65,8 @@ const InterviewSchema = new mongoose.Schema(
       ref: 'Agent',
       required: true,
     },
+    totalAttempts: { type: Number, default: 0 },
+    avgScore: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
   },
   { timestamps: true, collection: 'interviews' },
@@ -778,7 +798,15 @@ const interviewSeedData = [
     name: 'Practice Introduction',
     description:
       'Master your tech interview introduction. Practice delivering a compelling "Tell me about yourself" with real-time feedback from a senior recruiter.',
+    type: InterviewType.INTRODUCTION,
+    role: 'All Levels',
     tags: ['introduction', 'soft-skills', 'beginner', 'communication'],
+    stages: [
+      'Warm-up & Rapport',
+      'First Attempt',
+      'Feedback',
+      'Second Attempt',
+    ],
     durationMins: 10,
     difficulty: 'Easy',
     agentName: 'Alex', // Will be resolved to ObjectId
@@ -787,7 +815,15 @@ const interviewSeedData = [
     name: 'Resume Deep Dive',
     description:
       'Practice explaining your resume in detail. Learn to articulate your projects, technologies, and impact clearly with an Engineering Manager.',
+    type: InterviewType.RESUME_PREP,
+    role: 'All Levels',
     tags: ['resume', 'experience', 'projects', 'beginner', 'communication'],
+    stages: [
+      'Introduction',
+      'Project Deep-Dive',
+      'Technical Decisions',
+      'Gaps Discussion',
+    ],
     durationMins: 15,
     difficulty: 'Easy',
     agentName: 'Sarah',
@@ -796,6 +832,8 @@ const interviewSeedData = [
     name: 'SDE1 - MERN Stack Developer',
     description:
       'Technical interview for junior developers. Covers JavaScript fundamentals, React, Node.js, MongoDB, and includes a practical coding exercise.',
+    type: InterviewType.TECHNICAL,
+    role: 'SDE 1 / Junior Developer',
     tags: [
       'mern',
       'javascript',
@@ -806,6 +844,13 @@ const interviewSeedData = [
       'technical',
       'coding',
     ],
+    stages: [
+      'Introduction',
+      'JavaScript',
+      'React & Frontend',
+      'Node.js & Backend',
+      'Coding Problem',
+    ],
     durationMins: 30,
     difficulty: 'Medium',
     agentName: 'Mike',
@@ -814,6 +859,8 @@ const interviewSeedData = [
     name: 'Amazon SDE Interview',
     description:
       "Practice for Amazon's rigorous interview process. Combines Leadership Principles behavioral questions with a technical coding problem and system design thinking.",
+    type: InterviewType.FULL_MOCK,
+    role: 'SDE 2 / Software Engineer',
     tags: [
       'amazon',
       'faang',
@@ -823,6 +870,13 @@ const interviewSeedData = [
       'technical',
       'behavioral',
     ],
+    stages: [
+      'Introduction',
+      'Behavioral (LP)',
+      'Technical (DSA)',
+      'System Design',
+      'Questions',
+    ],
     durationMins: 45,
     difficulty: 'Hard',
     agentName: 'David',
@@ -831,6 +885,8 @@ const interviewSeedData = [
     name: 'Founding Engineer - Startup',
     description:
       'Interview for a founding engineer role at an early-stage startup. Tests versatility, ownership mindset, full-stack capabilities, and comfort with ambiguity.',
+    type: InterviewType.FULL_MOCK,
+    role: 'Founding Engineer',
     tags: [
       'startup',
       'founding-engineer',
@@ -838,6 +894,13 @@ const interviewSeedData = [
       'system-design',
       'leadership',
       'ownership',
+    ],
+    stages: [
+      'Startup Fit',
+      'Technical Breadth',
+      'Ambiguity Handling',
+      'Build Scenario',
+      'Ownership',
     ],
     durationMins: 40,
     difficulty: 'Hard',
@@ -847,12 +910,21 @@ const interviewSeedData = [
     name: 'Amazon Leadership Principles',
     description:
       "Deep dive into Amazon's 16 Leadership Principles. Practice STAR-format answers for behavioral questions that Amazon interviewers actually ask.",
+    type: InterviewType.BEHAVIORAL,
+    role: 'All Levels (Amazon)',
     tags: [
       'amazon',
       'faang',
       'leadership-principles',
       'behavioral',
       'star-method',
+    ],
+    stages: [
+      'LP Overview',
+      'Customer & Ownership',
+      'Dive Deep & Bias for Action',
+      'Earn Trust & Results',
+      'Wrap-up',
     ],
     durationMins: 30,
     difficulty: 'Medium',
@@ -862,7 +934,16 @@ const interviewSeedData = [
     name: 'Googliness Round - Google',
     description:
       'Practice Google\'s unique "Googliness" interview. Assess your collaboration, ambiguity handling, and alignment with Google\'s culture.',
+    type: InterviewType.BEHAVIORAL,
+    role: 'All Levels (Google)',
     tags: ['google', 'faang', 'googliness', 'behavioral', 'culture-fit'],
+    stages: [
+      'Introduction',
+      'Collaboration',
+      'Navigating Ambiguity',
+      'Intellectual Humility',
+      'Wrap-up',
+    ],
     durationMins: 30,
     difficulty: 'Medium',
     agentName: 'Kevin',
@@ -871,6 +952,8 @@ const interviewSeedData = [
     name: 'System Design - Meta',
     description:
       'Practice Meta\'s system design interview. Design scalable systems like Instagram Stories with a Meta engineering manager guiding you through the process.',
+    type: InterviewType.SYSTEM_DESIGN,
+    role: 'Senior Engineer / Staff',
     tags: [
       'meta',
       'facebook',
@@ -878,6 +961,13 @@ const interviewSeedData = [
       'system-design',
       'scalability',
       'technical',
+    ],
+    stages: [
+      'Problem Framing',
+      'Requirements',
+      'High-Level Design',
+      'Component Deep Dive',
+      'Trade-offs & Scaling',
     ],
     durationMins: 45,
     difficulty: 'Hard',

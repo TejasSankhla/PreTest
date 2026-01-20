@@ -28,6 +28,7 @@ function Navbar() {
   // Navigation links
   const navLinks = [
     { href: ROUTES.exploreMentors, label: "Find Mentors" },
+    { href: ROUTES.aiInterview.index, label: "AI Interview" },
     { href: ROUTES.anchors.howItWorks, label: "How It Works" },
   ];
 
@@ -62,19 +63,23 @@ function Navbar() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8 flex-1 ml-12">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`text-sm font-medium transition-colors hover:text-text-primary ${
-                pathname === link.href
-                  ? "text-text-primary"
-                  : "text-text-secondary"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href ||
+              (link.href === ROUTES.aiInterview.index && pathname.startsWith("/ai-interview"));
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-sm font-medium transition-colors hover:text-text-primary ${
+                  isActive
+                    ? "text-text-primary"
+                    : "text-text-secondary"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Auth Actions */}
@@ -143,20 +148,24 @@ function Navbar() {
         >
           <nav className="flex flex-col p-2">
             {/* Navigation Links */}
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-[13px] font-medium rounded-lg px-4 py-2.5 transition-colors ${
-                  pathname === link.href
-                    ? "text-text-primary bg-background-subtle"
-                    : "text-text-secondary hover:bg-background-subtle hover:text-text-primary"
-                }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href ||
+                (link.href === ROUTES.aiInterview.index && pathname.startsWith("/ai-interview"));
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-[13px] font-medium rounded-lg px-4 py-2.5 transition-colors ${
+                    isActive
+                      ? "text-text-primary bg-background-subtle"
+                      : "text-text-secondary hover:bg-background-subtle hover:text-text-primary"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
 
             <div className="border-t border-border my-1" />
 

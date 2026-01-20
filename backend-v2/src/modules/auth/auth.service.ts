@@ -11,7 +11,8 @@ export class AuthService {
   ) {}
 
   async hashPassword(password: string): Promise<string> {
-    const saltRounds = this.configService.get<number>('jwt.bcryptSaltRounds') || 10;
+    const saltRounds =
+      this.configService.get<number>('jwt.bcryptSaltRounds') || 10;
     return bcrypt.hash(password, saltRounds);
   }
 
@@ -19,7 +20,11 @@ export class AuthService {
     return bcrypt.compareSync(password, hashedPassword);
   }
 
-  generateToken(payload: { UserId: string; email: string; type: 'user' | 'mentor' }): string {
+  generateToken(payload: {
+    UserId: string;
+    email: string;
+    type: 'user' | 'mentor';
+  }): string {
     return this.jwtService.sign(payload);
   }
 

@@ -165,7 +165,7 @@ export function LevelUpJourney({ currentStage, name, email, showCelebration }: L
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                Nice to meet you. Let's get you connected with mentors who've been exactly where you are.
+                Nice to meet you. Let&apos;s get you connected with mentors who&apos;ve been exactly where you are.
               </motion.p>
 
               {/* Hint */}
@@ -282,7 +282,7 @@ export function LevelUpJourney({ currentStage, name, email, showCelebration }: L
 
               {/* Content */}
               <h3 className="text-xl font-bold text-text-primary mb-2 tracking-tight">
-                You're Almost There!
+                You&apos;re Almost There!
               </h3>
               <p className="text-body-sm text-text-secondary mb-8">
                 One click away from booking your first mock interview
@@ -323,7 +323,7 @@ export function LevelUpJourney({ currentStage, name, email, showCelebration }: L
                 animate={{ opacity: [0.7, 1, 0.7] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                <span>Hit "Create Account" to get started</span>
+                <span>Hit &quot;Create Account&quot; to get started</span>
                 <ArrowRight className="w-4 h-4" />
               </motion.p>
             </motion.div>
@@ -404,7 +404,7 @@ export function LevelUpJourney({ currentStage, name, email, showCelebration }: L
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                Your account is ready. Let's find you a mentor.
+                Your account is ready. Let&apos;s find you a mentor.
               </motion.p>
 
               <motion.p

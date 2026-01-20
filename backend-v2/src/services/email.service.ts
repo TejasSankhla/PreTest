@@ -24,7 +24,10 @@ export class EmailService {
     this.resend = new Resend(apiKey);
   }
 
-  private formatDateTime(dateTime: Date): { formattedDate: string; formattedTime: string } {
+  private formatDateTime(dateTime: Date): {
+    formattedDate: string;
+    formattedTime: string;
+  } {
     const date = new Date(dateTime);
     const options: Intl.DateTimeFormatOptions = {
       timeZone: this.INDIAN_TZ,
@@ -43,7 +46,9 @@ export class EmailService {
   }
 
   private generateClientEmailContent(bookingData: BookingEmailData): string {
-    const { formattedDate, formattedTime } = this.formatDateTime(bookingData.slot);
+    const { formattedDate, formattedTime } = this.formatDateTime(
+      bookingData.slot,
+    );
 
     return `
       <div style="font-family: Arial, sans-serif; line-height: 1.5;">
@@ -70,7 +75,9 @@ export class EmailService {
   }
 
   private generateMentorEmailContent(bookingData: BookingEmailData): string {
-    const { formattedDate, formattedTime } = this.formatDateTime(bookingData.slot);
+    const { formattedDate, formattedTime } = this.formatDateTime(
+      bookingData.slot,
+    );
 
     return `
       <div style="font-family: Arial, sans-serif; line-height: 1.5;">
@@ -95,10 +102,18 @@ export class EmailService {
   }
 
   private validateBookingData(bookingData: BookingEmailData): void {
-    if (!bookingData.client || !bookingData.client.email || !bookingData.client.name) {
+    if (
+      !bookingData.client ||
+      !bookingData.client.email ||
+      !bookingData.client.name
+    ) {
       throw new Error('Client information is missing.');
     }
-    if (!bookingData.mentor || !bookingData.mentor.name || !bookingData.mentor.email) {
+    if (
+      !bookingData.mentor ||
+      !bookingData.mentor.name ||
+      !bookingData.mentor.email
+    ) {
       throw new Error('Mentor information is missing.');
     }
     if (!bookingData.slot) {
@@ -106,7 +121,9 @@ export class EmailService {
     }
   }
 
-  async sendBookingConfirmationEmail(bookingData: BookingEmailData): Promise<void> {
+  async sendBookingConfirmationEmail(
+    bookingData: BookingEmailData,
+  ): Promise<void> {
     try {
       this.validateBookingData(bookingData);
 
@@ -119,7 +136,9 @@ export class EmailService {
       });
 
       if (clientError) {
-        throw new Error(`Failed to send email to client: ${clientError.message}`);
+        throw new Error(
+          `Failed to send email to client: ${clientError.message}`,
+        );
       }
 
       // Send email to mentor
@@ -131,10 +150,13 @@ export class EmailService {
       });
 
       if (mentorError) {
-        throw new Error(`Failed to send email to mentor: ${mentorError.message}`);
+        throw new Error(
+          `Failed to send email to mentor: ${mentorError.message}`,
+        );
       }
-    } catch (error: any) {
-      console.error('Error in sendBookingConfirmationEmail:', error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Error in sendBookingConfirmationEmail:', message);
     }
   }
 }

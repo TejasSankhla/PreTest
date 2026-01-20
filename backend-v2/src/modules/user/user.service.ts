@@ -17,20 +17,29 @@ export class UserService {
     @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
   ) {}
 
-  async signUp(createUserDto: CreateUserDto): Promise<{ user: UserDocument; token: string }> {
+  async signUp(
+    createUserDto: CreateUserDto,
+  ): Promise<{ user: UserDocument; token: string }> {
     try {
       const newUser = await this.userModel.create(createUserDto);
       const token = newUser.createToken();
       return { user: newUser, token };
-    } catch (error: any) {
-      if (error.code === 11000) {
+    } catch (error: unknown) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 11000
+      ) {
         throw new ConflictException('Email already exists');
       }
       throw error;
     }
   }
 
-  async signIn(loginUserDto: LoginUserDto): Promise<{ user: UserDocument; token: string }> {
+  async signIn(
+    loginUserDto: LoginUserDto,
+  ): Promise<{ user: UserDocument; token: string }> {
     const { email, password } = loginUserDto;
 
     const user = await this.userModel.findOne({ email });
