@@ -10,18 +10,13 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import type { JwtPayload } from '../auth/strategies/jwt.strategy';
 import { InterviewAttemptService } from './interview-attempt.service';
 import { CreateAttemptDto, ListAttemptsDto } from './dto';
 
-// JWT payload structure (attached to request by passport)
-interface JwtUser {
-  UserId: string;
-  email: string;
-  type: 'user' | 'mentor';
-}
-
+// Use Request from express with JwtPayload for decorated signatures
 interface AuthenticatedRequest extends Request {
-  user: JwtUser;
+  user: JwtPayload;
 }
 
 @Controller()

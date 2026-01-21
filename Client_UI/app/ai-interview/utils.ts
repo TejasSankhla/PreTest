@@ -100,22 +100,6 @@ export type ConnectionStatus = "connecting" | "connected" | "reconnecting" | "er
 // AI Avatar states
 export type AIState = "idle" | "speaking" | "listening";
 
-// Theme type for session UI
-export type Theme = "light" | "dark";
-
-// Session state interface
-export interface SessionState {
-  connectionStatus: ConnectionStatus;
-  errorMessage?: string;
-  isMuted: boolean;
-  aiState: AIState;
-  currentStageIndex: number;
-  elapsedSeconds: number;
-  showEndConfirmation: boolean;
-  showHelpPanel: boolean;
-  theme: Theme;
-}
-
 // Format seconds to MM:SS
 export function formatTime(seconds: number): string {
   const mins = Math.floor(seconds / 60);
@@ -231,3 +215,69 @@ export interface CreateAttemptResponse {
   success: boolean;
   msg: string;
 }
+
+// ============================================
+// Evaluation Polling Types
+// ============================================
+
+// Status polling response from GET /api/attempts/:id/status
+export interface AttemptStatusResponse {
+  data: {
+    attemptId: string;
+    status: AttemptStatus;
+    updatedAt: string;
+    evaluation?: {
+      overallScore: number;
+      overallFeedback: string;
+    };
+  };
+  success: boolean;
+  msg: string;
+}
+
+// Full attempt response from GET /api/attempts/:id
+export interface FullAttemptResponse {
+  data: {
+    attempt: {
+      _id: string;
+      interview: InterviewAPIResponse;
+      status: AttemptStatus;
+      startedAt?: string;
+      completedAt?: string;
+      durationSeconds?: number;
+      transcript?: { transcript: TranscriptItem[] };
+      evaluation?: FullEvaluation;
+    };
+  };
+  success: boolean;
+  msg: string;
+}
+
+export interface FullEvaluation {
+  overallScore: number;
+  overallFeedback: string;
+  rubricScores: RubricScore[];
+  evaluatedAt: string;
+  evaluationModel: string;
+}
+
+export interface RubricScore {
+  rubricId: string;
+  rubricName: string;
+  score: number;
+  strengths: FeedbackPoint[];
+  feedbacks: FeedbackPoint[];
+}
+
+export interface FeedbackPoint {
+  point: string;
+  evidence?: string;
+}
+
+// Phase state machine for results page
+export type EvaluationPhase =
+  | 'call_ended'    // Initial 2s animation
+  | 'polling'       // Actively polling status
+  | 'evaluated'     // Show full results
+  | 'failed'        // Evaluation failed
+  | 'timeout';      // Polling timed out

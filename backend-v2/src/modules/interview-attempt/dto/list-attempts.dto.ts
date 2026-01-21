@@ -1,11 +1,4 @@
-import {
-  IsOptional,
-  IsString,
-  IsEnum,
-  IsNumber,
-  Min,
-  Max,
-} from 'class-validator';
+import { IsOptional, IsString, IsEnum, IsInt, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 import { AttemptStatus } from '../../../schemas/interview-attempt.schema';
 
@@ -20,13 +13,13 @@ export class ListAttemptsDto {
 
   @IsOptional()
   @Type(() => Number)
-  @IsNumber()
+  @IsInt()
   @Min(1)
   page?: number = 1;
 
   @IsOptional()
   @Type(() => Number)
-  @IsNumber()
+  @IsInt()
   @Min(1)
   @Max(50)
   limit?: number = 10;

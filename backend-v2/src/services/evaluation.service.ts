@@ -6,17 +6,11 @@ import {
 } from '../schemas/interview-attempt.schema';
 import { InterviewDocument } from '../schemas/interview.schema';
 import { RubricDocument } from '../schemas/rubric.schema';
+import { ElevenLabsTranscriptItem } from '../types/elevenlabs.types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPES
 // ─────────────────────────────────────────────────────────────────────────────
-
-// ElevenLabs transcript item structure
-interface ElevenLabsTranscriptItem {
-  role: 'agent' | 'user';
-  message: string;
-  time_in_call_secs: number;
-}
 
 // GPT response structure for evaluation
 interface GPTEvaluationResponse {

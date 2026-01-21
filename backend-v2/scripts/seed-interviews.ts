@@ -58,6 +58,7 @@ const InterviewSchema = new mongoose.Schema(
       required: true,
     },
     systemPrompt: { type: String, required: true },
+    stages: { type: [String], default: [] },
     rubrics: {
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Rubric' }],
       default: [],
@@ -867,6 +868,12 @@ const interviewSeedData = [
     difficulty: 'Easy',
     agentName: 'Alex', // Will be resolved to ObjectId
     rubricNames: ['Self Introduction', 'Communication Clarity'],
+    stages: [
+      'Warm-up & Rapport Building (2-3 mins)',
+      'First Introduction Attempt (2-3 mins)',
+      'Feedback & Coaching (2-3 mins)',
+      'Second Introduction Attempt (2-3 mins)',
+    ],
   },
   {
     name: 'Resume Deep Dive',
@@ -878,6 +885,12 @@ const interviewSeedData = [
     difficulty: 'Easy',
     agentName: 'Sarah',
     rubricNames: ['Project Articulation', 'Communication Clarity', 'Technical Depth'],
+    stages: [
+      'Introduction & Resume Overview (2-3 mins)',
+      'Most Impactful Project Deep-Dive (5-6 mins)',
+      'Technical Decisions & Challenges (4-5 mins)',
+      'Wrap-up & Feedback (2-3 mins)',
+    ],
   },
   {
     name: 'SDE1 - MERN Stack Developer',
@@ -898,6 +911,14 @@ const interviewSeedData = [
     difficulty: 'Medium',
     agentName: 'Mike',
     rubricNames: ['Technical Depth', 'Problem Solving', 'Communication Clarity'],
+    stages: [
+      'Introduction & Background (3-5 mins)',
+      'JavaScript Fundamentals Discussion (5-7 mins)',
+      'React & Frontend Concepts (5-7 mins)',
+      'Node.js & Backend Discussion (5-7 mins)',
+      'Mini Coding Exercise (5-7 mins)',
+      'Wrap-up & Questions (2-3 mins)',
+    ],
   },
   {
     name: 'Amazon SDE Interview',
@@ -922,6 +943,13 @@ const interviewSeedData = [
       'Technical Depth',
       'Problem Solving',
     ],
+    stages: [
+      'Introduction (2-3 mins)',
+      'Behavioral - Leadership Principles (12-15 mins)',
+      'Technical - Data Structures & Algorithms (15-18 mins)',
+      'System Design Thinking (10-12 mins)',
+      'Closing & Questions (3-5 mins)',
+    ],
   },
   {
     name: 'Founding Engineer - Startup',
@@ -945,6 +973,13 @@ const interviewSeedData = [
       'Adaptability & Ambiguity',
       'System Design Thinking',
     ],
+    stages: [
+      'Introduction & Startup Fit (3-5 mins)',
+      'Full-Stack Technical Breadth (10-12 mins)',
+      'Ambiguity & Decision Making (8-10 mins)',
+      'System Design & Scale (10-12 mins)',
+      'Culture & Closing (5-7 mins)',
+    ],
   },
   {
     name: 'Amazon Leadership Principles',
@@ -962,6 +997,13 @@ const interviewSeedData = [
     difficulty: 'Medium',
     agentName: 'Rachel',
     rubricNames: ['STAR Method Structure', 'Leadership & Ownership', 'Communication Clarity'],
+    stages: [
+      'Introduction & LP Overview (2-3 mins)',
+      'Customer Obsession & Ownership Stories (8-10 mins)',
+      'Dive Deep & Bias for Action Stories (8-10 mins)',
+      'Earn Trust & Disagree and Commit Stories (8-10 mins)',
+      'Wrap-up & Coaching (2-3 mins)',
+    ],
   },
   {
     name: 'Googliness Round - Google',
@@ -976,6 +1018,13 @@ const interviewSeedData = [
       'Cultural Fit & Collaboration',
       'Adaptability & Ambiguity',
       'Communication Clarity',
+    ],
+    stages: [
+      'Introduction & Warm-up (2-3 mins)',
+      'Collaboration & Teamwork (8-10 mins)',
+      'Navigating Ambiguity (8-10 mins)',
+      'Intellectual Humility & Feedback (8-10 mins)',
+      'Wrap-up (2-3 mins)',
     ],
   },
   {
@@ -995,6 +1044,14 @@ const interviewSeedData = [
     difficulty: 'Hard',
     agentName: 'Jessica',
     rubricNames: ['System Design Thinking', 'Technical Depth', 'Communication Clarity'],
+    stages: [
+      'Introduction & Problem Framing (3-5 mins)',
+      'Requirements Clarification (5-7 mins)',
+      'High-Level Design (10-12 mins)',
+      'Deep Dive into Components (12-15 mins)',
+      'Scaling & Trade-offs (8-10 mins)',
+      'Wrap-up (3-5 mins)',
+    ],
   },
 ];
 

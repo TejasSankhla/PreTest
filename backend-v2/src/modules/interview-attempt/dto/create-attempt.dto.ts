@@ -13,8 +13,4 @@ export class CreateAttemptDto {
   @IsOptional()
   @IsEnum(Platform)
   platform?: Platform;
-
-  @IsOptional()
-  @IsString()
-  userAgent?: string;
 }

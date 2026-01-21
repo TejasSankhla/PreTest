@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   InternalServerErrorException,
   BadRequestException,
@@ -9,20 +10,10 @@ import { ConfigService } from '@nestjs/config';
 import { Model } from 'mongoose';
 import axios from 'axios';
 import { Interview, InterviewDocument } from '../../schemas/interview.schema';
-import { Agent, AgentDocument } from '../../schemas/agent.schema';
+import { AgentDocument } from '../../schemas/agent.schema';
 import { ListInterviewsDto } from './dto';
-
-export interface PaginatedResult<T> {
-  data: T[];
-  pagination: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
-}
+import { PaginatedResult } from '../../types/common.types';
+import { ElevenLabsConversation } from '../../types/elevenlabs.types';
 
 export interface SignedUrlResponse {
   signedUrl: string;
@@ -44,32 +35,7 @@ export interface SignedUrlResponse {
   durationMins: number;
 }
 
-// ElevenLabs Conversation API response types
-export interface ElevenLabsTranscriptItem {
-  role: 'agent' | 'user';
-  message: string;
-  time_in_call_secs: number;
-  tool_calls?: unknown[];
-  tool_results?: unknown[];
-}
-
-export interface ElevenLabsConversation {
-  conversation_id: string;
-  agent_id: string;
-  status: string;
-  transcript: ElevenLabsTranscriptItem[];
-  metadata?: {
-    start_time_unix_secs?: number;
-    end_time_unix_secs?: number;
-    call_duration_secs?: number;
-  };
-  analysis?: {
-    transcript_summary?: string;
-    evaluation_criteria_results?: Record<string, unknown>;
-  };
-}
-
-// ElevenLabs API response types
+// ElevenLabs API response types (internal to this service)
 interface ElevenLabsSignedUrlResponse {
   signed_url: string;
 }
@@ -80,13 +46,12 @@ interface ElevenLabsErrorResponse {
 
 @Injectable()
 export class AiInterviewService {
+  private readonly logger = new Logger(AiInterviewService.name);
   private readonly elevenLabsBaseUrl: string;
 
   constructor(
     @InjectModel(Interview.name)
     private interviewModel: Model<InterviewDocument>,
-    @InjectModel(Agent.name)
-    private agentModel: Model<AgentDocument>,
     private configService: ConfigService,
   ) {
     this.elevenLabsBaseUrl = this.configService.get<string>(
@@ -239,9 +204,8 @@ export class AiInterviewService {
       };
     } catch (error) {
       if (axios.isAxiosError<ElevenLabsErrorResponse>(error)) {
-        console.error(
-          'ElevenLabs API error:',
-          error.response?.data || error.message,
+        this.logger.error(
+          `ElevenLabs API error: ${JSON.stringify(error.response?.data) || error.message}`,
         );
         throw new InternalServerErrorException(
           `Failed to get signed URL: ${error.response?.data?.detail || error.message}`,
@@ -278,9 +242,8 @@ export class AiInterviewService {
       return response.data;
     } catch (error) {
       if (axios.isAxiosError<ElevenLabsErrorResponse>(error)) {
-        console.error(
-          'ElevenLabs API error:',
-          error.response?.data || error.message,
+        this.logger.error(
+          `ElevenLabs API error: ${JSON.stringify(error.response?.data) || error.message}`,
         );
         throw new InternalServerErrorException(
           `Failed to get conversation: ${error.response?.data?.detail || error.message}`,
@@ -292,6 +255,8 @@ export class AiInterviewService {
 
   /**
    * Get audio URL for a conversation from ElevenLabs
+   * NOTE: Currently returns null - audio storage not implemented yet
+   * TODO: Implement S3/CloudStorage upload when audio storage is needed
    */
   async getConversationAudioUrl(
     conversationId: string,
@@ -315,16 +280,17 @@ export class AiInterviewService {
         },
       );
 
-      // For now, return null as we'd need to store this audio somewhere
-      // In production, you might upload to S3/CloudStorage and return the URL
+      // TODO: Upload to S3/CloudStorage and return the URL
       const audioData = response.data as ArrayBuffer;
-      console.log(
+      this.logger.debug(
         `Audio retrieved for conversation ${conversationId}, size: ${audioData.byteLength} bytes`,
       );
       return null;
     } catch {
       // Audio might not be available for all conversations
-      console.warn(`Could not get audio for conversation ${conversationId}`);
+      this.logger.warn(
+        `Could not get audio for conversation ${conversationId}`,
+      );
       return null;
     }
   }

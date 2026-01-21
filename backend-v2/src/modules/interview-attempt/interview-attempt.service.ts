@@ -14,18 +14,7 @@ import {
 } from '../../schemas/interview-attempt.schema';
 import { Interview, InterviewDocument } from '../../schemas/interview.schema';
 import { CreateAttemptDto, ListAttemptsDto } from './dto';
-
-export interface PaginatedResult<T> {
-  data: T[];
-  pagination: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
-}
+import { PaginatedResult } from '../../types/common.types';
 
 export interface AttemptStatusResponse {
   attemptId: string;

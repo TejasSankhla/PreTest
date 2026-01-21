@@ -7,7 +7,6 @@ import { ROUTES } from "@/lib/routes";
 import { apiClient, API_ROUTES } from "@/lib/api";
 import {
   SessionStartResponse,
-  SessionState,
   AIState,
   formatTime,
   AIInterviewWithAgent,
@@ -28,10 +27,18 @@ import {
   PhoneOff,
   MessageSquare,
   Volume2,
-  Sun,
-  Moon,
   HelpCircle,
 } from "lucide-react";
+
+interface SessionPageState {
+  connectionStatus: "connecting" | "connected" | "reconnecting" | "error" | "ended";
+  errorMessage?: string;
+  aiState: AIState;
+  currentStageIndex: number;
+  elapsedSeconds: number;
+  showEndConfirmation: boolean;
+  showHelpPanel: boolean;
+}
 
 export default function InterviewSessionPage() {
   const params = useParams();
@@ -44,17 +51,14 @@ export default function InterviewSessionPage() {
   // Microphone mute state - controlled by ElevenLabs hook
   const [micMuted, setMicMuted] = useState(false);
 
-  const [state, setState] = useState<Omit<SessionState, "isMuted">>({
+  const [state, setState] = useState<SessionPageState>({
     connectionStatus: "connecting",
     aiState: "idle",
     currentStageIndex: 0,
     elapsedSeconds: 0,
     showEndConfirmation: false,
     showHelpPanel: false,
-    theme: "light",
   });
-
-  const isLight = state.theme === "light";
 
   // ElevenLabs conversation hook - micMuted controls the microphone
   const conversation = useConversation({
@@ -91,10 +95,6 @@ export default function InterviewSessionPage() {
       }));
     },
   });
-
-  const toggleTheme = useCallback(() => {
-    setState((prev) => ({ ...prev, theme: prev.theme === "light" ? "dark" : "light" }));
-  }, []);
 
   const toggleHelpPanel = useCallback(() => {
     setState((prev) => ({ ...prev, showHelpPanel: !prev.showHelpPanel }));
@@ -211,11 +211,13 @@ export default function InterviewSessionPage() {
       }
     }
 
-    // Navigate to results page with conversationId
-    const resultsUrl = conversationIdRef.current
-      ? `${ROUTES.aiInterview.results(params.id as string)}?conversationId=${conversationIdRef.current}`
-      : ROUTES.aiInterview.results(params.id as string);
-    router.push(resultsUrl);
+    // Navigate to results page with attemptId
+    const resultsUrl = ROUTES.aiInterview.results(params.id as string);
+    if (attemptIdRef.current) {
+      router.push(`${resultsUrl}?attemptId=${attemptIdRef.current}`);
+    } else {
+      router.push(resultsUrl);
+    }
   }, [router, params.id, conversation]);
 
   const handleRetry = useCallback(() => {
@@ -232,11 +234,10 @@ export default function InterviewSessionPage() {
       elapsedSeconds: 0,
       showEndConfirmation: false,
       showHelpPanel: false,
-      theme: state.theme, // Preserve theme preference
     });
     // Re-initialize session
     initSession();
-  }, [initSession, state.theme]);
+  }, [initSession]);
 
   const handleGoBack = useCallback(() => {
     if (conversation.status === "connected") {
@@ -248,13 +249,12 @@ export default function InterviewSessionPage() {
   // Show error state if connection failed
   if (state.connectionStatus === "error") {
     return (
-      <div className={`fixed inset-0 ${isLight ? "bg-gray-50" : "bg-[#1a1a2e]"} flex flex-col`}>
+      <div className="fixed inset-0 bg-background flex flex-col">
         <ConnectionOverlay
           status="error"
           errorMessage={state.errorMessage}
           onRetry={handleRetry}
           onGoBack={handleGoBack}
-          theme={state.theme}
         />
       </div>
     );
@@ -262,71 +262,62 @@ export default function InterviewSessionPage() {
 
   if (!interview) {
     return (
-      <div className={`fixed inset-0 ${isLight ? "bg-gray-50" : "bg-[#1a1a2e]"} flex items-center justify-center`}>
+      <div className="fixed inset-0 bg-background flex items-center justify-center">
         <ConnectionOverlay
           status="connecting"
           onRetry={handleRetry}
           onGoBack={handleGoBack}
-          theme={state.theme}
         />
       </div>
     );
   }
 
   return (
-    <div className={`fixed inset-0 ${isLight ? "bg-gray-50" : "bg-[#1a1a2e]"} flex flex-col transition-colors duration-300`}>
+    <div className="fixed inset-0 bg-background flex flex-col">
       {/* Connection overlay */}
       <ConnectionOverlay
         status={state.connectionStatus}
         errorMessage={state.errorMessage}
         onRetry={handleRetry}
         onGoBack={handleGoBack}
-        theme={state.theme}
       />
 
       {/* Header */}
-      <header className={`flex items-center justify-between px-4 sm:px-6 py-3 ${isLight ? "bg-white border-gray-200" : "bg-[#242438]/80 border-white/5"} backdrop-blur-sm border-b transition-colors duration-300`}>
+      <header className="flex items-center justify-between px-4 sm:px-6 py-3 bg-background backdrop-blur-sm border-b border-border">
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-              <span className="text-white text-xs font-bold">AI</span>
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
+              <span className="text-white text-body-xs font-bold">AI</span>
             </div>
             <div>
-              <h1 className={`${isLight ? "text-gray-900" : "text-white"} text-sm font-medium truncate max-w-[200px]`}>
+              <h1 className="text-text-primary text-body-sm font-medium truncate max-w-[200px]">
                 {interview.title}
               </h1>
-              <p className={`${isLight ? "text-gray-500" : "text-white/50"} text-xs`}>{interview.role}</p>
+              <p className="text-text-tertiary text-body-xs">{interview.role}</p>
             </div>
           </div>
         </div>
 
         {/* Center - Timer and Status */}
         <div className="flex items-center gap-4">
-          <div className={`flex items-center gap-2 ${isLight ? "bg-red-100" : "bg-red-500/20"} px-3 py-1.5 rounded-full`}>
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-            <span className={`${isLight ? "text-red-600" : "text-red-400"} text-xs font-semibold`}>REC</span>
+          <div className="flex items-center gap-2 bg-error-light px-3 py-1.5 rounded-full">
+            <div className="w-2 h-2 bg-error rounded-full animate-pulse" />
+            <span className="text-error text-body-xs font-semibold">REC</span>
           </div>
-          <div className={`font-mono text-sm ${isLight ? "bg-gray-100 text-gray-700" : "bg-white/10 text-white"} px-3 py-1.5 rounded-lg`}>
+          <div className="font-mono text-body-sm bg-background-subtle text-text-primary px-3 py-1.5 rounded-lg">
             {formatTime(state.elapsedSeconds)}
           </div>
-          <StageProgressPill stages={interview.stages} currentIndex={state.currentStageIndex} theme={state.theme} />
+          <StageProgressPill stages={interview.stages} currentIndex={state.currentStageIndex} />
         </div>
 
         {/* Right - Actions */}
         <div className="flex items-center gap-2">
           <button
             onClick={toggleHelpPanel}
-            className={`p-2 rounded-lg ${isLight ? "hover:bg-gray-100 text-gray-500 hover:text-gray-700" : "hover:bg-white/10 text-white/60 hover:text-white"} transition-colors`}
+            className="p-2 rounded-lg hover:bg-background-subtle text-text-tertiary hover:text-text-primary transition-colors"
             title="Interview guide & help"
           >
             <HelpCircle className="w-5 h-5" />
-          </button>
-          <button
-            onClick={toggleTheme}
-            className={`p-2 rounded-lg ${isLight ? "hover:bg-gray-100 text-gray-500 hover:text-gray-700" : "hover:bg-white/10 text-white/60 hover:text-white"} transition-colors`}
-            title={isLight ? "Switch to dark mode" : "Switch to light mode"}
-          >
-            {isLight ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
           </button>
         </div>
       </header>
@@ -337,7 +328,6 @@ export default function InterviewSessionPage() {
           <InterviewBriefBanner
             interview={interview}
             currentStageIndex={state.currentStageIndex}
-            theme={state.theme}
           />
 
           {/* Video grid */}
@@ -349,14 +339,12 @@ export default function InterviewSessionPage() {
                   role="AI Interviewer"
                   isAI
                   aiState={state.aiState}
-                  theme={state.theme}
                 />
                 <ParticipantTile
                   name="You"
                   role="Candidate"
                   isSpeaking={state.aiState === "listening"}
                   isMuted={micMuted}
-                  theme={state.theme}
                 />
               </div>
 
@@ -364,7 +352,6 @@ export default function InterviewSessionPage() {
                 <AIStateIndicator
                   aiState={state.aiState}
                   isMuted={micMuted}
-                  theme={state.theme}
                 />
               </div>
             </div>
@@ -374,37 +361,35 @@ export default function InterviewSessionPage() {
 
       {/* Control bar */}
       <footer className="py-4 px-4 sm:px-6">
-        <div className={`max-w-xl mx-auto ${isLight ? "bg-white border border-gray-200 shadow-lg" : "bg-[#242438]/90"} backdrop-blur-sm rounded-2xl px-4 py-3 flex items-center justify-between transition-colors duration-300`}>
+        <div className="max-w-xl mx-auto bg-background border border-border shadow-lg backdrop-blur-sm rounded-2xl px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
               onClick={toggleMute}
               className={`
                 w-12 h-12 rounded-xl flex items-center justify-center transition-all
                 ${micMuted
-                  ? "bg-red-500 text-white hover:bg-red-400"
-                  : isLight
-                    ? "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                    : "bg-white/10 text-white hover:bg-white/20"
+                  ? "bg-error text-white hover:bg-error/90"
+                  : "bg-background-subtle text-text-secondary hover:bg-border"
                 }
               `}
             >
               {micMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
             </button>
-            <button className={`w-12 h-12 rounded-xl ${isLight ? "bg-gray-100 text-gray-600 hover:bg-gray-200" : "bg-white/10 text-white hover:bg-white/20"} flex items-center justify-center transition-colors`}>
+            <button className="w-12 h-12 rounded-xl bg-background-subtle text-text-secondary hover:bg-border flex items-center justify-center transition-colors">
               <Volume2 className="w-5 h-5" />
             </button>
           </div>
 
           <button
             onClick={handleEndClick}
-            className="h-12 px-8 rounded-xl bg-red-600 hover:bg-red-500 text-white font-medium flex items-center gap-2 transition-colors shadow-lg shadow-red-600/25"
+            className="h-12 px-8 rounded-xl bg-error hover:bg-error/90 text-white font-medium flex items-center gap-2 transition-colors shadow-lg shadow-error/25"
           >
             <PhoneOff className="w-5 h-5" />
             <span className="hidden sm:inline">End Interview</span>
           </button>
 
           <div className="flex items-center gap-2">
-            <button className={`w-12 h-12 rounded-xl ${isLight ? "bg-gray-100 text-gray-600 hover:bg-gray-200" : "bg-white/10 text-white hover:bg-white/20"} flex items-center justify-center transition-colors`}>
+            <button className="w-12 h-12 rounded-xl bg-background-subtle text-text-secondary hover:bg-border flex items-center justify-center transition-colors">
               <MessageSquare className="w-5 h-5" />
             </button>
           </div>
@@ -419,7 +404,6 @@ export default function InterviewSessionPage() {
         totalStages={interview.stages.length}
         onContinue={handleContinue}
         onEnd={handleEndInterview}
-        theme={state.theme}
       />
 
       <HelpPanel
@@ -427,7 +411,6 @@ export default function InterviewSessionPage() {
         onClose={toggleHelpPanel}
         stages={interview.stages}
         currentStageIndex={state.currentStageIndex}
-        theme={state.theme}
       />
     </div>
   );
