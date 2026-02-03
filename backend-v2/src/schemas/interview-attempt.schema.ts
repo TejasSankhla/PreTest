@@ -10,7 +10,13 @@ export enum AttemptStatus {
   IN_PROGRESS = 'in_progress', // Interview active (WebSocket connected)
   COMPLETED = 'completed', // Interview ended normally
   ABANDONED = 'abandoned', // User quit or disconnected
-  EVALUATING = 'evaluating', // Fetching transcript and running LLM evaluation
+
+  // Evaluation pipeline stages
+  FETCHING_TRANSCRIPT = 'fetching_transcript', // Job 1: Fetching transcript from ElevenLabs
+  FETCHING_AUDIO = 'fetching_audio', // Job 2: Fetching audio from ElevenLabs
+  EVALUATING = 'evaluating', // Job 3: Running LLM evaluation
+
+  // Terminal states
   EVALUATED = 'evaluated', // Scoring complete
   FAILED = 'failed', // Evaluation failed (can be retried)
 }

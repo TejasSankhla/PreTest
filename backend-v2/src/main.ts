@@ -1,12 +1,20 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    // Enable rawBody for webhook signature verification
+    // This makes request.rawBody available for HMAC signature computation
+    rawBody: true,
+    // Enable all log levels
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+  });
+
+  const logger = new Logger('Bootstrap');
 
   const configService = app.get(ConfigService);
   const reflector = app.get(Reflector);
@@ -30,8 +38,10 @@ async function bootstrap() {
     ],
   });
 
-  // Global prefix to match existing API routes
-  app.setGlobalPrefix('api');
+  // Global prefix to match existing API routes (exclude Bull Board admin UI)
+  app.setGlobalPrefix('api', {
+    exclude: ['/admin/queues*path'],
+  });
 
   // Global exception filter
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -54,7 +64,8 @@ async function bootstrap() {
   // Bind to 0.0.0.0 for Render (required for external access)
   await app.listen(port, '0.0.0.0');
 
-  console.log(`Server started on port ${port}`);
+  logger.log(`Server started on port ${port}`);
+  logger.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 }
 
 void bootstrap();

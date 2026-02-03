@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button, Badge } from "@/components/atoms";
@@ -10,10 +10,15 @@ import {
   AIInterviewWithAgent,
   GetInterviewResponse,
   transformInterview,
+  SessionStartResponse,
+  CreateAttemptResponse,
+  AIState,
+  formatTime,
 } from "../../utils";
 import { apiClient, API_ROUTES } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { buildLoginUrl, getCurrentPathForReturn } from "@/lib/auth-redirect";
+import { useConversation } from "@elevenlabs/react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -21,6 +26,7 @@ import {
   Users,
   BarChart3,
   Mic,
+  MicOff,
   Sparkles,
   Info,
   ListOrdered,
@@ -30,7 +36,21 @@ import {
   ChevronDown,
   CheckCircle2,
   AlertCircle,
+  PhoneOff,
+  Volume2,
+  HelpCircle,
 } from "lucide-react";
+
+// Import session components
+import {
+  ParticipantTile,
+  StageProgressPill,
+  ConnectionOverlay,
+  AIStateIndicator,
+  InterviewBriefBanner,
+  HelpPanel,
+  EndConfirmationModal,
+} from "../session/components";
 
 // Difficulty badge config
 const difficultyConfig: Record<
@@ -41,6 +61,20 @@ const difficultyConfig: Record<
   [Difficulty.MEDIUM]: { label: "Medium", variant: "warning" },
   [Difficulty.HARD]: { label: "Hard", variant: "error" },
 };
+
+// Page mode
+type PageMode = "brief" | "session";
+
+// Session state
+interface SessionPageState {
+  connectionStatus: "connecting" | "connected" | "reconnecting" | "error" | "ended";
+  errorMessage?: string;
+  aiState: AIState;
+  currentStageIndex: number;
+  elapsedSeconds: number;
+  showEndConfirmation: boolean;
+  showHelpPanel: boolean;
+}
 
 // Loading skeleton component
 function BriefPageSkeleton() {
@@ -90,9 +124,61 @@ export default function InterviewBriefPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
+
+  // Page state
+  const [mode, setMode] = useState<PageMode>("brief");
   const [interview, setInterview] = useState<AIInterviewWithAgent | null>(null);
   const [loading, setLoading] = useState(true);
   const [showTips, setShowTips] = useState(false);
+
+  // Session state
+  const conversationStarted = useRef(false);
+  const conversationIdRef = useRef<string | null>(null);
+  const attemptIdRef = useRef<string | null>(null);
+  const [micMuted, setMicMuted] = useState(false);
+  const [sessionState, setSessionState] = useState<SessionPageState>({
+    connectionStatus: "connecting",
+    aiState: "idle",
+    currentStageIndex: 0,
+    elapsedSeconds: 0,
+    showEndConfirmation: false,
+    showHelpPanel: false,
+  });
+
+  // ElevenLabs conversation hook
+  const conversation = useConversation({
+    micMuted,
+    onConnect: () => {
+      setSessionState((prev) => ({ ...prev, connectionStatus: "connected" }));
+    },
+    onDisconnect: () => {
+      setSessionState((prev) => {
+        if (prev.connectionStatus === "connected") {
+          return { ...prev, connectionStatus: "ended" };
+        }
+        return prev;
+      });
+    },
+    onError: (error) => {
+      console.error("[ElevenLabs] Error:", error);
+      setSessionState((prev) => ({
+        ...prev,
+        connectionStatus: "error",
+        errorMessage: typeof error === "string" ? error : "Connection failed",
+      }));
+    },
+    onModeChange: (mode) => {
+      const modeMap: Record<string, AIState> = {
+        speaking: "speaking",
+        listening: "listening",
+        idle: "idle",
+      };
+      setSessionState((prev) => ({
+        ...prev,
+        aiState: modeMap[mode.mode] || "idle",
+      }));
+    },
+  });
 
   // Fetch interview data from API
   useEffect(() => {
@@ -119,6 +205,63 @@ export default function InterviewBriefPage() {
     fetchInterview();
   }, [params.id]);
 
+  // Timer effect for session
+  useEffect(() => {
+    if (mode !== "session" || sessionState.connectionStatus !== "connected") return;
+
+    const interval = setInterval(() => {
+      setSessionState((prev) => ({ ...prev, elapsedSeconds: prev.elapsedSeconds + 1 }));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [mode, sessionState.connectionStatus]);
+
+  // Start interview session
+  const initSession = useCallback(async () => {
+    const id = params.id as string;
+    if (!id || conversationStarted.current) return;
+
+    conversationStarted.current = true;
+
+    try {
+      const response = await apiClient.post<SessionStartResponse>(
+        API_ROUTES.aiInterview.startSession(id)
+      );
+
+      if (!response.data.success) {
+        throw new Error(response.data.msg || "Failed to start session");
+      }
+
+      const { signedUrl } = response.data.data;
+
+      const conversationId = await conversation.startSession({ signedUrl });
+      if (conversationId) {
+        conversationIdRef.current = conversationId;
+
+        // Create attempt record in the backend
+        try {
+          const attemptResponse = await apiClient.post<CreateAttemptResponse>(
+            API_ROUTES.attempts.create(id),
+            { conversationId }
+          );
+          if (attemptResponse.data.success) {
+            attemptIdRef.current = attemptResponse.data.data.attemptId;
+          }
+        } catch (attemptError) {
+          console.error("Failed to create attempt record:", attemptError);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to start session:", error);
+      conversationStarted.current = false;
+      setSessionState((prev) => ({
+        ...prev,
+        connectionStatus: "error",
+        errorMessage: error instanceof Error ? error.message : "Failed to start interview session",
+      }));
+    }
+  }, [params.id, conversation]);
+
   const handleStartInterview = () => {
     // Require login to start interview
     if (!user) {
@@ -126,14 +269,257 @@ export default function InterviewBriefPage() {
       router.push(buildLoginUrl(returnPath));
       return;
     }
-    router.push(ROUTES.aiInterview.session(params.id as string));
+
+    // Switch to session mode and initialize
+    setMode("session");
+    initSession();
   };
+
+  const toggleHelpPanel = useCallback(() => {
+    setSessionState((prev) => ({ ...prev, showHelpPanel: !prev.showHelpPanel }));
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    setMicMuted((prev) => !prev);
+  }, []);
+
+  const handleEndClick = useCallback(() => {
+    setSessionState((prev) => ({ ...prev, showEndConfirmation: true }));
+  }, []);
+
+  const handleContinue = useCallback(() => {
+    setSessionState((prev) => ({ ...prev, showEndConfirmation: false }));
+  }, []);
+
+  const handleEndInterview = useCallback(async () => {
+    try {
+      await conversation.endSession();
+    } catch (error) {
+      console.error("Failed to end session:", error);
+    }
+
+    // End the attempt record
+    if (attemptIdRef.current) {
+      try {
+        await apiClient.post(API_ROUTES.attempts.end(attemptIdRef.current));
+      } catch (error) {
+        console.error("Failed to end attempt:", error);
+      }
+    }
+
+    // Navigate to results page with attemptId
+    const resultsUrl = ROUTES.aiInterview.results(params.id as string);
+    if (attemptIdRef.current) {
+      router.push(`${resultsUrl}?attemptId=${attemptIdRef.current}`);
+    } else {
+      router.push(resultsUrl);
+    }
+  }, [router, params.id, conversation]);
+
+  const handleRetry = useCallback(() => {
+    // Reset all session state
+    conversationStarted.current = false;
+    conversationIdRef.current = null;
+    attemptIdRef.current = null;
+    setMicMuted(false);
+    setSessionState({
+      connectionStatus: "connecting",
+      aiState: "idle",
+      currentStageIndex: 0,
+      elapsedSeconds: 0,
+      showEndConfirmation: false,
+      showHelpPanel: false,
+    });
+    // Re-initialize session
+    initSession();
+  }, [initSession]);
+
+  const handleGoBack = useCallback(() => {
+    if (conversation.status === "connected") {
+      conversation.endSession();
+    }
+    // Go back to brief mode
+    setMode("brief");
+    conversationStarted.current = false;
+    conversationIdRef.current = null;
+    attemptIdRef.current = null;
+    setMicMuted(false);
+    setSessionState({
+      connectionStatus: "connecting",
+      aiState: "idle",
+      currentStageIndex: 0,
+      elapsedSeconds: 0,
+      showEndConfirmation: false,
+      showHelpPanel: false,
+    });
+  }, [conversation]);
 
   if (loading) return <BriefPageSkeleton />;
   if (!interview) return <NotFoundState />;
 
   const difficulty = difficultyConfig[interview.difficulty as Difficulty];
 
+  // Render session mode
+  if (mode === "session") {
+    // Show error state if connection failed
+    if (sessionState.connectionStatus === "error") {
+      return (
+        <div className="fixed inset-0 bg-background flex flex-col">
+          <ConnectionOverlay
+            status="error"
+            errorMessage={sessionState.errorMessage}
+            onRetry={handleRetry}
+            onGoBack={handleGoBack}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="fixed inset-0 bg-background flex flex-col">
+        {/* Connection overlay */}
+        <ConnectionOverlay
+          status={sessionState.connectionStatus}
+          errorMessage={sessionState.errorMessage}
+          onRetry={handleRetry}
+          onGoBack={handleGoBack}
+        />
+
+        {/* Header */}
+        <header className="flex items-center justify-between px-4 sm:px-6 py-3 bg-background backdrop-blur-sm border-b border-border">
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
+                <span className="text-white text-body-xs font-bold">AI</span>
+              </div>
+              <div>
+                <h1 className="text-text-primary text-body-sm font-medium truncate max-w-[200px]">
+                  {interview.title}
+                </h1>
+                <p className="text-text-tertiary text-body-xs">{interview.role}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Center - Timer and Status */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 bg-error-light px-3 py-1.5 rounded-full">
+              <div className="w-2 h-2 bg-error rounded-full animate-pulse" />
+              <span className="text-error text-body-xs font-semibold">REC</span>
+            </div>
+            <div className="font-mono text-body-sm bg-background-subtle text-text-primary px-3 py-1.5 rounded-lg">
+              {formatTime(sessionState.elapsedSeconds)}
+            </div>
+            <StageProgressPill stages={interview.stages} currentIndex={sessionState.currentStageIndex} />
+          </div>
+
+          {/* Right - Actions */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleHelpPanel}
+              className="p-2 rounded-lg hover:bg-background-subtle text-text-tertiary hover:text-text-primary transition-colors"
+              title="Interview guide & help"
+            >
+              <HelpCircle className="w-5 h-5" />
+            </button>
+          </div>
+        </header>
+
+        {/* Main content */}
+        <main className="flex-1 flex flex-col p-4 sm:p-6 overflow-auto">
+          <div className="w-full max-w-6xl mx-auto flex-1 flex flex-col">
+            <InterviewBriefBanner
+              interview={interview}
+              currentStageIndex={sessionState.currentStageIndex}
+            />
+
+            {/* Video grid */}
+            <div className="flex-1 flex items-center justify-center">
+              <div className="w-full max-w-5xl">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                  <ParticipantTile
+                    name={interview.agent?.name || "AI Interviewer"}
+                    role="AI Interviewer"
+                    isAI
+                    aiState={sessionState.aiState}
+                  />
+                  <ParticipantTile
+                    name="You"
+                    role="Candidate"
+                    isSpeaking={sessionState.aiState === "listening"}
+                    isMuted={micMuted}
+                  />
+                </div>
+
+                <div className="mt-6 flex items-center justify-center">
+                  <AIStateIndicator
+                    aiState={sessionState.aiState}
+                    isMuted={micMuted}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        {/* Control bar */}
+        <footer className="py-4 px-4 sm:px-6">
+          <div className="max-w-xl mx-auto bg-background border border-border shadow-lg backdrop-blur-sm rounded-2xl px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleMute}
+                className={`
+                  w-12 h-12 rounded-xl flex items-center justify-center transition-all
+                  ${micMuted
+                    ? "bg-error text-white hover:bg-error/90"
+                    : "bg-background-subtle text-text-secondary hover:bg-border"
+                  }
+                `}
+              >
+                {micMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              </button>
+              <button className="w-12 h-12 rounded-xl bg-background-subtle text-text-secondary hover:bg-border flex items-center justify-center transition-colors">
+                <Volume2 className="w-5 h-5" />
+              </button>
+            </div>
+
+            <button
+              onClick={handleEndClick}
+              className="h-12 px-8 rounded-xl bg-error hover:bg-error/90 text-white font-medium flex items-center gap-2 transition-colors shadow-lg shadow-error/25"
+            >
+              <PhoneOff className="w-5 h-5" />
+              <span className="hidden sm:inline">End Interview</span>
+            </button>
+
+            <div className="flex items-center gap-2">
+              <button className="w-12 h-12 rounded-xl bg-background-subtle text-text-secondary hover:bg-border flex items-center justify-center transition-colors">
+                <MessageSquare className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </footer>
+
+        {/* Modals */}
+        <EndConfirmationModal
+          isOpen={sessionState.showEndConfirmation}
+          stageName={interview.stages[sessionState.currentStageIndex]}
+          stageNumber={sessionState.currentStageIndex + 1}
+          totalStages={interview.stages.length}
+          onContinue={handleContinue}
+          onEnd={handleEndInterview}
+        />
+
+        <HelpPanel
+          isOpen={sessionState.showHelpPanel}
+          onClose={toggleHelpPanel}
+          stages={interview.stages}
+          currentStageIndex={sessionState.currentStageIndex}
+        />
+      </div>
+    );
+  }
+
+  // Render brief mode (original UI)
   return (
     <div className="min-h-screen bg-background pb-32 sm:pb-0">
       {/* Header */}

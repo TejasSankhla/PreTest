@@ -6,6 +6,7 @@ import googleConfig from './google.config';
 import emailConfig from './email.config';
 import elevenlabsConfig from './elevenlabs.config';
 import openaiConfig from './openai.config';
+import redisConfig from './redis.config';
 
 export default [
   appConfig,
@@ -16,4 +17,5 @@ export default [
   emailConfig,
   elevenlabsConfig,
   openaiConfig,
+  redisConfig,
 ];

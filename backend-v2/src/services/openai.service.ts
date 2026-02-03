@@ -43,6 +43,9 @@ export class OpenAIService {
 
     if (apiKey) {
       this.client = new OpenAI({ apiKey });
+      this.logger.log('OpenAI client initialized successfully');
+    } else {
+      this.logger.warn('OPENAI_API_KEY not found in environment variables');
     }
   }
 

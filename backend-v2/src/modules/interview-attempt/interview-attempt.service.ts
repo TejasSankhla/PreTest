@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ForbiddenException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -15,6 +16,7 @@ import {
 import { Interview, InterviewDocument } from '../../schemas/interview.schema';
 import { CreateAttemptDto, ListAttemptsDto } from './dto';
 import { PaginatedResult } from '../../types/common.types';
+import { EvaluationQueueService } from '../queue/evaluation/evaluation.queue';
 
 export interface AttemptStatusResponse {
   attemptId: string;
@@ -28,11 +30,14 @@ export interface AttemptStatusResponse {
 
 @Injectable()
 export class InterviewAttemptService {
+  private readonly logger = new Logger(InterviewAttemptService.name);
+
   constructor(
     @InjectModel(InterviewAttempt.name)
     private attemptModel: Model<InterviewAttemptDocument>,
     @InjectModel(Interview.name)
     private interviewModel: Model<InterviewDocument>,
+    private evaluationQueueService: EvaluationQueueService,
   ) {}
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -85,7 +90,7 @@ export class InterviewAttemptService {
   async endAttempt(
     userId: string,
     attemptId: string,
-  ): Promise<InterviewAttemptDocument> {
+  ): Promise<InterviewAttemptDocument & { evaluationJobId?: string }> {
     const attempt = await this.findByIdAndVerifyOwner(userId, attemptId);
 
     // Can only end an in-progress attempt
@@ -93,6 +98,11 @@ export class InterviewAttemptService {
       throw new BadRequestException(
         `Cannot end attempt with status: ${attempt.status}`,
       );
+    }
+
+    // Validate conversation ID exists for evaluation
+    if (!attempt.elevenLabsConversationId) {
+      throw new BadRequestException('Attempt has no conversation ID');
     }
 
     attempt.status = AttemptStatus.COMPLETED;
@@ -105,7 +115,25 @@ export class InterviewAttemptService {
       );
     }
 
-    return attempt.save();
+    await attempt.save();
+
+    // Queue evaluation job
+    const jobId = await this.evaluationQueueService.queueEvaluation({
+      attemptId: attempt._id.toString(),
+      conversationId: attempt.elevenLabsConversationId,
+      userId,
+      /* eslint-disable-next-line @typescript-eslint/no-base-to-string */
+      interviewId: String(attempt.interview),
+    });
+
+    this.logger.log(`Queued evaluation job ${jobId} for attempt ${attemptId}`);
+
+    // Return attempt with job ID
+    const attemptObj = attempt.toObject() as InterviewAttemptDocument & {
+      evaluationJobId?: string;
+    };
+    attemptObj.evaluationJobId = jobId;
+    return attemptObj;
   }
 
   // ─────────────────────────────────────────────────────────────────────────
